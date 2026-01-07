@@ -27,7 +27,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: false
+          push: true
           platforms: linux/amd64,linux/arm64
           tags: freudend/hytale-server:experimental
           cache-from: type=gha
