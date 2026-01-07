@@ -43,6 +43,9 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: freudend/hytale-server:experimental
+          build-args: |
+            SERVER_JAR_URL=https://piston-data.mojang.com/v1/objects/64bb6d763bed0a9f1d632ec347938594144943ed/server.jar
+            SERVER_JAR_SHA256=f83b8e093865806f931c7e34aae41b177d4c076335263dd124c75d6d65dd1726
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

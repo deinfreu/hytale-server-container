@@ -1,6 +1,6 @@
 services:
   hytale:
-    image: docker-hytale-server:local
+    image: freudend/hytale-server:experimental
     container_name: hytale-server
     environment:
       EULA: "${EULA}"
