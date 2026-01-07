@@ -10,6 +10,18 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug File Structure
+        run: |
+          echo "Listing root directory:"
+          ls -F
+          echo "Checking for build folder:"
+          ls -d build/ || echo "BUILD FOLDER NOT FOUND"
+        
+      - name: List files for debugging
+        run: |
+          ls -R
+          pwd
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -32,8 +44,3 @@ jobs:
           tags: freudend/hytale-server:experimental
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: List files for debugging
-        run: |
-          ls -R
-          pwd
