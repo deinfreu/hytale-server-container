@@ -59,20 +59,3 @@ jobs:
           format: 'table'
           exit-code: '0' 
           severity: 'CRITICAL,HIGH'
-
-  # 4. README
-  readme:
-    name: 📝 Update Docker Hub README
-    needs: scan # CHANGED from 'build' to 'scan' so they align in a nice row
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Update Description
-        uses: peter-evans/dockerhub-description@v4
-        with:
-          # Using consistent secret names here:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          repository: freudend/hytale-server:experimental
-          readme-filepath: ./README.md
