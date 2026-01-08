@@ -1,6 +1,6 @@
 <div align="center" width="100%">
 
-[![Docker Hytale Server](https://raw.githubusercontent.com/deinfreu/docker-hytale-server/main/path/to/your/logo.png)](https://github.com/deinfreu/docker-hytale-server)
+[![Docker Hytale Server](https://repository-images.githubusercontent.com/1129339268/326db70c-ce07-4e0e-a256-fabc1c0216a5)](https://github.com/deinfreu/docker-hytale-server)
 
 
 
