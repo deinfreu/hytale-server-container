@@ -97,4 +97,4 @@ EOF
 
 # Proper init + startup
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["/bin/bash", "/entrypoint.sh"]
+CMD ["/bin/sh", "/entrypoint.sh"]
