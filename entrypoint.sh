@@ -6,8 +6,6 @@ set -eu
 # ==============================================================================
 
 PROPERTIES_FILE="${HOME}/server.properties"
-SERVER_IP=${SERVER_IP:-0.0.0.0}
-SERVER_PORT=${SERVER_PORT:-25565}
 
 # Colors
 CYAN="\033[0;36m"
@@ -44,8 +42,11 @@ else
 fi
 
 # 3. Audits
-/usr/local/bin/security-check.sh
-/usr/local/bin/network-check.sh
+/usr/local/bin/network.sh
+/usr/local/bin/security.sh
+
+# 4. Auto download hytale server binary or auto update the server binary when there is no binary located.
+/usr/local/bin/download-server-binary.sh
 
 # 4. Pterodactyl Variable Parsing
 # Converts {{SERVER_MEMORY}} etc. into usable bash values

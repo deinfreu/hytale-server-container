@@ -21,8 +21,10 @@ LABEL org.opencontainers.image.title="docker-hytale-server" \
 
 # Runtime config
 ENV EULA="" \
+    AUTO_UPDATE="" \
     SERVER_JAR="" \
     SERVER_IP="" \
+    SERVER_PORT="" \
     SERVER_JAR_SHA256="" \
     JAVA_OPTS="" \
     UID=1000 \
@@ -62,31 +64,34 @@ RUN if [ -n "$SERVER_JAR_URL" ]; then \
 # 5. Persistent Data
 WORKDIR ${HOME}
 
-# 6. Copy Scripts & Fix Line Endings
-COPY --chmod=755 scripts/checks/network-check.sh /usr/local/bin/network-check.sh
-COPY --chmod=755 scripts/checks/security-check.sh /usr/local/bin/security-check.sh
-COPY --chmod=755 scripts/checks/prod-check.sh /usr/local/bin/prod-check.sh
-COPY --chmod=755 entrypoint.sh /entrypoint.sh
+# 6. copy over the scripts and the etnrypoint.sh file
+COPY scripts/ /usr/local/bin/scripts
+COPY entrypoint.sh /entrypoint.sh
+COPY scripts/hytale/server-binary.sh /usr/local/bin
 
-# Run dos2unix after copying the scripts
-RUN dos2unix /usr/local/bin/*.sh /entrypoint.sh
+# 7. Perform all file operations in one RUN to minimize layers
+RUN find /usr/local/bin/scripts -type f -name "*.sh" -exec dos2unix {} + && \
+    dos2unix /entrypoint.sh && \
+    chmod -R 755 /usr/local/bin/scripts && \
+    chmod +x /usr/local/bin/server-binary.sh && \
+    chmod +x /entrypoint.sh
 
-# 7. Finalize
+# 8. Finalize switch to user to get out of root.
 USER ${USER}
 
-# Expose Hytale server port (UDP for QUIC support)
+# 9. Expose Hytale server port (UDP for QUIC support)
 EXPOSE 25565/udp
-EXPOSE 25565/tcp # Added for testing with minecraft .jar
+EXPOSE 25565/tcp
 
-# Graceful shutdown
+# 10. Graceful shutdown
 STOPSIGNAL SIGTERM
 
-# Healthcheck
+# 11. Healthcheck
 # Note: Requires iproute2 (installed in step 1)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=2m --retries=3 \
     CMD ss -ulpn | grep -q ":${SERVER_PORT:-25565}" || exit 1
 
-# Build metadata
+# 12. Build metadata
 ARG BUILDTIME=local
 ARG VERSION=local
 ARG REVISION=local
@@ -96,6 +101,6 @@ version=${VERSION}
 revision=${REVISION}
 EOF
 
-# Proper init + startup
+# 13. FINAL Proper init + startup
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/bin/sh", "/entrypoint.sh"]
