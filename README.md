@@ -7,7 +7,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/deinfreu/docker-hytale-server?style=for-the-badge)](https://github.com/deinfreu/docker-hytale-server)
 [![GitHub last commit](https://img.shields.io/github/last-commit/deinfreu/docker-hytale-server?style=for-the-badge)](https://github.com/deinfreu/docker-hytale-server)
 [![Docker Pulls](https://img.shields.io/docker/pulls/freudend/hytale-server?style=for-the-badge)](https://hub.docker.com/r/freudend/hytale-server)
-[![Docker Image Size](https://img.shields.io/docker/image-size/freudend/hytale-server/experimental?style=for-the-badge)](https://hub.docker.com/r/freudend/hytale-server)
+[![Docker Image Size](https://img.shields.io/docker/image-size/freudend/hytale-server/experimental?style=for-the-badge)](https://hub.docker.com/r/freudend/hytale-server/tags)
 [![GitHub license](https://img.shields.io/github/license/deinfreu/docker-hytale-server?style=for-the-badge)](https://github.com/deinfreu/docker-hytale-server/blob/main/LICENSE)
 
 Deploy a production-ready Hytale server in seconds with automated diagnostics, hardened security, and optimized networking using a single command with docker.

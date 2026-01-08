@@ -10,6 +10,10 @@ ARG SERVER_JAR_URL
 ARG SERVER_JAR_SHA256
 ENV SERVER_JAR_SHA256=${SERVER_JAR_SHA256}
 
+# Sets the user and home directory for Pterodactyl compatibility.
+ENV USER=container
+ENV HOME=/home/container
+
 # Metadata
 LABEL org.opencontainers.image.title="docker-hytale-server" \
     org.opencontainers.image.description="Minimal Hytale server image optimized for performance, security, and AppArmor" \
@@ -22,8 +26,7 @@ ENV EULA="" \
     SERVER_JAR_SHA256="" \
     JAVA_OPTS="" \
     UID=1000 \
-    GID=1000 \
-    LC_ALL=en_US.UTF-8
+    GID=1000
 
 # BuildKit mount for platform-specific package installation
 ARG EXTRA_DEB_PACKAGES=""
@@ -57,20 +60,19 @@ RUN if [ -n "$SERVER_JAR_URL" ]; then \
     fi
 
 # 5. Persistent Data
-WORKDIR /data
-VOLUME ["/data"]
+WORKDIR ${HOME}
 
 # 6. Copy Scripts & Fix Line Endings
 COPY --chmod=755 scripts/checks/network-check.sh /usr/local/bin/network-check.sh
 COPY --chmod=755 scripts/checks/security-check.sh /usr/local/bin/security-check.sh
 COPY --chmod=755 scripts/checks/prod-check.sh /usr/local/bin/prod-check.sh
-COPY --chmod=755 start-hytale.sh /usr/local/bin/start-hytale.sh
+COPY --chmod=755 entrypoint.sh /entrypoint.sh
 
 # Run dos2unix after copying the scripts
 RUN dos2unix /usr/local/bin/*.sh
 
 # 7. Finalize
-USER hytale
+USER ${USER}
 
 # Expose Hytale server port (UDP for QUIC support)
 EXPOSE 25565/udp
@@ -94,4 +96,5 @@ revision=${REVISION}
 EOF
 
 # Proper init + startup
-ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/start-hytale.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["/bin/bash", "/entrypoint.sh"]

@@ -2,8 +2,8 @@
 set -eu
 
 # ==============================================================================
-# SETUP USER (Ubuntu/Debian)
-# Creates the hytale user and group with specific GID/UID
+# SETUP USER (Pterodactyl Compatible)
+# Creates the user and group using Dockerfile ENV variables
 # ==============================================================================
 
 log() { echo "[setup-user] $*"; }
@@ -22,34 +22,35 @@ fi
 # 2. Create Group
 # ------------------------------------------------------------------------------
 if ! getent group "$GID" >/dev/null 2>&1; then
-    log "Creating group 'hytale' with GID=$GID..."
-    # Attempt 'addgroup' (Alpine/Debian) then fallback to 'groupadd' (RHEL)
+    log "Creating group '$USER' with GID=$GID..."
     if command -v addgroup >/dev/null 2>&1; then
-        addgroup --gid "$GID" hytale
+        addgroup --gid "$GID" "$USER"
     else
-        groupadd -g "$GID" hytale
+        groupadd -g "$GID" "$USER"
     fi
 else
     log "Group with GID=$GID already exists"
 fi
 
-# 3. Create User
+# 3. Create User with $HOME
 # ------------------------------------------------------------------------------
-if ! id hytale >/dev/null 2>&1; then
-    log "Creating user 'hytale' with UID=$UID..."
+if ! id "$USER" >/dev/null 2>&1; then
+    log "Creating user '$USER' with UID=$UID and HOME=$HOME..."
     if command -v adduser >/dev/null 2>&1; then
-        adduser --system --shell /bin/false --uid "$UID" --ingroup hytale --home /data hytale
+        # Alpine/Debian adduser
+        adduser --system --shell /bin/bash --uid "$UID" --ingroup "$USER" --home "$HOME" "$USER"
     else
-        useradd -u "$UID" -g "$GID" -m -d /data -s /bin/false hytale
+        # Standard useradd
+        useradd -u "$UID" -g "$GID" -m -d "$HOME" -s /bin/bash "$USER"
     fi
 else
-    log "User 'hytale' already exists"
+    log "User '$USER' already exists"
 fi
 
 # 4. Permissions
 # ------------------------------------------------------------------------------
-log "Ensuring /data directory exists and has correct ownership..."
-mkdir -p /data
-chown -R "$UID":"$GID" /data
+log "Ensuring $HOME directory exists and has correct ownership..."
+mkdir -p "$HOME"
+chown -R "$UID":"$GID" "$HOME"
 
 log "setup-user script finished successfully!"

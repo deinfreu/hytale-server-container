@@ -23,7 +23,7 @@ services:
         limits:
           memory: 2G
     volumes:
-      - ./data:/data                        # Mounts the host's ./data folder to the container's /data directory (host:docker).
+      - ./data:/home/container              # Mounts the host's ./data folder to the container's /data directory (host:docker).
       - /etc/localtime:/etc/localtime:ro    # Uses the local time of the host machine
       - /etc/timezone:/etc/timezone:ro      # Uses the local timezone of the host machine
     logging:                                # Enables logging
