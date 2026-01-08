@@ -2,6 +2,7 @@
 #Template for AL projects for Dynamics 365 Business Central
 #launch.json folder
 .vscode/
+<<<<<<< Updated upstream
 #Cache folder
 .alcache/
 #Symbols folder
@@ -20,3 +21,83 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+=======
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.sw?
+*.code-workspace
+
+# ----------------------
+# OS-specific files
+# ----------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+
+# ----------------------
+# Python / other language caches (if used)
+# ----------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.pyo
+*.pyd
+
+# ----------------------
+# Docker
+# ----------------------
+examples/**/data/
+*.log
+*.pid
+*.sock
+docker-compose.override.yml
+.dockerignore
+
+# ----------------------
+# Hytale / project-specific
+# ----------------------
+# Ignore all data folders inside examples
+examples/**/data/
+*.jar
+
+# Persistent runtime folders
+/data/
+
+# ----------------------
+# Archives and temp files
+# ----------------------
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.tmp
+*.bak
+
+# ----------------------
+# Build artifacts
+# ----------------------
+dist/
+out/
+*.class
+*.o
+*.so
+*.exe
+
+# ----------------------
+# Misc
+# ----------------------
+*.log
+*.cache
+>>>>>>> Stashed changes

@@ -1,0 +1,33 @@
+services:
+  hytale:
+    image: freudend/hytale-server:experimental
+    container_name: hytale-server
+    environment:
+      EULA: "${EULA}"
+      UID: "${UID}"
+      GID: "${GID}"
+      JAVA_OPTS: "${JAVA_OPTS}"
+      SERVER_IP: "${SERVER_IP}"
+      SERVER_PORT: "${SERVER_PORT}"
+      PROD: "${PROD}"                       
+      TZ: "${TZ}"
+    restart: no
+    ports:
+      - "${SERVER_PORT}:25565/udp"
+    cap_drop:                               # Drops all default Linux kernel capabilities
+      - ALL
+    security_opt:                           # Prevents the process from gaining more privileges (e.g. via setuid binaries)
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+    volumes:
+      - ./data:/data                        # Mounts the host's ./data folder to the container's /data directory (host:docker).
+      - /etc/localtime:/etc/localtime:ro    # Uses the local time of the host machine
+      - /etc/timezone:/etc/timezone:ro      # Uses the local timezone of the host machine
+    logging:                                # Enables logging
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
