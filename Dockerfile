@@ -44,46 +44,35 @@ RUN chmod +x /usr/local/bin/gosu
 RUN --mount=target=/build,source=build \
     sh /build/run.sh setup-user
 
-# 4. bake the jar. We download this to /usr/local/lib/ so it's protected and separate from scripts
-ARG SERVER_JAR_URL
-ARG SERVER_JAR_SHA256
-RUN if [ -n "$SERVER_JAR_URL" ]; then \
-    curl -L -o /usr/local/lib/server.jar "$SERVER_JAR_URL" && \
-    if [ -n "$SERVER_JAR_SHA256" ]; then \
-    echo "$SERVER_JAR_SHA256  /usr/local/lib/server.jar" | sha256sum -c -; \
-    fi && \
-    chmod 444 /usr/local/lib/server.jar; \
-    fi
-
-# 5. Persistent Data
+# 4. Persistent Data
 WORKDIR ${HOME}
 
-# 6. copy over the scripts and the etnrypoint.sh file
+# 5. copy over the scripts and the etnrypoint.sh file
 COPY scripts/ /usr/local/bin/scripts
 COPY entrypoint.sh /entrypoint.sh
 
-# 7. Perform all file operations in one RUN to minimize layers
+# 6. Perform all file operations in one RUN to minimize layers
 RUN find /usr/local/bin/scripts -type f -name "*.sh" -exec dos2unix {} + && \
     dos2unix /entrypoint.sh && \
     chmod -R 755 /usr/local/bin/scripts && \
     chmod +x /entrypoint.sh
 
-# 8. Finalize switch to user to get out of root.
+# 7. Finalize switch to user to get out of root.
 USER ${USER}
 
-# 9. Expose Hytale server port (UDP for QUIC support)
+# 8. Expose Hytale server port (UDP for QUIC support)
 EXPOSE 25565/udp
 EXPOSE 25565/tcp
 
-# 10. Graceful shutdown
+# 9. Graceful shutdown
 STOPSIGNAL SIGTERM
 
-# 11. Healthcheck
+# 10. Healthcheck
 # Note: Requires iproute2 (installed in step 1)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=2m --retries=3 \
     CMD ss -ulpn | grep -q ":${SERVER_PORT:-25565}" || exit 1
 
-# 12. Build metadata
+# 11. Build metadata
 ARG BUILDTIME=local
 ARG VERSION=local
 ARG REVISION=local
@@ -93,6 +82,6 @@ version=${VERSION}
 revision=${REVISION}
 EOF
 
-# 13. FINAL Proper init + startup
+# 12. FINAL Proper init + startup
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/bin/sh", "/entrypoint.sh"]
