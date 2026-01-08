@@ -69,13 +69,14 @@ COPY --chmod=755 scripts/checks/prod-check.sh /usr/local/bin/prod-check.sh
 COPY --chmod=755 entrypoint.sh /entrypoint.sh
 
 # Run dos2unix after copying the scripts
-RUN dos2unix /usr/local/bin/*.sh
+RUN dos2unix /usr/local/bin/*.sh /entrypoint.sh
 
 # 7. Finalize
 USER ${USER}
 
 # Expose Hytale server port (UDP for QUIC support)
 EXPOSE 25565/udp
+EXPOSE 25565/tcp # Added for testing with minecraft .jar
 
 # Graceful shutdown
 STOPSIGNAL SIGTERM
