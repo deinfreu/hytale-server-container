@@ -6,31 +6,33 @@ SCRIPTS_PATH="/usr/local/bin/scripts"
 SERVER_PORT="${SERVER_PORT:-25565}"
 SERVER_IP="${SERVER_IP:-0.0.0.0}"
 AUTO_UPDATE="${AUTO_UPDATE:-false}"
-MINECRAFT="${MINECRAFT:-FALSE}" 
+MINECRAFT="${MINECRAFT:-FALSE}"
 
 # Load utilities (like the 'log' function)
 . "$SCRIPTS_PATH/utils.sh"
 
-# Set the default JAR path (Hytale)
-SERVER_JAR_PATH="hytale-server.jar"
-
 # Minecraft Fallback Logic
 if [ "$MINECRAFT" = "TRUE" ]; then
+    # Default name if we need to download a new one
     SERVER_JAR_PATH="/home/container/server.jar"
     
-    echo "🎮 MINECRAFT=TRUE: Checking for server.jar in root..."
-    
-    if [ ! -f "$SERVER_JAR_PATH" ]; then
-        echo "📥 Downloading Minecraft Server to root..."
+    echo "🎮 MINECRAFT=TRUE: Searching for any *server*.jar in root..."
+
+    # Check if any file matching *server*.jar exists
+    # We use a subshell to avoid errors if no file is found
+    FOUND_JAR=$(ls /home/container/*server*.jar 2>/dev/null | head -n 1)
+
+    if [ -z "$FOUND_JAR" ]; then
+        echo "📥 No server JAR found. Downloading Minecraft Server..."
         
-        # Download directly to the current directory
         curl -L -o "$SERVER_JAR_PATH" https://piston-data.mojang.com/v1/objects/84100236a2829286d11da9287c88019e34c919d7/server.jar
         
-        # Set to Read-Only (r--r--r--)
+        # Set to Read-Only
         chmod 444 "$SERVER_JAR_PATH"
         echo "🔒 File protections enabled: Read-only (server.jar)"
     else
-        echo "✅ server.jar already exists in root."
+        echo "✅ Found existing JAR: $FOUND_JAR"
+        SERVER_JAR_PATH="$FOUND_JAR"
     fi
 fi
 
