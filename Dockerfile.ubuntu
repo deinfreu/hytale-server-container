@@ -32,11 +32,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=tianon/gosu:1.19 /gosu /usr/local/bin/
 RUN chmod +x /usr/local/bin/gosu
 
-# 3. Setup User (Fixed to handle existing GID/UID 1000)
-RUN if getent group ${GID}; then groupdel $(getent group ${GID} | cut -d: -f1); fi && \
-    if getent passwd ${UID}; then userdel -f $(getent passwd ${UID} | cut -d: -f1); fi && \
-    groupadd -g ${GID} ${USER} && \
-    useradd -m -d ${HOME} -u ${UID} -g ${USER} ${USER}
+# 3. Setup User (Special handling for UID 1000 conflict, otherwise custom creation)
+RUN if [ "${UID}" -eq 1000 ] && getent passwd 1000 > /dev/null 2>&1; then \
+        # If UID is 1000 and taken, rename the existing user (usually 'ubuntu')
+        EXISTING_USER=$(getent passwd 1000 | cut -d: -f1); \
+        echo "UID 1000 detected. Renaming existing user '$EXISTING_USER' to ${USER}..."; \
+        usermod -l ${USER} -d ${HOME} -m ${EXISTING_USER}; \
+        groupmod -n ${USER} $(getent group 1000 | cut -d: -f1); \
+    else \
+        # For any other UID, or if 1000 is surprisingly free, create fresh
+        echo "Creating fresh user ${USER} with UID ${UID} and GID ${GID}..."; \
+        groupadd -g ${GID} ${USER} && \
+        useradd -m -d ${HOME} -u ${UID} -g ${USER} -s /bin/bash ${USER}; \
+    fi
 
 # 4. Persistent Data
 WORKDIR ${HOME}
