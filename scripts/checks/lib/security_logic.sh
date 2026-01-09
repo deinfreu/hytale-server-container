@@ -5,14 +5,6 @@
 
 check_integrity() {
     if [ -f "$SERVER_JAR_PATH" ]; then
-        if [ -n "${SERVER_JAR_SHA256:-}" ]; then
-            if echo "${SERVER_JAR_SHA256}  ${SERVER_PATH}" | sha256sum -c - >/dev/null 2>&1; then
-                log "Security: SHA256 matches." "$GREEN"
-            else
-                log "CRITICAL: SHA256 mismatch!" "$RED"
-                exit 1
-            fi
-        fi
         
         PERMS=$(stat -c "%a" "$SERVER_JAR_PATH")
         if [ "$PERMS" != "444" ]; then

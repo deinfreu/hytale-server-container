@@ -8,15 +8,13 @@ export SERVER_PORT="${SERVER_PORT:-25565}"
 export SERVER_IP="${SERVER_IP:-0.0.0.0}"
 export AUTO_UPDATE="${AUTO_UPDATE:-false}"
 export MINECRAFT="${MINECRAFT:-FALSE}"
+export SERVER_JAR_PATH="/home/container/server.jar"
 
 # Load utilities (like the 'log' function)
 . "$SCRIPTS_PATH/utils.sh"
 
 # Minecraft Fallback Logic
-if [ "$MINECRAFT" = "TRUE" ]; then
-    # Default name if we need to download a new one
-    SERVER_JAR_PATH="/home/container/server.jar"
-    
+if [ "$MINECRAFT" = "TRUE" ]; then    
     log "[system]" "MINECRAFT=TRUE: Searching for JAR..." "$YELLOW"
 
     # Check if any file matching *server*.jar exists
