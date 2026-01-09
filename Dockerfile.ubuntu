@@ -69,7 +69,11 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=2m --retries=3 \
 ARG BUILDTIME=local
 ARG VERSION=local
 ARG REVISION=local
-RUN printf "buildtime=${BUILDTIME}\nversion=${VERSION}\nrevision=${REVISION}" > /etc/image.properties
+COPY <<EOF /etc/image.properties
+buildtime=${BUILDTIME}
+version=${VERSION}
+revision=${REVISION}
+EOF
 
 # 12. FINAL Proper init + startup
 # Note: Ubuntu's tini is usually at /usr/bin

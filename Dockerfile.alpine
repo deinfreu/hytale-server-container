@@ -62,10 +62,15 @@ STOPSIGNAL SIGTERM
 HEALTHCHECK --interval=30s --timeout=5s --start-period=2m --retries=3 \
     CMD ss -ulpn | grep -q ":${SERVER_PORT}" || exit 1
 
-# 10. Metadata (Inlined for simplicity)
+# 10. Build metadata
 ARG BUILDTIME=local
 ARG VERSION=local
-RUN echo "buildtime=${BUILDTIME}\nversion=${VERSION}" > /etc/image.properties
+ARG REVISION=local
+COPY <<EOF /etc/image.properties
+buildtime=${BUILDTIME}
+version=${VERSION}
+revision=${REVISION}
+EOF
 
 # 11. FINAL Startup
 # Using tini for proper signal handling (SIGTERM)
