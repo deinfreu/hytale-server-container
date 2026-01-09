@@ -1,4 +1,5 @@
 name: 📦 Sync Documentation to Docker Hub
+
 on:
   push:
     branches:
@@ -6,17 +7,50 @@ on:
     paths:
       - README.md
       - .github/workflows/dockerhub-description.yml
+  workflow_dispatch:
+
 jobs:
-  readme:
+  sync:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: 📝 Update Docker Hub README
-      uses: peter-evans/dockerhub-description@v5
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-        repository: peterevans/dockerhub-description
-        short-description: ${{ github.event.repository.description }}
-        enable-url-completion: true
+      - name: 📏 Get Actual Image Size
+        id: get_info
+        run: |
+          # 1. Fetch metadata
+          JSON_DATA=$(curl -s "https://hub.docker.com/v2/repositories/freudend/hytale-server/tags/experimental-alpine-liberica")
+          
+          # 2. Extract size and convert to MB
+          SIZE_BYTES=$(echo $JSON_DATA | jq -r '.full_size')
+          SIZE_MB=$(echo "scale=1; $SIZE_BYTES / 1048576" | bc)
+          
+          # 3. Create the strings
+          # Long version for GitHub
+          GH_DESC="🚀 Hytale Docker Server 📦 ${SIZE_MB}MB (Alpine/Liberica) • Secure non-root execution • Fast QUIC/UDP optimization • Built-in Production & Debug diagnostics • Pterodactyl supported ✅"
+          
+          # Short version for Docker Hub (Optimized 100 chars)
+          DH_DESC="📦 ${SIZE_MB}MB (Alpine/Liberica) • Non-root • QUIC Optimized • Production & Debug • Pterodactyl ✅"
+          
+          # 4. EXPORT THEM PROPERLY
+          echo "GITHUB_DESC=$GH_DESC" >> $GITHUB_OUTPUT
+          echo "DOCKER_DESC=$DH_DESC" >> $GITHUB_OUTPUT
+
+      - name: 🐙 Update GitHub Repository Description
+        run: |
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }} \
+            -d "{\"description\":\"${{ steps.get_info.outputs.GITHUB_DESC }}\"}"
+
+      - name: 📝 Update Docker Hub README & Short Description
+        uses: peter-evans/dockerhub-description@v5
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          repository: freudend/hytale-server
+          # Using the output variable from the previous step:
+          short-description: ${{ steps.get_info.outputs.DOCKER_DESC }}
+          enable-url-completion: true
