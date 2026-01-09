@@ -35,9 +35,9 @@ jobs:
           - os_type: alpine
             dockerfile: Dockerfile.alpine
             tag_name: experimental-alpine   # Suffix for Alpine
-          - os_type: alpine
+          - os_type: alpine-liberica
             dockerfile: Dockerfile.alpine-liberica
-            tag_name: experimental-alpine-liberica   # Suffix for Alpine
+            tag_name: experimental-alpine-liberica   # Suffix for Alpine-liberica
     
     steps:
       - name: Checkout code

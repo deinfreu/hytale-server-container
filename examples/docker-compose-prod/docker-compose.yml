@@ -1,6 +1,6 @@
 services:
   hytale:
-    image: freudend/hytale-server:experimental-alpine
+    image: freudend/hytale-server:experimental-alpine-liberica
     container_name: hytale-server
     environment:
       EULA: "${EULA}"
