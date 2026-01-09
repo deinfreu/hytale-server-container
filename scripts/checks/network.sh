@@ -2,8 +2,8 @@
 set -eu
 
 # Load dependencies
-. "$(dirname "$0")/../utils.sh"
-. "$(dirname "$0")/lib/network_logic.sh"
+. "$SCRIPTS_PATH/utils.sh"
+. "$SCRIPTS_PATH/checks/lib/network_logic.sh"
 
 log "Starting network configuration audit..." "$BLUE" "network-check"
 

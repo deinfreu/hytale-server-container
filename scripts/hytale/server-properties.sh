@@ -2,7 +2,7 @@
 set -eu
 
 # Load dependencies
-. "$(dirname "$0")/../utils.sh"
+. "$SCRIPTS_PATH/utils.sh"
 
 # Configure server.properties (Using $HOME)
 if [ ! -f "$PROPERTIES_FILE" ]; then

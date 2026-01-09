@@ -2,7 +2,7 @@
 set -eu
 
 # Load dependencies
-. "$(dirname "$0")/../utils.sh"
+. "$SCRIPTS_PATH/utils.sh"
 
 # EULA Check (Redirected to $HOME)
 case "$EULA" in

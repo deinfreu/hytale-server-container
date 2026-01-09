@@ -2,8 +2,8 @@
 set -eu
 
 # Load dependencies
-. "$(dirname "$0")/../utils.sh"
-. "$(dirname "$0")/lib/security_logic.sh"
+. "$SCRIPTS_PATH/utils.sh"
+. "$SCRIPTS_PATH/checks/lib/security.sh"
 
 # Execute
 log "Starting security audit..." "$BLUE"

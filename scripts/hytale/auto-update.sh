@@ -2,8 +2,8 @@
 set -eu
 
 # Load dependencies
-. "$(dirname "$0")/../utils.sh"
-. "$(dirname "$0")/lib/update_logic.sh"
+. "$SCRIPTS_PATH/utils.sh"
+. "$SCRIPTS_PATH/hytale/lib/network_logic.sh"
 
 if [ -f "$SERVER_JAR_PATH" ]; then
     log "Checking for Hytale updates..." "$BLUE" "updater"
