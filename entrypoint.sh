@@ -24,7 +24,7 @@ if [ "$MINECRAFT" = "TRUE" ]; then
     if [ -z "$FOUND_JAR" ]; then
         log "[download]" "No JAR found. Downloading Minecraft Server..." "$CYAN"
         
-        curl -L -o "$SERVER_JAR_PATH" https://piston-data.mojang.com/v1/objects/84100236a2829286d11da9287c88019e34c919d7/server.jar
+        curl -L -o "$SERVER_JAR_PATH" https://piston-data.mojang.com/v1/objects/64bb6d763bed0a9f1d632ec347938594144943ed/server.jar
         
         # Set to Read-Only
         chmod 444 "$SERVER_JAR_PATH"
