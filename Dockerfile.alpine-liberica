@@ -43,10 +43,17 @@ ENV USER=container \
 
 # 1. Install ONLY essential runtime dependencies
 # We use --no-cache to avoid storing index files in the image
-RUN apk add --no-cache su-exec tini bash iproute2 && \
+RUN apk add --no-cache \
+    su-exec \
+    tini \
+    bash \
+    iproute2 \
+    gcompat \
+    libc6-compat \
+    libstdc++ && \
     ln -s /sbin/su-exec /usr/local/bin/gosu && \
-    addgroup -S -g 1000 ${USER} && \
-    adduser -S -D -h ${HOME} -u 1000 -G ${USER} ${USER}
+    addgroup -S -g ${GID} ${USER} && \
+    adduser -S -D -h ${HOME} -u ${UID} -G ${USER} ${USER}
 
 # 2. Copy ONLY the processed files from the builder
 # This avoids having dos2unix or temporary build files in the final image
