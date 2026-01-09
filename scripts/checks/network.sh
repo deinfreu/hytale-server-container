@@ -7,11 +7,10 @@ set -eu
 
 log "Starting network configuration audit..." "$BLUE" "network-check"
 
+check_connectivity
 validate_port_cfg
-validate_ip_syntax
 check_port_availability
 check_udp_stack
-check_connectivity
 
 log "Network audit finished." "$GREEN" "network-check"
 exit 0

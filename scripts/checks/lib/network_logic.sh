@@ -3,6 +3,16 @@
 # Load dependencies
 . "$SCRIPTS_PATH/utils.sh"
 
+check_connectivity() {
+    if curl -s --connect-timeout 5 https://google.com > /dev/null; then
+        log "Internet access verified." "$GREEN" "conn"
+        PUBLIC_IP=$(curl -s --connect-timeout 5 https://api.ipify.org)
+        log "Public IP: $PUBLIC_IP" "$GREEN" "conn"
+    else
+        log "Warning: No internet access. Auth & Updates will fail." "$YELLOW" "conn"
+    fi
+}
+
 validate_port_cfg() {
     if [ -n "$SERVER_PORT" ]; then
         if ! echo "$SERVER_PORT" | grep -Eq '^[0-9]+$' || [ "$SERVER_PORT" -lt 1 ] || [ "$SERVER_PORT" -gt 65535 ]; then
@@ -44,15 +54,5 @@ check_udp_stack() {
         fi
     else
         log "Warning: Cannot read UDP buffer limits. Access restricted." "$YELLOW" "net"
-    fi
-}
-
-check_connectivity() {
-    if curl -s --connect-timeout 5 https://google.com > /dev/null; then
-        log "Internet access verified." "$GREEN" "conn"
-        PUBLIC_IP=$(curl -s --connect-timeout 5 https://api.ipify.org)
-        log "Public IP: $PUBLIC_IP" "$GREEN" "conn"
-    else
-        log "Warning: No internet access. Auth & Updates will fail." "$YELLOW" "conn"
     fi
 }
