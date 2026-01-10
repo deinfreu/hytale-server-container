@@ -1,3 +1,5 @@
+> **[WARNING]** Still waiting on Hytale to release more information about the server binary. The docker image is therefore under development.
+
 <div align="center" width="100%">
 
 <picture>
