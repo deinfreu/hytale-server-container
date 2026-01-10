@@ -1,6 +1,10 @@
 <div align="center" width="100%">
 
-[![Docker Hytale Server](https://repository-images.githubusercontent.com/1129339268/326db70c-ce07-4e0e-a256-fabc1c0216a5)](https://github.com/deinfreu/docker-hytale-server)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/deinfreu/docker-hytale-server/tree/experimental/docs/logo_Dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/deinfreu/docker-hytale-server/tree/experimental/docs/logo_Light.png">
+  <img alt="Docker Hytale Server Logo" src="https://github.com/deinfreu/docker-hytale-server/tree/experimental/docs/logo_Light.png" width="600">
+</picture>
 
 
 [![GitHub stars](https://img.shields.io/github/stars/deinfreu/docker-hytale-server?style=for-the-badge&color=daaa3f)](https://github.com/deinfreu/docker-hytale-server)
