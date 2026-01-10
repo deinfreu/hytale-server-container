@@ -1,92 +1,60 @@
 # syntax=docker/dockerfile:1.7
 FROM eclipse-temurin:25.0.1_8-jre
 
-# Multi-arch support
-ARG TARGETOS
-ARG TARGETARCH
-
-# Sets the user and home directory for Pterodactyl compatibility.
+# Sets the user and home directory
 ENV USER=container
 ENV HOME=/home/container
 
 # Runtime config
-ENV EULA="" \
-    DEBUG="" \
-    PROD="" \
-    SERVER_IP="" \
-    SERVER_PORT=5520 \
-    JAVA_OPTS="" \
-    MINECRAFT="" \
-    MINECRAFT_URL="" \
-    UID=1000 \
-    GID=1000
+ENV EULA="" DEBUG="" PROD="" SERVER_IP="" SERVER_PORT=5520 \
+    JAVA_OPTS="" MINECRAFT="" MINECRAFT_URL="" UID=1000 GID=1000
 
 # 1. Install Dependencies
-# Added tini for the ENTRYPOINT and iproute2 for HEALTHCHECK
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    tini \
-    iproute2 \
-    dos2unix \
-    curl \
-    ca-certificates \
+    tini iproute2 dos2unix curl ca-certificates coreutils \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Add Gosu (Privilege dropping)
+# 2. Add Gosu
 COPY --from=tianon/gosu:1.19 /gosu /usr/local/bin/
 RUN chmod +x /usr/local/bin/gosu
 
-# 3. Setup User (Special handling for UID 1000 conflict, otherwise custom creation)
-RUN if [ "${UID}" -eq 1000 ] && getent passwd 1000 > /dev/null 2>&1; then \
-        # If UID is 1000 and taken, rename the existing user (usually 'ubuntu')
-        EXISTING_USER=$(getent passwd 1000 | cut -d: -f1); \
-        echo "UID 1000 detected. Renaming existing user '$EXISTING_USER' to ${USER}..."; \
+# 3. Setup User (Handling the UID 1000 conflict correctly)
+RUN if getent passwd ${UID} > /dev/null 2>&1; then \
+        EXISTING_USER=$(getent passwd ${UID} | cut -d: -f1); \
         usermod -l ${USER} -d ${HOME} -m ${EXISTING_USER}; \
-        groupmod -n ${USER} $(getent group 1000 | cut -d: -f1); \
+        groupmod -n ${USER} $(getent group ${GID} | cut -d: -f1) || true; \
     else \
-        # For any other UID, or if 1000 is surprisingly free, create fresh
-        echo "Creating fresh user ${USER} with UID ${UID} and GID ${GID}..."; \
         groupadd -g ${GID} ${USER} && \
         useradd -m -d ${HOME} -u ${UID} -g ${USER} -s /bin/bash ${USER}; \
     fi
 
-# 4. Persistent Data
 WORKDIR ${HOME}
 
-# 5. Copy scripts and entrypoint
+# 4. Copy and fix scripts (Using a similar pattern to your Alpine builder)
 COPY scripts/ /usr/local/bin/scripts/
 COPY entrypoint.sh /entrypoint.sh
 
-# 6. Fix permissions and line endings
-# We set ownership to the container user for the home directory and scripts
 RUN find /usr/local/bin/scripts -type f -name "*.sh" -exec dos2unix {} + && \
     dos2unix /entrypoint.sh && \
     chmod -R +x /usr/local/bin/scripts && \
     chmod +x /entrypoint.sh && \
     chown -R ${USER}:${USER} ${HOME} /usr/local/bin/scripts /entrypoint.sh
 
-# 7. Finalize switch to user
-USER ${USER}
-
-# 8. Ports
-EXPOSE 5520/udp
-EXPOSE 5520/tcp
-
-# 9. Graceful shutdown
-STOPSIGNAL SIGTERM
-
-# 10. Healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=2m --retries=3 \
-    CMD ss -ulpn | grep -q ":${SERVER_PORT}" || exit 1
-
-# 11. Build metadata
+# 5. Build metadata
 ARG BUILDTIME=local
 ARG VERSION=local
 ARG REVISION=local
-COPY <<EOF /etc/image.properties
-buildtime=${BUILDTIME}
-version=${VERSION}
-revision=${REVISION}
-EOF
+RUN echo "buildtime=${BUILDTIME}\nversion=${VERSION}\nrevision=${REVISION}" > /etc/image.properties
 
-# 12. FINAL Proper init + startup
-# Note: Ubuntu's tini is usually at /usr/bin
+# 6. Final Config
+USER ${USER}
+EXPOSE 5520/udp 5520/tcp
+STOPSIGNAL SIGTERM
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=2m --retries=3 \
+    CMD ss -ulpn | grep -q ":${SERVER_PORT}" || exit 1
+
+# 7. EXECUTION (The missing part)
+# We use /usr/bin/tini for Ubuntu
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["/bin/bash", "/entrypoint.sh"]

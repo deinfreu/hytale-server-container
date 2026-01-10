@@ -59,7 +59,7 @@ jobs:
 
   # STEP 3: DEPLOYMENT TEST
   test:
-    name: 🧪 Test Boot
+    name: 🧪 Server start test
     needs: build
     runs-on: ubuntu-latest
     strategy:

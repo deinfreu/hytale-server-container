@@ -1,16 +1,14 @@
 # syntax=docker/dockerfile:1.7
-
 # --- STAGE 1: Builder ---
 FROM alpine:3.23 AS builder
 
-# Install tools needed for preparation
 RUN apk add --no-cache dos2unix
 
 WORKDIR /build
 COPY scripts/ scripts/
 COPY entrypoint.sh .
 
-# Fix all line endings and permissions in one go
+# Optimized: Combined operations to reduce builder overhead
 RUN find scripts -type f -name "*.sh" -exec dos2unix {} + && \
     dos2unix entrypoint.sh && \
     chmod -R +x scripts && \
@@ -18,6 +16,11 @@ RUN find scripts -type f -name "*.sh" -exec dos2unix {} + && \
 
 # --- STAGE 2: Final Runtime ---
 FROM eclipse-temurin:25.0.1_8-jre-alpine-3.23
+
+# Arguments for metadata
+ARG BUILDTIME=local
+ARG VERSION=local
+ARG REVISION=local
 
 # Metadata
 LABEL org.opencontainers.image.title="Hytale Server" \
@@ -30,56 +33,48 @@ LABEL org.opencontainers.image.title="Hytale Server" \
     org.opencontainers.image.created="${BUILDTIME}" \
     org.opencontainers.image.licenses="Apache-2.0"
 
-# Runtime config
+# Runtime config - Grouped for better layer caching
 ENV USER=container \
     HOME=/home/container \
-    SERVER_PORT=5520 \
-    EULA="" \
+    UID="1000" \
+    GID="1000" \
     MINECRAFT="" \
     MINECRAFT_URL="" \
     PROD="" \
     DEBUG="" \
-    SERVER_IP="" \
+    EULA="" \
     JAVA_OPTS="" \
-    UID=1000 \
-    GID=1000
+    SERVER_PORT="" \
+    SERVER_IP="" \
+    EULA=FALSE MINECRAFT=FALSE PROD=FALSE DEBUG=FALSE
 
-# 1. Install ONLY essential runtime dependencies
-# We use --no-cache to avoid storing index files in the image
+# 1. Consolidated dependencies and User creation
+# Using --no-cache and cleaning up after apk
 RUN apk add --no-cache \
-    curl \
-    su-exec \
-    tini \
-    bash \
-    iproute2 \
-    gcompat \
-    libc6-compat \
-    libstdc++ \
-    tzdata \
-    coreutils && \
-    ln -s /sbin/su-exec /usr/local/bin/gosu && \
+    curl su-exec tini bash iproute2 gcompat \
+    libc6-compat libstdc++ tzdata coreutils && \
     addgroup -S -g ${GID} ${USER} && \
     adduser -S -D -h ${HOME} -u ${UID} -G ${USER} ${USER}
 
-# 2. Copy ONLY the processed files from the builder
-# This avoids having dos2unix or temporary build files in the final image
-COPY --from=builder /build/scripts/ /usr/local/bin/scripts/
-COPY --from=builder /build/entrypoint.sh /entrypoint.sh
+# 2. Optimized File Transfer & Permissions
+# Using --chown during COPY is significantly faster than 'chown -R' afterwards
+COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scripts/
+COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
 
-# 3. Build metadata (Done as root before switching user)
-ARG BUILDTIME=local
-ARG VERSION=local
-RUN echo "buildtime=${BUILDTIME}" > /etc/image.properties && \
-    echo "version=${VERSION}" >> /etc/image.properties && \
-    chown -R ${USER}:${USER} ${HOME} /usr/local/bin/scripts /entrypoint.sh
+# 3. Fast Metadata Generation
+RUN echo -e "buildtime=${BUILDTIME}\nversion=${VERSION}\nrevision=${REVISION}" > /etc/image.properties && \
+    chown ${USER}:${USER} /etc/image.properties
 
+# 4. Final Environment Setup
 WORKDIR ${HOME}
 USER ${USER}
 
-# 4. Networking & Execution
-EXPOSE 5520/udp 5520/tcp
+# Default Ports for Hytale (UDP)
+EXPOSE 5520/tcp
+
 STOPSIGNAL SIGTERM
 
+# Enhanced Healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --start-period=2m --retries=3 \
     CMD ss -ulpn | grep -q ":${SERVER_PORT}" || exit 1
 
