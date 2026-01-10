@@ -21,7 +21,6 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
-=======
 .idea/
 *.sublime-project
 *.sublime-workspace
@@ -58,13 +57,12 @@ __pycache__/
 # ----------------------
 # Docker
 # ----------------------
-examples/**/data/
+**/data/
 *.log
 *.pid
 *.sock
 docker-compose.override.yml
-.dockerignore
-/docker-compose.yml
+docker-compose.yml
 .env
 
 # ----------------------
@@ -75,7 +73,7 @@ examples/**/data/
 *.jar
 
 # Persistent runtime folders
-/data/
+/data
 
 # ----------------------
 # Archives and temp files
@@ -102,4 +100,3 @@ out/
 # ----------------------
 *.log
 *.cache
->>>>>>> Stashed changes

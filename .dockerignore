@@ -1,0 +1,32 @@
+# Git files
+.git
+.gitignore
+.github
+
+# Documentation and metadata
+README.md
+SECURITY.md
+LICENSE
+CONTRIBUTING.md
+.editorconfig
+
+# Docker files (The Dockerfile itself isn't needed inside the image)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Build artifacts & Temporary files
+*.log
+tmp/
+dist/
+.cache/
+**/data
+**/data/**
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Potential sensitive/local config
+.env
+config/local.json
