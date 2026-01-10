@@ -36,7 +36,7 @@ docker run -d \
     nano docker-compose.yml
     ```
     add this docker-compose.yml information to the file:
-    ``` bash
+    ``` yaml
     services:
     hytale-server:
         image: freudend/docker-hytale-server:latest
