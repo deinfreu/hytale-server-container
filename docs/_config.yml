@@ -6,7 +6,7 @@ theme: jekyll-remote-theme
 # Navigation
 header_pages:
   - index.md
-  - setup.md
+  - installation.md
 
 # Theme settings
 remote_theme: just-the-docs/just-the-docs
