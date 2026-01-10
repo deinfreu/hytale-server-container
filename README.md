@@ -1,9 +1,9 @@
 <div align="center" width="100%">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/deinfreu/docker-hytale-server/tree/experimental/docs/logo_Dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/deinfreu/docker-hytale-server/tree/experimental/docs/logo_Light.png">
-  <img alt="Docker Hytale Server Logo" src="https://github.com/deinfreu/docker-hytale-server/tree/experimental/docs/logo_Light.png" width="600">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/deinfreu/docker-hytale-server/blob/experimental/images/logo_Dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/deinfreu/docker-hytale-server/blob/experimental/images/logo_Light.png">
+  <img alt="Docker Hytale Server Logo" src="https://github.com/deinfreu/docker-hytale-server/blob/experimental/images/logo_Light.png" width="600">
 </picture>
 
 
