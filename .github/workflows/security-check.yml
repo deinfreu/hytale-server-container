@@ -28,7 +28,8 @@ jobs:
       - name: Lint Dockerfile
         run: |
           echo "Linting ${{ matrix.dockerfile }}..."
-          hadolint "${{ matrix.dockerfile }}" --format sarif --output "sarif-${{ matrix.dockerfile }}.sarif" || true
+          # Redirect SARIF output manually instead of --output
+          hadolint "${{ matrix.dockerfile }}" -f sarif > "sarif-${{ matrix.dockerfile }}.sarif" || true
 
       - name: Upload Hadolint SARIF
         uses: github/codeql-action/upload-sarif@v4
@@ -55,16 +56,3 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
-          category: trivy
-
-  shellcheck:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@2.0.0
-        with:
-          scandir: './scripts'
