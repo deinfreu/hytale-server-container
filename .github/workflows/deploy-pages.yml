@@ -34,7 +34,7 @@ jobs:
           destination: ./_site
 
       - name: Generate Sitemap
-        uses: cicirello/generate-sitemap@v1
+        uses: cicirello/generate-sitemap@v1.10.4
         with:
           base-url-path: https://deinfreu.github.io/docker-hytale-server/
           source-directory: ./_site  # Points to the Jekyll output
