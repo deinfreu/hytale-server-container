@@ -1,0 +1,14 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Docker Hytale Server",
+  "operatingSystem": "Linux, Windows, Docker",
+  "applicationCategory": "GameApplication",
+  "author": {
+    "@type": "Person",
+    "name": "deinfreu"
+  },
+  "description": "A high-performance Dockerized solution for running Hytale dedicated servers with ease."
+}
+</script>
