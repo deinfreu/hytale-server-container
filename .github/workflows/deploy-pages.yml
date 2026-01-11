@@ -43,8 +43,10 @@ jobs:
         with:
           base-url-path: https://deinfreu.github.io/docker-hytale-server/
           source-directory: ./_site  # Points to the Jekyll output
-          sitemap-path: _site/sitemap.xml # Saves it directly into the build folder
           drop-html-extension: true
+
+      - name: Move Sitemap to Site Folder
+        run: sudo cp sitemap.xml ./_site/sitemap.xml
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
