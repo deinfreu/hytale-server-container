@@ -42,7 +42,7 @@ jobs:
         uses: cicirello/generate-sitemap@v1.10.4
         with:
           base-url-path: https://deinfreu.github.io/docker-hytale-server/
-          source-directory: ./_site  # Points to the Jekyll output
+          path-to-root: ./_site
           drop-html-extension: true
 
       - name: Move Sitemap to Site Folder
