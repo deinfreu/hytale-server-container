@@ -3,7 +3,6 @@ name: "📄 Deploy GitHub Pages"
 on:
   push:
     branches: ["experimental"]
-  workflow_dispatch:
 
 permissions:
   contents: read

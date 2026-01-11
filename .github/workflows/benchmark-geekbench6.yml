@@ -1,5 +1,7 @@
 name: Benchmark Runner
-on: [workflow_dispatch]
+on:
+  push:
+    branches: ["experimental"]
 
 jobs:
   geekbench:
