@@ -35,8 +35,8 @@ jobs:
           
       - name: Copy static web files
         run: |
-          cp assets/website/robots.txt ./_site/robots.txt
-          cp assets/website/llms.txt ./_site/llms.txt
+          sudo cp assets/website/robots.txt ./_site/robots.txt
+          sudo cp assets/website/llms.txt ./_site/llms.txt
 
       - name: Generate Sitemap
         uses: cicirello/generate-sitemap@v1.10.4
