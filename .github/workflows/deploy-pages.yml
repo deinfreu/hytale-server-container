@@ -41,12 +41,15 @@ jobs:
           sitemap-path: _site/sitemap.xml # Saves it directly into the build folder
           drop-html-extension: true
 
-      - name: Generate robots.txt
+      - name: move robots.txt
         run: |
-          echo "User-agent: *" > ./_site/robots.txt
-          echo "Allow: /" >> ./_site/robots.txt
-          echo "" >> ./_site/robots.txt
-          echo "Sitemap: https://deinfreu.github.io/docker-hytale-server/sitemap.xml" >> ./_site/robots.txt
+          cp robots.txt ./_site/robots.txt
+          ls -l ./_site/robots.txt
+
+      - name: move llms.txt
+        run: |
+          cp robots.txt ./_site/robots.txt
+          ls -l ./_site/robots.txt
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
