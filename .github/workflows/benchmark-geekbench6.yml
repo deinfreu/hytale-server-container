@@ -19,7 +19,7 @@ jobs:
           ./geekbench6 --no-upload --export-json geekbench_results.json
 
       - name: Upload results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: geekbench-results
           path: Geekbench-6.5.0-Linux/geekbench_results.json
