@@ -1,0 +1,68 @@
+User-agent: *
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: GPTBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: YouBot
+Allow: /
+User-agent: Bytespider
+Allow: /
+User-agent: Diffbot
+Allow: /
+
+# --------------------------------------------------
+# BLOCKING HARMFUL / AGGRESSIVE BOTS
+# --------------------------------------------------
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: Rogerbot
+Disallow: /
+
+User-agent: EmailCollector
+Disallow: /
+
+User-agent: EmailSiphon
+Disallow: /
+
+User-agent: WebReaper
+Disallow: /
+
+User-agent: Sysomos
+Disallow: /
+
+User-agent: *
+Crawl-delay: 10
