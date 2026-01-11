@@ -32,6 +32,11 @@ jobs:
         with:
           source: ./docs
           destination: ./_site
+          
+      - name: Copy static web files
+        run: |
+          cp assets/website/robots.txt ./_site/robots.txt
+          cp assets/website/llms.txt ./_site/llms.txt
 
       - name: Generate Sitemap
         uses: cicirello/generate-sitemap@v1.10.4
@@ -40,21 +45,6 @@ jobs:
           source-directory: ./_site  # Points to the Jekyll output
           sitemap-path: _site/sitemap.xml # Saves it directly into the build folder
           drop-html-extension: true
-
-      - name: DEBUG
-        run: |
-          cd /docs
-          ls -l
-
-      - name: move robots.txt
-        run: |
-          cp /docs/robots.txt ./_site/robots.txt
-          ls -l ./_site/robots.txt
-
-      - name: move llms.txt
-        run: |
-          cp /docs/llms.txt ./_site/llms.txt
-          ls -l ./_site/llms.txt
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
