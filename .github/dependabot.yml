@@ -1,7 +1,9 @@
-# 🔄 Automated Updates
+# 🔄 Automated Dependency Updates
+# Managed by Dependabot
+
 version: 2
 updates:
-  # Check for Dockerfile updates (Base images like eclipse-temurin)
+  # 🐳 Dockerfile updates (base images like eclipse-temurin)
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
@@ -11,7 +13,7 @@ updates:
       - "docker"
       - "dependencies"
 
-  # Check for GitHub Actions updates
+  # ⚙️ GitHub Actions updates
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
