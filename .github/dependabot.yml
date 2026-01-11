@@ -1,3 +1,4 @@
+# 🔄 Automated Updates
 version: 2
 updates:
   # Check for Dockerfile updates (Base images like eclipse-temurin)
@@ -5,9 +6,17 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    target-branch: "experimental"
+    labels:
+      - "docker"
+      - "dependencies"
 
   # Check for GitHub Actions updates
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    target-branch: "experimental"
+    labels:
+      - "github-actions"
+      - "dependencies"
