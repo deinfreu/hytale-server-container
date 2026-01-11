@@ -41,6 +41,10 @@ jobs:
           sitemap-path: _site/sitemap.xml # Saves it directly into the build folder
           drop-html-extension: true
 
+      - name: show files
+        run: |
+          ls -l
+
       - name: move robots.txt
         run: |
           cp robots.txt ./_site/robots.txt
