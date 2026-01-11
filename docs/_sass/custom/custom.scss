@@ -1,0 +1,7 @@
+// Print-only styles.
+@media print {
+    .site-title {
+        font-size: 1.125rem !important;
+        line-height: 1.25 !important;
+    }
+}
