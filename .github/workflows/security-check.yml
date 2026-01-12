@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Run Trivy Scan
         uses: aquasecurity/trivy-action@0.29.0
@@ -54,8 +54,9 @@ jobs:
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
 
-      - name: Upload results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4 # Updated to v3 for 2026 compatibility
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
         with:
           sarif_file: 'trivy-results.sarif'
           category: trivy
@@ -64,19 +65,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
         with:
           scandir: './scripts'
-
-          image-ref: 'freudend/docker-hytale-server:latest'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-
-      - name: Upload results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4 # Updated to v3 for 2026 compatibility
-        with:
-          sarif_file: 'trivy-results.sarif'
