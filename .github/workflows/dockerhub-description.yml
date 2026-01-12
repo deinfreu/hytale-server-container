@@ -56,6 +56,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          repository: deinfreu/hytale-server
+          repository: hytale-server
           short-description: ${{ steps.get_info.outputs.DOCKER_DESC }}
           enable-url-completion: true
