@@ -17,8 +17,8 @@ docker run -d \
   -e EULA="TRUE" \
   -e DEBUG="FALSE" \
   -p 5520:5520/udp \
-  -v freudend-docker-hytale-server:/home/container \
-  freudend/docker-hytale-server:latest
+  -v freudend-hytale-server-container:/home/container \
+  freudend/hytale-server-container:latest
 ```
 
 ### Method B: Docker compose
@@ -35,7 +35,7 @@ docker run -d \
     ``` yaml
     services:
     hytale-server:
-        image: freudend/docker-hytale-server:latest
+        image: freudend/hytale-server-container:latest
         container_name: hytale-server
         restart: unless-stopped
         environment:

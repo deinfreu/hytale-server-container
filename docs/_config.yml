@@ -17,8 +17,8 @@ color_scheme: dark # Perfect for gaming/server projects
 
 # URL settings
 # Replace 'deinfreu' with your GitHub username if different
-baseurl: "/docker-hytale-server" 
-url: "https://deinfreu.github.io/docker-hytale-server/"
+baseurl: "/hytale-server-container" 
+url: "https://deinfreu.github.io/hytale-server-container/"
 permalink: pretty
 
 # Aux links (Top right buttons)
