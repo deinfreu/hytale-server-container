@@ -31,15 +31,17 @@ We are now going to start the server!
     > **[INFO]**
     > You should see a ">" sign. This means you are successfully connected to the Java process.
 
-4. **Authenticate the server**
+4. **Authenticate the server** 
 
-    Run the following command to authorize the server:
+    This prevents the need to log in again every time the container restarts.
 
     ```bash
-    /auth persistence encrypted
+    /auth persistence Encrypted
     ```
     
-    > **[INFO]** Running `/auth persistence encrypted` makes sure you don't have to re-authorise after a restart.
+    > **[INFO]** "Encrypted" with a capital.
+
+    Run the following command to authorize the server and follow the steps:
 
     ```bash
     /auth login device
