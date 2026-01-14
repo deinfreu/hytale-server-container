@@ -19,7 +19,7 @@ export XMS="${XMS:-128M}"
 export DTERM_JLINE="${DTERM_JLINE:-false}"
 export DTERM_ANSI="${DTERM_ANSI:-true}"
 
-jvm_args = "-Xms$XMS -Xmx$XMX -Dterminal.jline=$DTERM_JLINE -Dterminal.ansi=$DTERM_ANSI"
+jvm_args="-Xms$XMS -Xmx$XMX -Dterminal.jline=$DTERM_JLINE -Dterminal.ansi=$DTERM_ANSI"
 export JVM_ARGS="${JVM_ARGS:-$jvm_args}"
 
 # Load utilities
