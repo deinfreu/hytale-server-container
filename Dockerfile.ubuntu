@@ -4,7 +4,7 @@
 FROM eclipse-temurin:25-jre AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl 7zip dos2unix && \
+    curl p7zip-full dos2unix && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
@@ -39,7 +39,7 @@ ENV USER=container \
 
 # 1. Install Runtime Dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    tini iproute2 ca-certificates tzdata jq && \
+    tini iproute2 ca-certificates tzdata jq p7zip-full && \
     rm -rf /var/lib/apt/lists/*
 
 # 2. Add Gosu

@@ -43,7 +43,7 @@ ENV USER=container HOME=/home/container UID=1000 GID=1000 \
     JAVA_ARGS="" PROD=FALSE DEBUG=FALSE
 
 # Install dependencies & create user
-RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc6-compat libstdc++ gcompat && \
+RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc6-compat libstdc++ gcompat p7zip && \
     addgroup -S -g ${GID} ${USER} && adduser -S -D -h ${HOME} -u ${UID} -G ${USER} ${USER}
 
 # Copy artifacts from builder
