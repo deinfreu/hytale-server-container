@@ -1,4 +1,4 @@
-> **[WARNING]** Still waiting on Hytale to release more information about the server binary. The docker image is therefore under development.
+> **[INFO]** this docker container is functioning right now. Clear your browser cache when visiting the [docs](https://deinfreu.github.io/hytale-server-container/) to get the last version of the manual. At the moment only the ubuntu image is working properly (:experimental). The alpine images are next on my list.
 
 <div align="center" width="100%">
 
