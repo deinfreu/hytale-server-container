@@ -1,4 +1,4 @@
-> **[WARNING]** Still waiting on Hytale to release more information about the server binary. The docker image is therefore under development.
+> **[INFO]** This Docker container is functioning properly. Clear your browser cache when visiting the [docs](https://deinfreu.github.io/hytale-server-container/) to ensure you see the latest version of the manual. At the moment, only the Ubuntu image is fully working (:experimental). The Alpine images are next on my list.
 
 <div align="center" width="100%">
 
@@ -35,10 +35,16 @@ You can run the container by running this in your CLI
 ```bash
 docker run -d \
   --name hytale-server \
-  --restart unless-stopped \
-  -e EULA=TRUE \
+  -e SERVER_IP="0.0.0.0" \
+  -e SERVER_PORT="5520" \
+  -e PROD="FALSE" \
+  -e DEBUG="FALSE" \
+  -e TZ="Europe/Amsterdam" \
   -p 5520:5520/udp \
-  -v deinfreu-hytale-server-container:/home/container \
+  -v "hytale-server:/home/container" \
+  -v "/etc/machine-id:/etc/machine-id:ro" \
+  --restart unless-stopped \
+  -t -i \
   deinfreu/hytale-server:experimental
 ```
 
@@ -50,12 +56,19 @@ services:
     image: deinfreu/hytale-server:experimental
     container_name: hytale-server
     environment:
-      - EULA=TRUE
+      SERVER_IP: "0.0.0.0"
+      SERVER_PORT: "5520"
+      PROD: "FALSE"
+      DEBUG: "FALSE"
+      TZ: "Europe/Amsterdam"
     restart: unless-stopped
     ports:
       - "5520:5520/udp"
     volumes:
       - ./data:/home/container
+      - /etc/machine-id:/etc/machine-id:ro
+    tty: true
+    stdin_open: true
 ```
 
 That's all you need to know to start! 🎉
