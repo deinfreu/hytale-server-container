@@ -13,15 +13,21 @@ export GAME_DIR="$BASE_DIR/game"
 export SERVER_JAR_PATH="$GAME_DIR/Server/HytaleServer.jar"
 export CACHE="${CACHE:-FALSE}"
 
-# --- Hytale specific enviroment variables ---
+# --- Hytale specific environment variables ---
 export HYTALE_ACCEPT_EARLY_PLUGINS="${HYTALE_ACCEPT_EARLY_PLUGINS:-FALSE}"
 export HYTALE_ALLOW_OP="${HYTALE_ALLOW_OP:-FALSE}"
 export HYTALE_AUTH_MODE="${HYTALE_AUTH_MODE:-FALSE}"
 export HYTALE_BACKUP="${HYTALE_BACKUP:-FALSE}"
 export HYTALE_BACKUP_FREQUENCY="${HYTALE_BACKUP_FREQUENCY:-}"
 
-# used by the script
-export AOT_FLAG=""
+# Initialize flags as empty strings
+export HYTALE_CACHE_FLAG=""
+export HYTALE_ACCEPT_EARLY_PLUGINS_FLAG=""
+export HYTALE_ALLOW_OP_FLAG=""
+export HYTALE_AUTH_MODE_FLAG=""
+export HYTALE_BACKUP_FLAG=""
+export HYTALE_BACKUP_FREQUENCY_FLAG=""
+export HYTALE_QUIET_FLAGS=""
 
 # Load utilities
 . "$SCRIPTS_PATH/utils.sh"
@@ -64,6 +70,7 @@ fi
 # This script handles its own log_section internally
 sh "$SCRIPTS_PATH/hytale/hytale_downloader.sh"
 sh "$SCRIPTS_PATH/hytale/hytale_config.sh"
+sh "$SCRIPTS_PATH/hytale/hytale_flags.sh"
 
 # --- 3. Startup Preparation ---
 log_section "Process Execution"
@@ -73,20 +80,22 @@ log_step "Finalizing Environment"
 cd "$BASE_DIR"
 log_success
 
-# Check if CACHE is set to true
-if [ "$CACHE" = "TRUE" ]; then
-    AOT_FLAG="-XX:AOTCache=HytaleServer.aot"
-fi
-
 # --- 4. Execution ---
 printf "\n${BOLD}${CYAN}🚀 Launching Hytale Server...${NC}\n\n"
 
 # Execute the Java command.
 # Using exec ensures Java becomes PID 1, allowing it to receive shutdown signals properly.
+# Execute the Java command with the new flags added
 exec gosu $USER java $JAVA_ARGS \
--Dterminal.jline=false \
--Dterminal.ansi=true \
-$AOT_FLAG \
--jar "$SERVER_JAR_PATH" \
---assets "$GAME_DIR/Assets.zip" \
---bind "$SERVER_IP:$SERVER_PORT"
+    -Dterminal.jline=false \
+    -Dterminal.ansi=true \
+    $HYTALE_CACHE_FLAG \
+    $HYTALE_ACCEPT_EARLY_PLUGINS_FLAG \
+    $HYTALE_ALLOW_OP_FLAG \
+    $HYTALE_AUTH_MODE_FLAG \
+    $HYTALE_BACKUP_FLAG \
+    $HYTALE_BACKUP_FREQUENCY_FLAG \
+    $HYTALE_QUIET_FLAGS \
+    -jar "$SERVER_JAR_PATH" \
+    --assets "$GAME_DIR/Assets.zip" \
+    --bind "$SERVER_IP:$SERVER_PORT"

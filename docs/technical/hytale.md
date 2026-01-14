@@ -25,3 +25,7 @@ You can use the following commands:
 | hytale-downloader -check-update              | Check for hytale-downloader updates               |
 | hytale-downloader -patchline pre-release     | Download from pre-release channel                |
 | hytale-downloader -skip-update-check         | Skip automatic update check                      |
+
+### Hytale server variables
+
+Check the variables in the [docker technical page](./docker.md) which you can use to set server settings 

@@ -11,15 +11,20 @@ The Hytale server container is highly configurable through environment variables
 
 ## ⚙️ Core Server Settings
 
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `TZ` | The [Timezone identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for server logs. | `UTC` |
-| `DEBUG` | Set to `TRUE` to enable diagnostic scripts and verbose logging. | `FALSE` |
-| `SERVER_PORT` | The primary UDP port for game traffic. | `5520` |
-| `SERVER_IP` | The IP address the server binds to. | `0.0.0.0` |
-| `PROD` | Set to `TRUE` to run production readiness audits. | `FALSE` |
-| `JAVA_ARGS` | Additional flags for the JVM (Expert use only). | `(Empty)` |
-| `CACHE` | Enables the Ahead-Of-Time Cache . | `FALSE` |
+| Variable                     | Description                                                                 | Default   |
+|------------------------------|-----------------------------------------------------------------------------|-----------|
+| `TZ`                         | The [Timezone identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for server logs | `UTC`     |
+| `DEBUG`                      | Set to `TRUE` to enable diagnostic scripts and verbose logging               | `FALSE`   |
+| `SERVER_PORT`                | The primary UDP port for game traffic                                        | `5520`    |
+| `SERVER_IP`                  | The IP address the server binds to                                            | `0.0.0.0` |
+| `PROD`                       | Set to `TRUE` to run production readiness audits                             | `FALSE`   |
+| `JAVA_ARGS`                  | Additional flags for the JVM (expert use only)                               | `(Empty)` |
+| `CACHE`                      | Enables the Ahead-Of-Time cache                                              | `FALSE`   |
+| `HYTALE_ACCEPT_EARLY_PLUGINS`| Allow loading early or experimental plugins                                  | `FALSE`   |
+| `HYTALE_ALLOW_OP`            | Automatically grant operator permissions                                     | `FALSE`   |
+| `HYTALE_AUTH_MODE`           | Enable authenticated (online) mode                                           | `FALSE`   |
+| `HYTALE_BACKUP`              | Enable automatic backups                                                     | `FALSE`   |
+| `HYTALE_BACKUP_FREQUENCY`    | Frequency of automatic backups                                               | `(Empty)` |
 
 ---
 
