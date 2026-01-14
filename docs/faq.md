@@ -11,6 +11,15 @@ Find solutions to common issues encountered when setting up or managing your Hyt
 
 ---
 
+## Server requires re-authentication after every restart
+
+This happens because the container does not have access to the host’s Linux hardware ID. Without it, the server generates a new identity on each restart.
+
+### How to fix
+In youd docker compose mount this volume: "/etc/machine-id:/etc/machine-id:ro". Or in docker run use -v "/etc/machine-id:/etc/machine-id:ro".
+
+---
+
 ## 🕒 My logs don't show the correct date or time.
 
 By default, Docker containers often run in Coordinated Universal Time (UTC). To synchronize the server logs with your local time, you must define the `TZ` (Time Zone) environment variable.
