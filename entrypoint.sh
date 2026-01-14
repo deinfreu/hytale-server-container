@@ -13,8 +13,14 @@ export PROD="${PROD:-FALSE}"
 export BASE_DIR="/home/container"
 export GAME_DIR="$BASE_DIR/game"
 export SERVER_JAR_PATH="$GAME_DIR/Server/HytaleServer.jar"
+
 export XMX="${XMX:-2048M}"
 export XMS="${XMS:-128M}"
+export DTERM_JLINE="${DTERM_JLINE:-false}"
+export DTERM_ANSI="${DTERM_ANSI:-true}"
+
+jvm_args = "-Xms$XMS -Xmx$XMX -Dterminal.jline=$DTERM_JLINE -Dterminal.ansi=$DTERM_ANSI"
+export JVM_ARGS="${JVM_ARGS:-$jvm_args}"
 
 # Load utilities
 . "$SCRIPTS_PATH/utils.sh"
@@ -55,9 +61,7 @@ printf "\n${BOLD}${CYAN}🚀 Launching Hytale Server...${NC}\n\n"
 
 # Execute the Java command.
 # Using exec ensures Java becomes PID 1, allowing it to receive shutdown signals properly.
-exec gosu $USER java -Xms$XMS -Xmx$XMX \
--Dterminal.jline=false \
--Dterminal.ansi=true \
+exec gosu $USER java $JVM_ARGS \
 -jar "$SERVER_JAR_PATH" \
 --assets "$GAME_DIR/Assets.zip" \
 --bind "$SERVER_IP:$SERVER_PORT"
