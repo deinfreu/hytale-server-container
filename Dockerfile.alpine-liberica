@@ -41,7 +41,7 @@ ENV USER=container \
     PROD="" \
     DEBUG="" \
     EULA="" \
-    JAVA_OPTS="" \
+    JAVA_ARGS="" \
     SERVER_PORT="" \
     SERVER_IP="" \
     PROD=FALSE DEBUG=FALSE

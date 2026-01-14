@@ -6,7 +6,7 @@ check_java_mem() {
     log_section "Memory Integrity"
     
     # Extract Xmx value safely
-    local xmx_raw=$(echo "${JAVA_OPTS:-}" | grep -oE 'Xmx[0-9]+[gGmM]' | tr -d 'Xmx' || echo "")
+    local xmx_raw=$(echo "${JAVA_ARGS:-}" | grep -oE 'Xmx[0-9]+[gGmM]' | tr -d 'Xmx' || echo "")
     local xmx_num=$(echo "$xmx_raw" | grep -oE '[0-9]+' || echo "0")
     local xmx_unit=$(echo "$xmx_raw" | grep -oE '[gGmM]' || echo "m")
 
@@ -27,7 +27,7 @@ check_java_mem() {
             local limit_mb=$((limit_bytes / 1024 / 1024))
             
             if [ "$xmx_mb" -eq 0 ]; then
-                log_warning "No -Xmx limit detected." "Java may grow until Docker kills the container. Add -Xmx to JAVA_OPTS."
+                log_warning "No -Xmx limit detected." "Java may grow until Docker kills the container. Add -Xmx to JAVA_ARGS."
             elif [ "$xmx_mb" -gt "$limit_mb" ]; then
                 log_error "Heap ($xmx_mb MB) exceeds Docker limit ($limit_mb MB)!" "The container will OOM-kill immediately on load."
                 exit 1

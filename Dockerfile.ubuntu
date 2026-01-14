@@ -7,7 +7,7 @@ ENV HOME=/home/container
 
 # Runtime config
 ENV EULA="" DEBUG="" PROD="" SERVER_IP="" SERVER_PORT=5520 \
-    JAVA_OPTS="" UID=1000 GID=1000
+    JAVA_ARGS="" UID=1000 GID=1000
 
 # 1. Install Dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
