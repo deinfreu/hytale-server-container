@@ -3,6 +3,8 @@ title: Hytale Docker Server
 description: A lightweight Dockerized environment for Hytale servers.
 theme: jekyll-remote-theme
 
+favicon_ico: "/assets/website/favicon.ico"
+
 # Navigation
 header_pages:
   - index.md
