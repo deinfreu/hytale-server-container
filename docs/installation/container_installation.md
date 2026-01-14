@@ -16,8 +16,8 @@ docker run -d \
   --restart unless-stopped \
   -e DEBUG="FALSE" \
   -p 5520:5520/udp \
-  -v deinfreu-hytale-server-container:/home/container \
-  deinfreu/hytale-server-container:latest
+  -v hytale-server:/home/container \
+  deinfreu/hytale-server:experimental
 ```
 
 ### Method B: Docker compose
@@ -34,7 +34,7 @@ docker run -d \
     ``` yaml
     services:
         hytale:
-            image: freudend/hytale-server:experimental
+            image: deinfreu/hytale-server:experimental
             container_name: hytale-server
             environment:
             SERVER_IP: "0.0.0.0"
