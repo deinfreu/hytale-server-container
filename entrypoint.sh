@@ -13,6 +13,8 @@ export PROD="${PROD:-FALSE}"
 export BASE_DIR="/home/container"
 export GAME_DIR="$BASE_DIR/game"
 export SERVER_JAR_PATH="$GAME_DIR/Server/HytaleServer.jar"
+export XMX="${XMX:-2048M}"
+export XMS="${XMS:-128M}"
 
 # Load utilities
 . "$SCRIPTS_PATH/utils.sh"
@@ -53,7 +55,7 @@ printf "\n${BOLD}${CYAN}🚀 Launching Hytale Server...${NC}\n\n"
 
 # Execute the Java command.
 # Using exec ensures Java becomes PID 1, allowing it to receive shutdown signals properly.
-exec gosu $USER java -Xms128M -Xmx2048M \
+exec gosu $USER java -Xms$XMS -Xmx$XMX \
 -Dterminal.jline=false \
 -Dterminal.ansi=true \
 -jar "$SERVER_JAR_PATH" \
