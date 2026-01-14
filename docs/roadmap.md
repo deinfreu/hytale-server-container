@@ -5,6 +5,7 @@ nav_order: 6
 description: "Speed optimisations for your hytale server"
 ---
 
+```yaml
 [ ] Bug fixes
 [ ] Alpine image
 [ ] Alpine Liberica
@@ -21,3 +22,4 @@ Testing for specific device:
 Other:
 [ ] CI/CD Safety Pipeline: Validates builds to ensure production stability.
 [ ] Support ARM64. Currently waiting for hytale to ship the downloader-hytale ARM64 build.
+```
