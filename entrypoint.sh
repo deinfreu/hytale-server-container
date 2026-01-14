@@ -12,7 +12,7 @@ export DEBUG="${DEBUG:-FALSE}"
 export PROD="${PROD:-FALSE}"
 export BASE_DIR="/home/container"
 export GAME_DIR="$BASE_DIR/game"
-export SERVER_JAR_PATH="$GAME_DIR/server/HytaleServer.jar"
+export SERVER_JAR_PATH="$GAME_DIR/Server/HytaleServer.jar"
 
 # Load utilities
 . "$SCRIPTS_PATH/utils.sh"
