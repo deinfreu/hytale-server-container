@@ -14,6 +14,10 @@ export JAVA_ARGS="${JAVA_ARGS:-}"
 export BASE_DIR="/home/container"
 export GAME_DIR="$BASE_DIR/game"
 export SERVER_JAR_PATH="$GAME_DIR/Server/HytaleServer.jar"
+export CACHE="$CACHE:-TRUE"
+
+# used by the script
+export AOT_FLAG=""
 
 # Load utilities
 . "$SCRIPTS_PATH/utils.sh"
@@ -49,14 +53,20 @@ log_step "Finalizing Environment"
 cd "$BASE_DIR"
 log_success
 
+# Check if CACHE is set to true
+if [ "$CACHE" = "true" ]; then
+    AOT_FLAG="-XX:AOTCache=HytaleServer.aot"
+fi
+
 # --- 4. Execution ---
 printf "\n${BOLD}${CYAN}🚀 Launching Hytale Server...${NC}\n\n"
 
 # Execute the Java command.
 # Using exec ensures Java becomes PID 1, allowing it to receive shutdown signals properly.
-exec gosu $USER java -Xms128M -Xmx2048M \
+exec gosu $USER java $JAVA_ARGS \
 -Dterminal.jline=false \
 -Dterminal.ansi=true \
+$AOT_FLAG \
 -jar "$SERVER_JAR_PATH" \
 --assets "$GAME_DIR/Assets.zip" \
 --bind "$SERVER_IP:$SERVER_PORT"
