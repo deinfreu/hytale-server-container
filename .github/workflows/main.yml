@@ -1,31 +1,31 @@
-name: "Release: Tag ➔ Docker Hub & GitHub"
+name: "Main Branch: Conditional Build"
 
 on:
   push:
-    tags:
-      - 'v*.*.*'
+    branches:
+      - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
-  actions: write
-
 jobs:
-  setup:
-    name: "🏗️ Setup and Auth"
+  check-version-tag:
     runs-on: ubuntu-latest
+    outputs:
+      is_version_tag: ${{ steps.check_tag.outputs.is_version_tag }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
-      - name: Verify Docker Hub Secrets
+        uses: actions/checkout@v3
+      - name: Check if latest commit is a version tag
+        id: check_tag
         run: |
-          if [ -z "${{ secrets.DOCKER_HUB_USERNAME }}" ]; then echo "Missing Username"; exit 1; fi
-          if [ -z "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" ]; then echo "Missing Token"; exit 1; fi
+          latest_tag=$(git describe --tags --exact-match 2>/dev/null || echo "none")
+          if [[ $latest_tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "is_version_tag=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_version_tag=false" >> $GITHUB_OUTPUT
 
-  build:
-    name: "🐳 Build & Push Images"
-    needs: setup
+  build-and-push:
+    needs: check-version-tag
+    if: needs.check-version-tag.outputs.is_version_tag == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -59,7 +59,7 @@ jobs:
       - name: Extract version from tag
         id: get_version
         run: |
-          raw_tag="${GITHUB_REF#refs/tags/}"
+          raw_tag="$(git describe --tags --exact-match 2>/dev/null || echo "main")"
           version="${raw_tag#v}"
           echo "version=$version" >> $GITHUB_OUTPUT
       - name: Build & push to GitHub Container Registry
@@ -70,10 +70,9 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ghcr.io/deinfreu/hytale-server:${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
             ghcr.io/deinfreu/hytale-server:${{ matrix.tag_suffix }}
-          cache-from: type=gha,scope=${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
+          cache-from: type=gha,scope=${{ matrix.tag_suffix }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.tag_suffix }}
       - name: Build & push to Docker Hub
         uses: docker/build-push-action@v6
         with:
@@ -82,7 +81,6 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            deinfreu/hytale-server:${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
             deinfreu/hytale-server:${{ matrix.tag_suffix }}
-          cache-from: type=gha,scope=${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
+          cache-from: type=gha,scope=${{ matrix.tag_suffix }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.tag_suffix }}
