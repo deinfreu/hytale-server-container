@@ -10,6 +10,9 @@ if [ "${NO_COLOR:-FALSE}" = "TRUE" ]; then
     YELLOW=''
     CYAN=''
     NC=''
+    SYM_OK='OK'
+    SYM_FAIL='FAIL'
+    SYM_WARN='WARN'
 else
     BOLD='\033[1m'
     DIM='\033[2m'
@@ -18,12 +21,10 @@ else
     YELLOW='\033[0;33m'
     CYAN='\033[0;36m'
     NC='\033[0m'
+    SYM_OK="${GREEN}✔${NC}"
+    SYM_FAIL="${RED}✘${NC}"
+    SYM_WARN="${YELLOW}⚠${NC}"
 fi
-
-# --- Symbols ---
-SYM_OK="${GREEN}✔${NC}"
-SYM_FAIL="${RED}✘${NC}"
-SYM_WARN="${YELLOW}⚠${NC}"
 
 log_section() {
     # %b allows backslash escapes in the arguments
