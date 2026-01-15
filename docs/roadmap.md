@@ -6,13 +6,13 @@ description: "Speed optimisations for your hytale server"
 ---
 
 ```yaml
-[ ] Full hytale commands intergration
-    [ ] Server commands
-    [ ] Hytale downloader
+[X] Full hytale commands intergration
+    [X] Server commands
+    [X] Hytale downloader
+[X] Alpine image
+[X] Alpine Liberica
 [ ] Auto-update checks
-[ ] Alpine image
-[ ] Alpine Liberica
-[ ] Mod support
+[ ] Mod support auto downloader
 [ ] Pterodactyl eggs
 
 Testing for specific device:
@@ -20,7 +20,6 @@ Testing for specific device:
 [ ] Raspberry pi V5 (See other ARM64)
 [ ] Truenas scale
 [X] Windows 11 WSL2
-
 
 Other:
 [ ] CI/CD Safety Pipeline: Validates builds to ensure production stability.
