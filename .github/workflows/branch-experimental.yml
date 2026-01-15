@@ -1,4 +1,4 @@
-name: "🚀 Publish: Experimental ➔ Docker Hub"
+name: "🚀 Publish: Experimental ➔ Docker Hub & GitHub"
 
 on:
   push:
@@ -9,24 +9,22 @@ on:
 permissions:
   contents: read
   packages: write
-  actions: write 
+  actions: write
 
 jobs:
-  # STEP 1: SETUP & AUTH VALIDATION
   setup:
-    name: 🏗️ Setup and Auth
+    name: "🏗️ Setup and Auth"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-      - name: Verify Secrets
+      - name: Verify Docker Hub Secrets
         run: |
           if [ -z "${{ secrets.DOCKER_HUB_USERNAME }}" ]; then echo "Missing Username"; exit 1; fi
           if [ -z "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" ]; then echo "Missing Token"; exit 1; fi
 
-  # STEP 2: MULTI-OS BUILD
   build:
-    name: 🐳 Build & Push
+    name: "🐳 Build & Push Images"
     needs: setup
     runs-on: ubuntu-latest
     strategy:
@@ -39,7 +37,6 @@ jobs:
             tag_name: experimental-alpine
           - os_type: alpine-liberica
             tag_name: experimental-alpine-liberica
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -50,14 +47,31 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Build & push
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build & push to GitHub Container Registry
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile.${{ matrix.os_type }}
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: deinfreu/hytale-server:${{ matrix.tag_name }}
+          tags: |
+            ghcr.io/deinfreu/hytale-server:${{ matrix.tag_name }}
+          cache-from: type=gha,scope=${{ matrix.tag_name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.tag_name }}
+      - name: Build & push to Docker Hub
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.${{ matrix.os_type }}
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            deinfreu/hytale-server:${{ matrix.tag_name }}
           cache-from: type=gha,scope=${{ matrix.tag_name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.tag_name }}
