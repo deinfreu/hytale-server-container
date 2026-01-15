@@ -1,7 +1,7 @@
 ---
 name: 🐳 Pterodactyl Failure
 about: Report issues with running or starting the pterodactyl egg
-title: '[PTERODACTYL] Unable to start container'
+title: '[Pterodactyl] Unable to start container'
 labels: pterodactyl, bug
 assignees: 'deinfreu'
 ---
