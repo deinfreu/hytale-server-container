@@ -16,7 +16,7 @@ Find solutions to common issues encountered when setting up or managing your Hyt
 This happens because the container does not have access to the host’s Linux hardware ID. Without it, the server generates a new identity on each restart.
 
 ### How to fix
-In youd docker compose mount this volume: "/etc/machine-id:/etc/machine-id:ro". Or in docker run use -v "/etc/machine-id:/etc/machine-id:ro".
+In your docker compose mount this volume: "/etc/machine-id:/etc/machine-id:ro". Or in docker run use -v "/etc/machine-id:/etc/machine-id:ro".
 
 ---
 
