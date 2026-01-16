@@ -12,6 +12,7 @@ SECURITY.md
 LICENSE
 CONTRIBUTING.md
 .editorconfig
+/docs
 
 # Docker files (The Dockerfile itself isn't needed inside the image)
 Dockerfile
