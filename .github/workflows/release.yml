@@ -45,6 +45,22 @@ jobs:
             echo EOF
           } >> $GITHUB_OUTPUT
       
+      - name: Generate contributors list
+        id: contributors
+        run: |
+          PREVIOUS_TAG="${{ steps.previoustag.outputs.previous_tag }}"
+          CURRENT_TAG="${{ github.ref_name }}"
+          
+          # Get unique contributors for this release
+          CONTRIBUTORS=$(git log ${PREVIOUS_TAG}..${CURRENT_TAG} --pretty=format:"- @%an" --no-merges | sort -u)
+          
+          # Create multiline output
+          {
+            echo 'contributors<<EOF'
+            echo "$CONTRIBUTORS"
+            echo EOF
+          } >> $GITHUB_OUTPUT
+      
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -61,6 +77,16 @@ jobs:
             docker pull ghcr.io/${{ github.repository }}:${{ github.ref_name }}
             docker pull ghcr.io/${{ github.repository }}:latest
             ```
+            
+            ---
+            
+            ## 🌟 Contributors
+            
+            A special thank you to everyone who contributed to this release! Your dedication and hard work make this project possible. 🎉
+            
+            ${{ steps.contributors.outputs.contributors }}
+            
+            We deeply appreciate every contribution, whether it's code, documentation, bug reports, or feature suggestions. Thank you for being part of this journey! 💙
           draft: false
           prerelease: false
         env:
