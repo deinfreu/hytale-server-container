@@ -71,6 +71,48 @@ services:
     stdin_open: true
 ```
 
+If you prefer, you can also deploy using Podman Quadlets, e.g. by following this example:
+
+`~/.config/containers/systemd/default.network`
+```ini
+[Network]
+NetworkDeleteOnStop=true
+
+[Install]
+WantedBy=default.target
+```
+
+`~/.config/containers/systemd/hytale.container`
+```ini
+[Service]
+Description=Hytale Quadlet
+
+[Container]
+ContainerName=hytale
+EnvironmentFile=%h/.config/containers/systemd/hytale.env
+Image=docker.io/deinfreu/hytale-server:experimental
+AutoUpdate=registry
+Network=default.network
+PublishPort=5520:5520/udp
+Volume=%h/files/hytale:/home/container
+Volume=/etc/machine-id:/etc/machine-id:ro
+# If running on an OS with SELinux, use these Volume declarations instead
+#Volume=%h/files/hytale:/home/container:z
+#Volume=/etc/machine-id:/etc/machine-id:z,ro
+
+[Install]
+WantedBy=default.target
+```
+
+`~/.config/containers/systemd/hytale.env`
+```ini
+SERVER_IP=0.0.0.0
+SERVER_PORT=5520
+PROD=FALSE
+DEBUG=FALSE
+TZ=Europe/Amsterdam
+```
+
 ## 🔧 Common Fixes & Troubleshooting
 
 If you encounter issues during deployment, check these common solutions below.
