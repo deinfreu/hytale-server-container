@@ -18,6 +18,25 @@ COPY entrypoint.sh .
 RUN find scripts -type f -name "*.sh" -exec dos2unix {} + && \
     dos2unix entrypoint.sh && chmod -R +x scripts && chmod +x entrypoint.sh
 
+
+FROM ghcr.io/astral-sh/uv:python3.12-alpine AS uv-builder
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+ENV UV_NO_DEV=1
+ENV UV_PYTHON_INSTALL_DIR=/python
+ENV UV_PYTHON_PREFERENCE=only-managed
+RUN uv python install 3.12
+
+WORKDIR /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=hytale-mod-downloader/uv.lock,target=uv.lock \
+    --mount=type=bind,source=hytale-mod-downloader/pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project
+
+
+COPY hytale-mod-downloader/ /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked
+
 # STAGE 2: Final Runtime
 FROM eclipse-temurin:25.0.1_8-jre-alpine-3.23
 
@@ -54,7 +73,7 @@ ENV USER=container \
     DEBUG=FALSE
 
 # Install dependencies
-RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc6-compat libstdc++ gcompat 7zip uv
+RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc6-compat libstdc++ gcompat 7zip
 
 # Setup User (with UID/GID conflict handling)
 RUN if getent passwd ${UID} > /dev/null 2>&1; then \
@@ -72,11 +91,18 @@ COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hy
 COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scripts/
 COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
 
+COPY --from=uv-builder --chown=python:python /python /python
+COPY --from=uv-builder --chown=${USER}:${USER} /app /usr/local/bin/scripts/hytale-mod-downloader
+
+ENV VIRTUAL_ENV=/usr/local/bin/scripts/hytale-mod-downloader/.venv
+ENV PATH="/usr/local/bin/scripts/hytale-mod-downloader/.venv/bin:$PATH"
+
+
+
 # Image metadata file
 RUN printf "buildtime=%s\nversion=%s\nrevision=%s\n" "${BUILDTIME}" "${VERSION}" "${REVISION}" > /etc/image.properties
 
 # Final setup
-COPY hytale-mod-downloader/ /usr/local/bin/scripts/hytale-mod-downloader
 WORKDIR ${HOME}
 USER ${USER}
 EXPOSE ${SERVER_PORT}/udp

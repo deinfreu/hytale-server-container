@@ -100,7 +100,7 @@ fi
 log_section "Process Execution"
 log_step "Finalizing Environment"
 cd "$SCRIPTS_PATH/hytale-mod-downloader"
-uv run main.py --mod-ids "$HYTALE_MODS" --output-dir "$BASE_DIR/mods"
+python main.py --mod-ids "$HYTALE_MODS" --output-dir "$BASE_DIR/mods"
 for modfile in "$BASE_DIR/mods/"*.zip; do
     if [ -f "$modfile" ]; then
         unzip -o "$modfile" -d "$GAME_DIR"
