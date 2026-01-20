@@ -65,11 +65,11 @@ fi
 # Authentication Mode
 log_step "Authentication Mode"
 if [ -n "${HYTALE_AUTH_MODE:-}" ]; then
-    if [ "$HYTALE_AUTH_MODE" = "authenticated" ] || [ "$HYTALE_AUTH_MODE" = "offline" ]; then
+    if [ "$HYTALE_AUTH_MODE" = "authenticated" ] || [ "$HYTALE_AUTH_MODE" = "insecure" ] || [ "$HYTALE_AUTH_MODE" = "offline" ]; then
         export HYTALE_AUTH_MODE_OPT="--auth-mode=$HYTALE_AUTH_MODE"
         printf "${GREEN}$HYTALE_AUTH_MODE${NC}\n"
     else
-        printf "${RED}invalid: $HYTALE_AUTH_MODE${NC} (use 'authenticated' or 'offline')${NC}\n"
+        printf "${RED}invalid: $HYTALE_AUTH_MODE${NC} (use 'authenticated', 'insecure' or 'offline')${NC}\n"
     fi
 else
     printf "${DIM}default (authenticated)${NC}\n"
