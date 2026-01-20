@@ -103,7 +103,7 @@ cd "$SCRIPTS_PATH/hytale-mod-downloader"
 python main.py --mod-ids "$HYTALE_MODS" --output-dir "$BASE_DIR/mods"
 for modfile in "$BASE_DIR/mods/"*.zip; do
     if [ -f "$modfile" ]; then
-        unzip -o "$modfile" -d "$GAME_DIR"
+        7z x "$modfile" -o"$GAME_DIR" -y
     fi
 done
 cd "$BASE_DIR"
