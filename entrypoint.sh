@@ -134,6 +134,7 @@ exec $RUNTIME java $JAVA_ARGS \
     -Duser.timezone="$TZ" \
     -Dterminal.jline=false \
     -Dterminal.ansi=true \
+    $HYTALE_CACHE_OPT \
     -jar "$SERVER_JAR_PATH" \
     $HYTALE_ACCEPT_EARLY_PLUGINS_OPT \
     $HYTALE_ALLOW_OP_OPT \
