@@ -57,7 +57,10 @@ elif [ ! -f "$SERVER_JAR_PATH" ]; then
     log_warning "HytaleServer.jar not found." "Downloading fresh installation..."
     
     log_step "Download Status"
-    hytale-downloader
+    if [ "${DEBUG:-FALSE}" = "TRUE" ]; then
+        printf "      ${DIM}↳ Patchline:${NC} ${GREEN}%s${NC}\n" "$HYTALE_PATCHLINE"
+    fi
+    hytale-downloader --patchline "$HYTALE_PATCHLINE"
     
     ZIP_FILE=$(ls "$BASE_DIR"/[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9][0-9]*.zip 2>/dev/null | head -n 1)
     
