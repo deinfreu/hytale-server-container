@@ -18,7 +18,7 @@ To get the most performance out of your server, I suggest taking a look at the [
 
 * **🚀 Fast server startup:** Startup your server in 7 seconds with `CACHE=TRUE`
 * **⚡ Easy Deployment:** Go to the installation pages to get started
-* **🤖 Smart CLI:** Includes the `hytale-downloader` tool to manage server binaries and check for updates automatically. You can just use "hytale-downloader" in the terminal to accecs it.
+* **🤖 Smart CLI:** Includes the `hytale-downloader` tool to manage server binaries and check for updates automatically. You can just use "hytale-downloader" in the terminal to access it.
 * **🍓 Multi-Arch Support:** Optimized for `x86_64` (`ARM64` coming soon [more info](https://x.com/slikey/status/2010869532454510999)).
 * **🛠️ Diagnostic Suite:** Built-in debug mode to audit your network and security settings automatically.
 * **📉 Slim Images:** Optimized, lightweight image variants for production environments.
