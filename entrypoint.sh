@@ -62,6 +62,10 @@ export HYTALE_VALIDATE_WORLD_GEN="${HYTALE_VALIDATE_WORLD_GEN:-FALSE}"
 export HYTALE_VERSION="${HYTALE_VERSION:-FALSE}"
 export HYTALE_WORLD_GEN="${HYTALE_WORLD_GEN:-}"
 
+# --- CurseForge Mod Downloader (no API key required!) ---
+export CURSEFORGE_MOD_IDS="${CURSEFORGE_MOD_IDS:-}"
+export HYTALE_MOD_DIR="${HYTALE_MOD_DIR:-$BASE_DIR/mods}"
+
 # Load utilities
 . "$SCRIPTS_PATH/utils.sh"
 
@@ -79,6 +83,7 @@ fi
 # --- 1. Initialization ---
 # CRITICAL ORDER: Downloader must run BEFORE config management. The audit suite must run AFTER this step.
 sh "$SCRIPTS_PATH/hytale/hytale_downloader.sh"
+sh "$SCRIPTS_PATH/hytale/curseforge_mods.sh"
 sh "$SCRIPTS_PATH/hytale/hytale_config.sh"
 . "$SCRIPTS_PATH/hytale/hytale_options.sh"
 

@@ -27,6 +27,36 @@ The Hytale server container is highly configurable through environment variables
 | Variable                      | Description                                                                                             | Default    |
 |-------------------------------|---------------------------------------------------------------------------------------------------------|------------|
 | `HYTALE_PATCHLINE`            | Patchline to download from: `release` or `prerelease`                                                   | `release`  |
+## 📦 CurseForge Mod Downloader
+
+Automatically download and manage mods from CurseForge.
+
+The downloader maintains a manifest to track installed mods and automatically removes mods that are no longer in your list.
+
+| Variable                      | Description                                                                                             | Default    |
+|-------------------------------|---------------------------------------------------------------------------------------------------------|------------|
+| `CURSEFORGE_MOD_IDS`          | Comma-separated list of CurseForge mod project IDs (e.g., `12345,67890`)                                | `(Empty)`  |
+| `HYTALE_MOD_DIR`              | Directory where mods are downloaded                                                                     | `./mods` |
+
+### Usage Example
+
+```yaml
+environment:
+  CURSEFORGE_MOD_IDS: "12345,67890,11111"
+```
+
+### How It Works
+
+1. On startup, the downloader fetches mod info from cflookup.com
+2. Downloads the latest version from forgecdn.net if not already present
+3. Removes mods that were previously downloaded but are no longer in `CURSEFORGE_MOD_IDS`
+4. Maintains a manifest file (`.curseforge_manifest.json`) in the mods directory
+
+### Finding Mod IDs
+
+The mod ID can be found in the CurseForge URL. For example:
+- URL: `https://www.curseforge.com/hytale/mods/example-mod/12345`
+- Mod ID: `12345`
 
 ---
 
