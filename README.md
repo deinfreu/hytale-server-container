@@ -139,3 +139,12 @@ chmod -R 755 [volume folder]
 ```
 
 That's all you need to know to start! 🎉
+
+## 🙏 Credits & Acknowledgments
+
+This project is a fork of the excellent work by **[deinfreu](https://github.com/deinfreu)**:
+
+- **Original Repository:** [deinfreu/hytale-server-container](https://github.com/deinfreu/hytale-server-container)
+- **Original Author:** [@deinfreu](https://github.com/deinfreu)
+
+Thank you to deinfreu and all the [original contributors](https://github.com/deinfreu/hytale-server-container/graphs/contributors) for building the foundation of this container. This fork adds additional features like pre-release server support (`HYTALE_PATCHLINE`) and CurseForge mod downloading (`CURSEFORGE_MOD_IDS`).

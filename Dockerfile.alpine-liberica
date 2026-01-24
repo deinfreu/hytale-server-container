@@ -32,10 +32,12 @@ ARG REVISION=local
 
 # OCI Metadata
 LABEL org.opencontainers.image.title="Hytale Server" \
-    org.opencontainers.image.description="Hytale Docker server image with non-root execution, UDP optimization, and diagnostics." \
-    org.opencontainers.image.authors="deinfreu" \
-    org.opencontainers.image.url="https://github.com/deinfreu/hytale-server-container" \
-    org.opencontainers.image.source="https://github.com/deinfreu/hytale-server-container" \
+    org.opencontainers.image.description="Hytale Docker server image with non-root execution, UDP optimization, and diagnostics. Fork with pre-release and CurseForge mod support." \
+    org.opencontainers.image.authors="shotah, deinfreu (original author)" \
+    org.opencontainers.image.url="https://github.com/shotah/hytale-server-container" \
+    org.opencontainers.image.source="https://github.com/shotah/hytale-server-container" \
+    org.opencontainers.image.vendor="shotah" \
+    org.opencontainers.image.base.name="https://github.com/deinfreu/hytale-server-container" \
     org.opencontainers.image.version="${VERSION}" \
     org.opencontainers.image.revision="${REVISION}" \
     org.opencontainers.image.created="${BUILDTIME}" \

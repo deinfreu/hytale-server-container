@@ -49,4 +49,20 @@ If you run into trouble, we have resources available:
 
 ---
 
+---
+
+## 🙏 Credits & Acknowledgments
+
+This project is a fork of the excellent work by **[deinfreu](https://github.com/deinfreu)**:
+
+| | |
+|---|---|
+| **Original Repository** | [deinfreu/hytale-server-container](https://github.com/deinfreu/hytale-server-container) |
+| **Original Author** | [@deinfreu](https://github.com/deinfreu) |
+| **Contributors** | [View all contributors](https://github.com/deinfreu/hytale-server-container/graphs/contributors) |
+
+Thank you to deinfreu and the original contributors for building this container's foundation!
+
+---
+
 > **Disclaimer:** This project is not affiliated with HYPIXEL STUDIOS CANADA INC. A valid Hytale license is required to download the server binaries.
