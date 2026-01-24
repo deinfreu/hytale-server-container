@@ -22,6 +22,11 @@ The Hytale server container is highly configurable through environment variables
 
 ---
 
+## 📥 Hytale Downloader Options
+
+| Variable                      | Description                                                                                             | Default    |
+|-------------------------------|---------------------------------------------------------------------------------------------------------|------------|
+| `HYTALE_PATCHLINE`            | Patchline to download from: `release` or `prerelease`                                                   | `release`  |
 ## 📦 CurseForge Mod Downloader
 
 Automatically download and manage mods from CurseForge.
