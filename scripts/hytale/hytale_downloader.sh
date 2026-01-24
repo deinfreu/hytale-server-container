@@ -97,6 +97,17 @@ download_and_install() {
     extract_server "$ZIP_FILE" "$VERSION"
 }
 
+# Clean existing installation for fresh download
+# SAFE: Only removes server binaries ($GAME_DIR = /home/container/game/)
+# PRESERVED: universe/ (worlds), mods/, config.json, .hytale-auth-tokens.json
+clean_for_reinstall() {
+    log_step "Cleaning for Reinstall"
+    rm -rf "$GAME_DIR" 2>/dev/null || true
+    rm -f "$VERSION_FILE" 2>/dev/null || true
+    rm -f "$BASE_DIR"/*.zip 2>/dev/null || true
+    log_success
+}
+
 # Main logic
 log_step "Hytale Server Binary Check"
 
@@ -126,6 +137,14 @@ elif [ ! -f "$SERVER_JAR_PATH" ]; then
     # No jar - fresh install required
     log_success
     download_and_install "HytaleServer.jar not found. Downloading fresh installation..."
+
+elif [ "$INSTALLED_VERSION" = "none" ] || [ ! -f "$VERSION_FILE" ]; then
+    # FAILSAFE: JAR exists but no version tracking - inconsistent state
+    # Clean and re-download to ensure known-good state
+    log_success
+    log_warning "Version tracking missing." "Server exists but version unknown. Cleaning for fresh download..."
+    clean_for_reinstall
+    download_and_install "Reinstalling to establish version tracking..."
 
 elif [ "$INSTALLED_PATCHLINE" != "$HYTALE_PATCHLINE" ]; then
     # Patchline changed - need to re-download
