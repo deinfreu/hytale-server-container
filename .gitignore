@@ -68,6 +68,7 @@ __pycache__/
 *.sock
 docker-compose.override.yml
 docker-compose.yml
+!examples/**/docker-compose.yml
 .env
 
 # ----------------------

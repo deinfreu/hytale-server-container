@@ -1,0 +1,31 @@
+# Hytale Server with CurseForge Mod Support
+# 
+# No API key required! Just add mod IDs and go.
+#
+# Setup:
+#   1. Find mod IDs from https://www.curseforge.com/hytale
+#   2. Add them to CURSEFORGE_MOD_IDS below
+#   3. Run: docker-compose up
+
+services:
+  hytale:
+    image: deinfreu/hytale-server:experimental
+    container_name: hytale-server-mods
+    environment:
+      SERVER_IP: "0.0.0.0"
+      SERVER_PORT: "5520"
+      DEBUG: "TRUE"
+      TZ: "UTC"
+      
+      # CurseForge mod IDs (comma-separated)
+      # Find IDs in the URL: curseforge.com/hytale/mods/mod-name/12345
+      CURSEFORGE_MOD_IDS: "12345,67890"
+      
+    restart: unless-stopped
+    ports:
+      - "5520:5520/udp"
+    volumes:
+      - ./data:/home/container
+      - /etc/machine-id:/etc/machine-id:ro
+    tty: true
+    stdin_open: true
