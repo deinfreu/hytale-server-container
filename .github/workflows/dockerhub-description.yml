@@ -25,7 +25,7 @@ jobs:
         id: get_info
         run: |
           # 1. Fetch metadata
-          JSON_DATA=$(curl -s "https://hub.docker.com/v2/repositories/deinfreu/hytale-server/tags/experimental-alpine-liberica")
+          JSON_DATA=$(curl -s "https://hub.docker.com/v2/repositories/shotah/hytale-server/tags/experimental-alpine-liberica")
           
           # 2. Extract size and convert to MB
           SIZE_BYTES=$(echo $JSON_DATA | jq -r '.full_size')
@@ -55,6 +55,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          repository: deinfreu/hytale-server
+          repository: shotah/hytale-server
           short-description: ${{ steps.get_info.outputs.DOCKER_DESC }}
           enable-url-completion: true

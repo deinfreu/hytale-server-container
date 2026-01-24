@@ -52,7 +52,7 @@ jobs:
           CURRENT_TAG="${{ github.ref_name }}"
           
           # Get unique contributors for this release (excluding repository owner)
-          CONTRIBUTORS=$(git log --pretty=format:"- @%an" --no-merges ${PREVIOUS_TAG}..${CURRENT_TAG} | sort -u | grep -v "deinfreu")
+          CONTRIBUTORS=$(git log --pretty=format:"- @%an" --no-merges ${PREVIOUS_TAG}..${CURRENT_TAG} | sort -u | grep -v "shotah")
           
           # Create multiline output
           {
