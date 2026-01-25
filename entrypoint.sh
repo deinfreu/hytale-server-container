@@ -27,6 +27,8 @@ export HYTALE_CACHE_DIR="${HYTALE_CACHE_DIR:-$GAME_DIR/Server/HytaleServer.aot}"
 export HYTALE_ACCEPT_EARLY_PLUGINS="${HYTALE_ACCEPT_EARLY_PLUGINS:-FALSE}"
 export HYTALE_ALLOW_OP="${HYTALE_ALLOW_OP:-FALSE}"
 export HYTALE_AUTH_MODE="${HYTALE_AUTH_MODE:-}"
+export HYTALE_AUTH_READY_PATTERN="${HYTALE_AUTH_READY_PATTERN:-Hytale Server Booted}"
+export HYTALE_AUTH_READY_ALT_PATTERN="${HYTALE_AUTH_READY_ALT_PATTERN:-No server tokens configured. Use /auth login to authenticate.}"
 export HYTALE_BACKUP="${HYTALE_BACKUP:-FALSE}"
 export HYTALE_BACKUP_DIR="${HYTALE_BACKUP_DIR:-./backups}"
 export HYTALE_BACKUP_FREQUENCY="${HYTALE_BACKUP_FREQUENCY:-}"
@@ -122,12 +124,33 @@ else
     RUNTIME=""
 fi
 
+# Preload auth commands into the server console after the server signals readiness
+AUTH_PIPE="/tmp/hytale-console.in"
+AUTH_OUTPUT_LOG="/tmp/hytale-server.log"
+rm -f "$AUTH_PIPE" "$AUTH_OUTPUT_LOG"
+mkfifo "$AUTH_PIPE"
+touch "$AUTH_OUTPUT_LOG"
+
+(
+    tail -n0 -F "$AUTH_OUTPUT_LOG" | while IFS= read -r line; do
+        case "$line" in
+            *"$HYTALE_AUTH_READY_PATTERN"*|*"$HYTALE_AUTH_READY_ALT_PATTERN"*)
+                {
+                    printf "auth persistence Encrypted\n"
+                    printf "auth login device\n"
+                } > "$AUTH_PIPE"
+                break
+                ;;
+        esac
+    done
+) &
+
 # Execute Java server as non-root user
-exec $RUNTIME java $JAVA_ARGS \
-    -Duser.timezone="$TZ" \
+exec $RUNTIME sh -c "cat \"$AUTH_PIPE\" - | exec stdbuf -oL -eL java $JAVA_ARGS \
+    -Duser.timezone=\"$TZ\" \
     -Dterminal.jline=false \
     -Dterminal.ansi=true \
-    -jar "$SERVER_JAR_PATH" \
+    -jar \"$SERVER_JAR_PATH\" \
     $HYTALE_ACCEPT_EARLY_PLUGINS_OPT \
     $HYTALE_ALLOW_OP_OPT \
     $HYTALE_AUTH_MODE_OPT \
@@ -164,5 +187,5 @@ exec $RUNTIME java $JAVA_ARGS \
     $HYTALE_VALIDATE_WORLD_GEN_OPT \
     $HYTALE_VERSION_OPT \
     $HYTALE_WORLD_GEN_OPT \
-    --assets "$GAME_DIR/Assets.zip" \
-    --bind "$SERVER_IP:$SERVER_PORT"
+    --assets \"$GAME_DIR/Assets.zip\" \
+    --bind \"$SERVER_IP:$SERVER_PORT\" 2>&1 | tee \"$AUTH_OUTPUT_LOG\""
