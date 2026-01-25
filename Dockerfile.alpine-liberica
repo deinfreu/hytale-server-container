@@ -54,7 +54,7 @@ ENV USER=container \
     DEBUG=FALSE
 
 # Install dependencies
-RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc6-compat libstdc++ gcompat 7zip
+RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc6-compat libstdc++ gcompat 7zip coreutils
 
 # Setup User (with UID/GID conflict handling)
 RUN if getent passwd ${UID} > /dev/null 2>&1; then \
