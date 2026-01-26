@@ -44,7 +44,6 @@ docker run \
   -v "hytale-server:/home/container" \
   -v "/etc/machine-id:/etc/machine-id:ro" \
   --restart unless-stopped \
-  -t -i \
   deinfreu/hytale-server:experimental
 ```
 
@@ -67,33 +66,13 @@ services:
     volumes:
       - ./data:/home/container
       - /etc/machine-id:/etc/machine-id:ro
-    tty: true
-    stdin_open: true
 ```
 
 ## 🔧 Common Fixes & Troubleshooting
 
 If you encounter issues during deployment, check these common solutions below.
 
-### 1. Authentication Problems
-
-If the server requires authentication or you see authentication errors in the logs, follow these steps in your Linux console:
-
-1. Attach to the running container:
-```bash
-docker attach [container name]
-```
-
-
-2. Run the authentication command:
-```bash
-auth login device
-```
-
-
-3. An authentication link will appear. Copy the verification code, paste it into the Hytale OAuth website, and login with your Hytale account. Your server should now start successfully.
-
-### 2. Linux Permission Errors
+### 1. Linux Permission Errors
 
 If the container crashes or logs errors regarding file access, it is likely a permission issue with your mounted volume.
 

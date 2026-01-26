@@ -7,6 +7,7 @@ set -eu
 log_section "Server Options Management"
 
 # Initialize options to ensure they are empty if not set
+export HYTALE_HELP_OPT=""
 export HYTALE_ACCEPT_EARLY_PLUGINS_OPT=""
 export HYTALE_ALLOW_OP_OPT=""
 export HYTALE_AUTH_MODE_OPT=""
@@ -44,6 +45,15 @@ export HYTALE_VALIDATE_WORLD_GEN_OPT=""
 export HYTALE_VERSION_OPT=""
 export HYTALE_WORLD_GEN_OPT=""
 
+# Enable help option    
+log_step "Accept Early Plugins"
+if [ "${HYTALE_HELP:-}" = "TRUE" ]; then
+    export HYTALE_ACCEPT_EARLY_PLUGINS_OPT="--help"
+    printf "${GREEN}enabled${NC}\n"
+else
+    printf "${DIM}disabled${NC}\n"
+fi
+
 # Accept Early Plugins
 log_step "Accept Early Plugins"
 if [ "${HYTALE_ACCEPT_EARLY_PLUGINS:-}" = "TRUE" ]; then
@@ -65,11 +75,11 @@ fi
 # Authentication Mode
 log_step "Authentication Mode"
 if [ -n "${HYTALE_AUTH_MODE:-}" ]; then
-    if [ "$HYTALE_AUTH_MODE" = "authenticated" ] || [ "$HYTALE_AUTH_MODE" = "offline" ]; then
+    if [ "$HYTALE_AUTH_MODE" = "authenticated" ] || [ "$HYTALE_AUTH_MODE" = "insecure" ] || [ "$HYTALE_AUTH_MODE" = "offline" ]; then
         export HYTALE_AUTH_MODE_OPT="--auth-mode=$HYTALE_AUTH_MODE"
         printf "${GREEN}$HYTALE_AUTH_MODE${NC}\n"
     else
-        printf "${RED}invalid: $HYTALE_AUTH_MODE${NC} (use 'authenticated' or 'offline')${NC}\n"
+        printf "${RED}invalid: $HYTALE_AUTH_MODE${NC} (use 'authenticated', 'insecure' or 'offline')${NC}\n"
     fi
 else
     printf "${DIM}default (authenticated)${NC}\n"

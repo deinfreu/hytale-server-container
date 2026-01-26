@@ -23,11 +23,14 @@ export NO_COLOR="${NO_COLOR:-FALSE}"
 
 # --- Hytale specific environment variables ---
 export HYTALE_PATCHLINE="${HYTALE_PATCHLINE:-release}"
-export HYTALE_CACHE="${HYTALE_CACHE:-false}"
+export HYTALE_HELP="${HYTALE_HELP:-FA}"
+export HYTALE_CACHE="${HYTALE_CACHE:-FALSE}"
 export HYTALE_CACHE_DIR="${HYTALE_CACHE_DIR:-$GAME_DIR/Server/HytaleServer.aot}"
 export HYTALE_ACCEPT_EARLY_PLUGINS="${HYTALE_ACCEPT_EARLY_PLUGINS:-FALSE}"
 export HYTALE_ALLOW_OP="${HYTALE_ALLOW_OP:-FALSE}"
 export HYTALE_AUTH_MODE="${HYTALE_AUTH_MODE:-}"
+export HYTALE_AUTH_READY_PATTERN="${HYTALE_AUTH_READY_PATTERN:-Hytale Server Booted}"
+export HYTALE_AUTH_READY_ALT_PATTERN="${HYTALE_AUTH_READY_ALT_PATTERN:-No server tokens configured. Use /auth login to authenticate.}"
 export HYTALE_BACKUP="${HYTALE_BACKUP:-FALSE}"
 export HYTALE_BACKUP_DIR="${HYTALE_BACKUP_DIR:-./backups}"
 export HYTALE_BACKUP_FREQUENCY="${HYTALE_BACKUP_FREQUENCY:-}"
@@ -61,6 +64,7 @@ export HYTALE_VALIDATE_PREFABS="${HYTALE_VALIDATE_PREFABS:-}"
 export HYTALE_VALIDATE_WORLD_GEN="${HYTALE_VALIDATE_WORLD_GEN:-FALSE}"
 export HYTALE_VERSION="${HYTALE_VERSION:-FALSE}"
 export HYTALE_WORLD_GEN="${HYTALE_WORLD_GEN:-}"
+export RUN_AUTO_AUTH="${RUN_AUTO_AUTH:-TRUE}"
 
 # --- CurseForge Mod Downloader (no API key required!) ---
 export CURSEFORGE_MOD_IDS="${CURSEFORGE_MOD_IDS:-}"
@@ -71,13 +75,12 @@ export HYTALE_MOD_DIR="${HYTALE_MOD_DIR:-$BASE_DIR/mods}"
 
 ARCH=$(uname -m)
 if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-    printf "############################################################\n"
-    printf "  WARNING: UNSUPPORTED ARCHITECTURE DETECTED\n"
-    printf "############################################################\n"
-    printf " Architecture: %s\n\n" "$ARCH"
-    printf " Hytale-Downloader only works for x86_64 at the moment.\n"
-    printf " Status: Waiting for Hytale to release the native ARM64 binary.\n"
-    printf "############################################################\n"
+    printf "\n${RED}############################################################${NC}\n"
+    printf "${RED}  WARNING: UNSUPPORTED ARCHITECTURE DETECTED${NC}\n"
+    printf "${RED}############################################################${NC}\n"
+    printf "${RED} Architecture:${NC} %s\n" "$ARCH"
+    printf "${RED} Status:${NC} Waiting for Hytale to release the native ARM64 binary.\n"
+    printf "${RED}############################################################${NC}\n\n"
 fi
 
 # --- 1. Initialization ---
@@ -94,13 +97,13 @@ if [ "$DEBUG" = "TRUE" ]; then
     sh "$SCRIPTS_PATH/checks/security.sh"
     sh "$SCRIPTS_PATH/checks/network.sh"
 else
-    echo -e "${DIM}System debug skipped (DEBUG=FALSE)${NC}"
+    printf "${DIM}System debug skipped (DEBUG=FALSE)${NC}\n"
 fi
 
 if [ "$PROD" = "TRUE" ]; then
     sh "$SCRIPTS_PATH/checks/prod.sh"
 else
-    echo -e "${DIM}Production audit skipped (PROD=FALSE)${NC}"
+    printf "${DIM}Production audit skipped (PROD=FALSE)${NC}\n"
 fi
 
 # --- 3. Startup Preparation ---
@@ -110,7 +113,7 @@ cd "$BASE_DIR"
 log_success
 
 # --- 4. Execution ---
-printf "\n${BOLD}${CYAN}🚀 Launching Hytale Server...${NC}\n\n"
+log_section "Launching Hytale Server"
 
 # Determine if we need to switch users
 CURRENT_UID=$(id -u)
@@ -128,12 +131,59 @@ else
     RUNTIME=""
 fi
 
+# Preload auth commands into the server console after the server signals readiness
+# Skip auto-auth if credentials are already persisted AND hardware ID matches
+log_section "Authentication Management"
+
+AUTH_PIPE="/tmp/hytale-console.in"
+AUTH_OUTPUT_LOG="/tmp/hytale-server.log"
+rm -f "$AUTH_PIPE" "$AUTH_OUTPUT_LOG"
+mkfifo "$AUTH_PIPE"
+touch "$AUTH_OUTPUT_LOG"
+
+# First check if /etc/machine-id exists
+log_step "Checking Hardware ID"
+if [ ! -f "/etc/machine-id" ]; then
+    log_warning "Hardware ID not found" "Mount /etc/machine-id:/etc/machine-id:ro to enable encrypted credential persistence"
+    printf "      ${DIM}↳ Info:${NC} Auto-auth will run on every startup without it\n"
+elif [ -z "$(cat /etc/machine-id 2>/dev/null | tr -d '\n' | tr -d '\r')" ]; then
+    log_warning "Hardware ID file is empty" "Ensure /etc/machine-id contains a valid machine identifier"
+elif [ -f "$BASE_DIR/auth.enc" ]; then
+    log_success
+    log_step "Credential Persistence"
+    printf "${GREEN}enabled (auth.enc file found)${NC}\n"
+    RUN_AUTO_AUTH=FALSE
+else
+    log_success
+    log_step "Credential Persistence"
+    printf "${YELLOW}not configured${NC}\n"
+fi
+
+if [ "$RUN_AUTO_AUTH" = "TRUE" ]; then
+    (
+        tail -n0 -F "$AUTH_OUTPUT_LOG" | while IFS= read -r line; do
+            case "$line" in
+                *"$HYTALE_AUTH_READY_PATTERN"*|*"$HYTALE_AUTH_READY_ALT_PATTERN"*)
+                    {
+                        printf "auth persistence Encrypted\n"
+                        printf "auth login device\n"
+                    } > "$AUTH_PIPE"
+                    break
+                    ;;
+            esac
+        done
+    ) &
+fi
+
+printf "\n"
+
 # Execute Java server as non-root user
-exec $RUNTIME java $JAVA_ARGS \
-    -Duser.timezone="$TZ" \
+exec $RUNTIME sh -c "cat \"$AUTH_PIPE\" - | exec stdbuf -oL -eL java $JAVA_ARGS \
+    -Duser.timezone=\"$TZ\" \
     -Dterminal.jline=false \
     -Dterminal.ansi=true \
-    -jar "$SERVER_JAR_PATH" \
+    -jar \"$SERVER_JAR_PATH\" \
+    $HYTALE_HELP_OPT \
     $HYTALE_ACCEPT_EARLY_PLUGINS_OPT \
     $HYTALE_ALLOW_OP_OPT \
     $HYTALE_AUTH_MODE_OPT \
@@ -170,5 +220,5 @@ exec $RUNTIME java $JAVA_ARGS \
     $HYTALE_VALIDATE_WORLD_GEN_OPT \
     $HYTALE_VERSION_OPT \
     $HYTALE_WORLD_GEN_OPT \
-    --assets "$GAME_DIR/Assets.zip" \
-    --bind "$SERVER_IP:$SERVER_PORT"
+    --assets \"$GAME_DIR/Assets.zip\" \
+    --bind \"$SERVER_IP:$SERVER_PORT\" 2>&1 | tee \"$AUTH_OUTPUT_LOG\""
