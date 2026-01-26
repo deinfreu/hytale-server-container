@@ -44,13 +44,13 @@ extract_server() {
     
     # SAFE EXTRACTION: Only overwrites files from the archive
     # Files not in the archive (user data, configs, mods) remain untouched
-    if 7z x "$zip_file" -aoa -bsp1 -mmt=on -o"$GAME_DIR" >/dev/null 2>&1; then
+    if unzip -o -q "$zip_file" -d "$GAME_DIR" 2>/dev/null; then
         log_success
         if [ "${DEBUG:-FALSE}" = "TRUE" ]; then
             printf "      ${DIM}↳ Note:${NC} Server binaries updated. User data preserved.\n"
         fi
     else
-        log_error "Extraction failed" "Check disk space or 7z compatibility."
+        log_error "Extraction failed" "Check disk space or zip file integrity."
         exit 1
     fi
     

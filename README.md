@@ -95,6 +95,62 @@ The downloader:
 - Tracks installed mods via manifest
 - Cleans up removed mods on restart
 
+## ⚙️ Environment Variables
+
+### Server Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SERVER_IP` | `0.0.0.0` | IP address to bind the server |
+| `SERVER_PORT` | `5520` | UDP port for the server |
+| `TZ` | `UTC` | Timezone for logs |
+| `DEBUG` | `FALSE` | Enable debug logging and security audits |
+| `PROD` | `FALSE` | Enable production mode checks |
+
+### Hytale Server Config (`config.json`)
+
+These environment variables override settings in `config.json`:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HYTALE_SERVER_NAME` | `Hytale Server` | Server name shown in server list |
+| `HYTALE_MOTD` | *(empty)* | Message of the day |
+| `HYTALE_PASSWORD` | *(empty)* | Server password (leave empty for public) |
+| `HYTALE_MAX_PLAYERS` | `100` | Maximum concurrent players |
+| `HYTALE_MAX_VIEW_RADIUS` | `32` | View distance in chunks |
+| `HYTALE_COMPRESSION` | `false` | Enable local compression |
+| `HYTALE_WORLD` | `default` | Default world name |
+| `HYTALE_GAMEMODE` | `Adventure` | Default game mode |
+
+### Access Control
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HYTALE_WHITELIST_ENABLED` | `false` | Enable whitelist mode |
+| `HYTALE_WHITELIST` | *(empty)* | Comma-separated player UUIDs to whitelist |
+| `HYTALE_OPS` | *(empty)* | Comma-separated player UUIDs to grant OP |
+
+### Patchline & Mods
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HYTALE_PATCHLINE` | `release` | Server version: `release` or `pre-release` |
+| `CURSEFORGE_MOD_IDS` | *(empty)* | Comma-separated CurseForge mod project IDs |
+| `HYTALE_MOD_DIR` | `/home/container/mods` | Directory for mods |
+
+### Volume Mounts
+
+For custom configuration files, mount them directly:
+
+```yaml
+volumes:
+  - ./data:/home/container           # Server data (required)
+  - ./my-config.json:/home/container/config.json        # Custom config
+  - ./my-whitelist.json:/home/container/whitelist.json  # Custom whitelist
+  - ./my-permissions.json:/home/container/permissions.json  # Custom permissions
+  - /etc/machine-id:/etc/machine-id:ro  # Machine ID for auth
+```
+
 ## 🔧 Common Fixes & Troubleshooting
 
 If you encounter issues during deployment, check these common solutions below.

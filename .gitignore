@@ -112,5 +112,5 @@ out/
 # Local development
 # Used for test mapping and running the server locally
 # ----------------------
-Makefile
 data
+files_to_not_commit/

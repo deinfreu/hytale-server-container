@@ -85,6 +85,7 @@ fi
 sh "$SCRIPTS_PATH/hytale/hytale_downloader.sh"
 sh "$SCRIPTS_PATH/hytale/curseforge_mods.sh"
 sh "$SCRIPTS_PATH/hytale/hytale_config.sh"
+sh "$SCRIPTS_PATH/hytale/hytale_permissions.sh"
 . "$SCRIPTS_PATH/hytale/hytale_options.sh"
 
 # --- 1. Audit Suite ---

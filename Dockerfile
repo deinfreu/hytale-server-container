@@ -1,31 +1,47 @@
 # syntax=docker/dockerfile:1.7
+#
+# Unified Hytale Server Dockerfile
+# Supports multiple base images via BUILD_ARG:
+#   - eclipse-temurin:25-jre-alpine (default, smallest)
+#   - eclipse-temurin:25-jre (Ubuntu-based)
+#   - bellsoft/liberica-openjre-alpine-musl:25 (Liberica JRE)
+#
+# Usage:
+#   docker build --build-arg BASE_IMAGE=eclipse-temurin:25-jre-alpine .
+#
 
-# STAGE 1: Builder
-FROM alpine:3.23 AS builder
-RUN apk add --no-cache curl 7zip dos2unix
+# Global ARG must be declared before any FROM to be available in later stages
+ARG BASE_IMAGE=eclipse-temurin:25-jre-alpine
+
+# --- STAGE 1: Builder (always Alpine for consistency) ---
+FROM alpine:3.21 AS builder
+
+RUN apk add --no-cache curl unzip dos2unix
 
 WORKDIR /build
 
 # Download and extract Hytale Downloader
-RUN curl -L -o hytale.zip https://downloader.hytale.com/hytale-downloader.zip && \
-    7z x hytale.zip -y -o./hytale -mmt=on && \
+RUN curl -fsSL -o hytale.zip https://downloader.hytale.com/hytale-downloader.zip && \
+    unzip -q hytale.zip -d ./hytale && \
     mv ./hytale/hytale-downloader-linux-amd64 ./hytale-downloader && \
-    chmod +x ./hytale-downloader && rm -rf hytale hytale.zip
+    chmod +x ./hytale-downloader && \
+    rm -rf hytale hytale.zip
 
-# Prepare scripts
+# Prepare scripts (fix line endings and permissions)
 COPY scripts/ ./scripts/
 COPY entrypoint.sh .
 RUN find scripts -type f -name "*.sh" -exec dos2unix {} + && \
-    dos2unix entrypoint.sh && chmod -R +x scripts && chmod +x entrypoint.sh
+    dos2unix entrypoint.sh && \
+    chmod -R +x scripts && \
+    chmod +x entrypoint.sh
 
-# STAGE 2: Final Runtime
-FROM eclipse-temurin:25.0.1_8-jre-alpine-3.23
-
-# Build arguments for customizable UID/GID
-ARG UID=1000
-ARG GID=1000
+# --- STAGE 2: Final Runtime ---
+ARG BASE_IMAGE=eclipse-temurin:25-jre-alpine
+FROM ${BASE_IMAGE}
 
 # Build arguments
+ARG UID=1000
+ARG GID=1000
 ARG BUILDTIME=local
 ARG VERSION=local
 ARG REVISION=local
@@ -55,19 +71,14 @@ ENV USER=container \
     PROD=FALSE \
     DEBUG=FALSE
 
-# Install dependencies
-RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc6-compat libstdc++ gcompat 7zip
+# Install packages (platform-specific)
+COPY build/ /build-scripts/
+RUN --mount=target=/build-scripts,source=build \
+    /build-scripts/run.sh install-packages
 
-# Setup User (with UID/GID conflict handling)
-RUN if getent passwd ${UID} > /dev/null 2>&1; then \
-        EXISTING_USER=$(getent passwd ${UID} | cut -d: -f1); \
-        deluser ${EXISTING_USER} && \
-        addgroup -S -g ${GID} ${USER} && \
-        adduser -S -D -h ${HOME} -u ${UID} -G ${USER} ${USER}; \
-    else \
-        addgroup -S -g ${GID} ${USER} && \
-        adduser -S -D -h ${HOME} -u ${UID} -G ${USER} ${USER}; \
-    fi
+# Setup user (platform-specific)
+RUN --mount=target=/build-scripts,source=build \
+    /build-scripts/run.sh setup-user
 
 # Copy artifacts from builder
 COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader
@@ -82,6 +93,10 @@ WORKDIR ${HOME}
 USER ${USER}
 EXPOSE ${SERVER_PORT}/udp
 STOPSIGNAL SIGTERM
-HEALTHCHECK --interval=30s --timeout=5s --start-period=2m --retries=3 CMD ss -ulpn | grep -q ":${SERVER_PORT}" || exit 1
+
+# Health check - verify server is listening on UDP port
+HEALTHCHECK --interval=30s --timeout=5s --start-period=2m --retries=3 \
+    CMD ss -ulpn | grep -q ":${SERVER_PORT}" || exit 1
+
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/bin/sh", "/entrypoint.sh"]
