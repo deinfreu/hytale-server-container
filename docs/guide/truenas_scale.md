@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Truenas Scale"
-parent: "📓 guide"
+parent: "📓 Guide"
 nav_order: 1
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Unraid"
-parent: "📓 guide"
+parent: "📓 Guide"
 nav_order: 2
 ---
 
