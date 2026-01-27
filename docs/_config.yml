@@ -1,5 +1,5 @@
 # Site settings
-title: Hytale Docker Server
+title: Hytale Server Cotnainer
 description: A lightweight Dockerized environment for Hytale servers.
 theme: jekyll-remote-theme
 

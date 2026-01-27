@@ -2,13 +2,13 @@
 layout: default
 title: 🏠 Home
 nav_order: 1
-description: "Hytale Docker Server Documentation Home"
+description: "Hytale server container Documentation Home"
 permalink: /
 ---
 
 # Hytale Docker Server
 
-Welcome to the official documentation for **`deinfreu/hytale-server`**, the complete hytale docker solution. This hytale server docker container provides a high-performance, containerized environment for hosting Hytale servers with ease, featuring automated binary management and cross-platform support.
+Welcome to the official documentation for **`deinfreu/hytale-server`**, the complete hytale server container solution. This hytale server docker container provides a high-performance, containerized environment for hosting Hytale servers with ease, featuring automated binary management and cross-platform support.
 
 ---
 
