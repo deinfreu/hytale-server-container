@@ -86,4 +86,8 @@ docker run \
 
 ---
 
+Running a special OS like TrueNAS Scale, Unraid or Windows WSL2? Check out the [Guide section](../guide/index.md) for specific instructions!
+
+---
+
 Go to the [Next page](./running_server.md)!
