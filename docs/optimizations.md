@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "🚀 Speed optimizations"
+title: "🚀 Speed Optimizations"
 nav_order: 5
 description: "Speed optimisations for your hytale server"
 ---

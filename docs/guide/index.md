@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "📓 guide"
+title: "📓 Guide"
 has_children: true
 nav_order: 3
 ---
