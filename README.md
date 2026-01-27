@@ -66,6 +66,8 @@ services:
     volumes:
       - ./data:/home/container
       - /etc/machine-id:/etc/machine-id:ro
+    tty: true
+    stdin_open: true
 ```
 
 ## 🔧 Common Fixes & Troubleshooting

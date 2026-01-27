@@ -62,6 +62,14 @@ jobs:
           raw_tag="${GITHUB_REF#refs/tags/}"
           version="${raw_tag#v}"
           echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Set tag prefix
+        id: set_tag
+        run: |
+          if [ -z "${{ matrix.tag_suffix }}" ]; then
+            echo "tag_prefix=" >> $GITHUB_OUTPUT
+          else
+            echo "tag_prefix=${{ matrix.tag_suffix }}-" >> $GITHUB_OUTPUT
+          fi
       - name: Build & push to GitHub Container Registry
         uses: docker/build-push-action@v6
         with:
@@ -70,10 +78,9 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ghcr.io/deinfreu/hytale-server:${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
-            ghcr.io/deinfreu/hytale-server:${{ matrix.tag_suffix }}
-          cache-from: type=gha,scope=${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
+            ghcr.io/deinfreu/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Build & push to Docker Hub
         uses: docker/build-push-action@v6
         with:
@@ -82,7 +89,6 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            deinfreu/hytale-server:${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
-            deinfreu/hytale-server:${{ matrix.tag_suffix }}
-          cache-from: type=gha,scope=${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.tag_suffix }}-${{ steps.get_version.outputs.version }}
+            deinfreu/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

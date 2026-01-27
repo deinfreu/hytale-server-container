@@ -58,7 +58,7 @@ jobs:
       - name: Generate Sitemap
         uses: cicirello/generate-sitemap@v1.10.4
         with:
-          base-url-path: https://deinfreu.github.io/hytale-server-container/
+          base-url-path: https://hytale-server-container.com
           path-to-root: ./_site
           drop-html-extension: true
 

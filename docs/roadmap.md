@@ -18,7 +18,7 @@ description: "Speed optimisations for your hytale server"
 Testing for specific device:
 [ ] Macbook Pro 14 inch 2025 (See other ARM64)
 [ ] Raspberry pi V5 (See other ARM64)
-[ ] Truenas scale
+[X] Truenas scale
 [X] Windows 11 WSL2
 
 Other:

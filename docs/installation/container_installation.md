@@ -5,7 +5,7 @@ parent: "📥 Installation"
 nav_order: 2
 ---
 
-## 📥 Container installation
+## Container installation
 
 ### Method A: Docker CLI
 
@@ -23,6 +23,7 @@ docker run \
   -v "hytale-server:/home/container" \
   -v "/etc/machine-id:/etc/machine-id:ro" \
   --restart unless-stopped \
+  -it \
   deinfreu/hytale-server:latest
 ```
 
@@ -59,6 +60,8 @@ docker run \
         volumes:
           - ./data:/home/container
           - /etc/machine-id:/etc/machine-id:ro
+        tty: true
+        stdin_open: true
     ```
 
 3.  Now get out of the nano text editor and save the file:
@@ -83,37 +86,7 @@ docker run \
 
 ---
 
-### Windows Users (Docker Desktop with WSL)
-
-If you're running Docker Desktop on Windows with WSL, the default `/etc/machine-id` volume binding won't work. Follow these steps instead:
-
-1. **Modify the volume binding** in your `docker-compose.yml`:
-
-   Change this:
-
-   ```yaml
-   volumes:
-     - ./data:/home/container
-     - /etc/machine-id:/etc/machine-id:ro
-   ```
-
-   To this:
-
-   ```yaml
-   volumes:
-     - ./data:/home/container
-     - ./machine-id:/etc/machine-id:ro
-   ```
-
-2. **Generate a machine-id file** by opening PowerShell in the same directory as your `docker-compose.yml` and running:
-
-   ```powershell
-   [guid]::NewGuid().ToString("N") | Out-File -Encoding ascii -NoNewline .\machine-id
-   ```
-
-3. **Restart the server** and authenticate it. You'll be fine going forward.
-
-> **Note:** This creates a local `machine-id` file that persists with your project, ensuring consistent authentication across container restarts.
+Running a special OS like TrueNAS Scale, Unraid or Windows WSL2? Check out the [Guide section](../guide/index.md) for specific instructions!
 
 ---
 

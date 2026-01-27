@@ -1,0 +1,22 @@
+services:
+  hytale:
+    container_name: hytale
+    environment:
+      CACHE: 'TRUE'
+      DEBUG: 'FALSE'
+      NO_COLOR: 'TRUE'
+      PROD: 'FALSE'
+      SERVER_IP: 0.0.0.0
+      SERVER_PORT: '5520'
+      TZ: Europe/Amsterdam
+    image: deinfreu/hytale-server:latest
+    ports:
+      - 5520:5520/udp
+    restart: unless-stopped
+    stdin_open: True
+    tty: False
+    user: '1000:1000'
+    volumes:
+      - /mnt/main/docker/hytale:/home/container/ 
+      # YOURPATH:home/container/ # use this format to set your own path
+      - /etc/machine-id:/etc/machine-id:ro
