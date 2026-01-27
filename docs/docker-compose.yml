@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  jekyll:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+      - "35729:35729"  # LiveReload port
+    volumes:
+      - .:/site
+      - bundle_cache:/usr/local/bundle
+    environment:
+      - JEKYLL_ENV=development
+      - PAGES_REPO_NWO=deinfreu/hytale-server-container
+    command: bundle exec jekyll serve --host 0.0.0.0 --livereload --force_polling
+
+volumes:
+  bundle_cache:
