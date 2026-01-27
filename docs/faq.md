@@ -18,14 +18,15 @@ Find solutions to common issues encountered when setting up or managing your Hyt
 
 1. Run the following command to access the terminal inside your container:
 
-```bash
-docker exec -it hytale-server /bin/sh
-```
+  ```bash
+  docker exec -it hytale-server /bin/sh
+  ```
 
 2. Run the `hytale-downloader` CLI tool:
-```bash
-hytale-downloader
-```
+
+  ```bash
+  hytale-downloader
+  ```
 
 3. Restart the Docker container, and the script will automatically install the new files.
 
