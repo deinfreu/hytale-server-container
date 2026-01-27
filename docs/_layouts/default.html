@@ -52,11 +52,12 @@ layout: table_wrappers
 <script src="https://unpkg.com/swup@4"></script>
 <script>
   const swup = new Swup({
-    containers: ["#main-content"]
+    containers: ["#main-content"],
+    skipIfSamePath: false
   });
 
   function reinitJustTheDocs() {
-    if (window.jtd && jtd.init) {
+    if (window.jtd && typeof jtd.init === 'function') {
       jtd.init();
     }
 
@@ -64,56 +65,58 @@ layout: table_wrappers
       window.initSearch();
     }
 
-    const content = document.getElementById('main-content');
-    if (content) {
-      content.setAttribute('tabindex', '-1');
-      content.focus();
+    document.body.classList.remove('nav-open');
+    const menuBtn = document.getElementById('menu-button');
+    if (menuBtn) {
+      menuBtn.setAttribute('aria-expanded', 'false');
     }
+  }
+
+  function syncSidebar() {
+    const currentPath = window.location.pathname;
+
+    document.querySelectorAll('.nav-list-link').forEach(link => {
+      const linkPath = link.getAttribute('href');
+
+      link.classList.remove('active');
+      link.style.fontWeight = "400";
+      link.style.color = "";
+
+      if (linkPath === currentPath || 
+          linkPath === currentPath + '/' || 
+          (currentPath === '/hytale-server-container/' && linkPath.includes('index.html'))) {
+        
+        link.classList.add('active');
+        link.style.fontWeight = "600";
+        link.style.color = "#4593fb";
+
+        let parent = link.closest('.nav-list-item');
+        while (parent) {
+          const expander = parent.querySelector('.nav-list-expander');
+          if (expander) {
+            expander.setAttribute('aria-expanded', 'true');
+            const subList = parent.querySelector('.nav-list');
+            if (subList) subList.style.display = 'block';
+          }
+          parent = parent.parentElement.closest('.nav-list-item');
+        }
+      }
+    });
   }
 
   swup.hooks.on('page:view', () => {
     reinitJustTheDocs();
-
+    syncSidebar();
     window.scrollTo(0, 0);
-  });
 
-  swup.hooks.on('click:link', () => {
-    document.body.classList.remove('nav-open');
-  });
-
-  swup.hooks.on('page:view', () => {
-    fixJustTheDocsNav();
-    // Re-run search if the search script is available
-    if (window.initSearch) window.initSearch();
-
-    window.scrollTo(0, 0);
-  });
-
-  function fixJustTheDocsNav() {
-    // 1. Force the theme to re-initialize its internal event listeners
-    if (window.jtd && typeof jtd.init === 'function') {
-      jtd.init();
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.setAttribute('tabindex', '-1');
+      mainContent.focus();
     }
+  });
 
-    const currentPath = window.location.pathname;
-    document.querySelectorAll('.nav-list-link').forEach(link => {
-      // Check if link matches current URL
-      if (link.getAttribute('href') === currentPath ||
-        link.getAttribute('href') === currentPath + '/' ||
-        currentPath.startsWith(link.getAttribute('href'))) {
-        link.classList.add('active');
-        // Just the Docs uses font-weight 600 for active
-        link.style.fontWeight = "600";
-      } else {
-        link.classList.remove('active');
-        link.style.fontWeight = "400";
-      }
-    });
-
-    document.body.classList.remove('nav-open');
-    const menuBtn = document.getElementById('menu-button');
-    if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
-  }
+  document.addEventListener('DOMContentLoaded', syncSidebar);
 </script>
 
 </html>
