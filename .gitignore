@@ -73,8 +73,6 @@ docker-compose.yml
 # ----------------------
 # Hytale / project-specific
 # ----------------------
-# Ignore all data folders inside examples
-examples/**/data/
 *.jar
 
 # Persistent runtime folders
