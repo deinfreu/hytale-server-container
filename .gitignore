@@ -68,6 +68,7 @@ __pycache__/
 *.sock
 docker-compose.override.yml
 docker-compose.yml
+!examples/**/docker-compose.yml
 .env
 
 # ----------------------
@@ -106,3 +107,10 @@ out/
 # ----------------------
 *.log
 *.cache
+
+# ----------------------
+# Local development
+# Used for test mapping and running the server locally
+# ----------------------
+Makefile
+data
