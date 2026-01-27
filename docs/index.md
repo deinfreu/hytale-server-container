@@ -7,7 +7,6 @@ permalink: /
 ---
 
 # Hytale Docker Server
-
 {: .fs-9 }
 
 A high-performance Docker container for hosting Hytale servers. Features automated binary management, cross-platform support, and built-in diagnostic tools.
