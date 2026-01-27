@@ -22,7 +22,7 @@ export GID="${GID:-1000}"
 export NO_COLOR="${NO_COLOR:-FALSE}"
 
 # --- Hytale specific environment variables ---
-export HYTALE_HELP="${HYTALE_HELP:-FA}"
+export HYTALE_HELP="${HYTALE_HELP:-FALSE}"
 export HYTALE_CACHE="${HYTALE_CACHE:-FALSE}"
 export HYTALE_CACHE_DIR="${HYTALE_CACHE_DIR:-$GAME_DIR/Server/HytaleServer.aot}"
 export HYTALE_ACCEPT_EARLY_PLUGINS="${HYTALE_ACCEPT_EARLY_PLUGINS:-FALSE}"
@@ -170,7 +170,6 @@ if [ "$RUN_AUTO_AUTH" = "TRUE" ]; then
 fi
 
 printf "\n"
-
 
 +# Execute Java server as non-root user
 exec $RUNTIME sh -c "( tail -f \"$AUTH_PIPE\" & cat ) | exec stdbuf -oL -eL java $JAVA_ARGS \

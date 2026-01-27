@@ -46,9 +46,9 @@ export HYTALE_VERSION_OPT=""
 export HYTALE_WORLD_GEN_OPT=""
 
 # Enable help option    
-log_step "Accept Early Plugins"
+log_step "Enable help option"
 if [ "${HYTALE_HELP:-}" = "TRUE" ]; then
-    export HYTALE_ACCEPT_EARLY_PLUGINS_OPT="--help"
+    export HYTALE_HELP_OPT="--help"
     printf "${GREEN}enabled${NC}\n"
 else
     printf "${DIM}disabled${NC}\n"
