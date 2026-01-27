@@ -33,13 +33,13 @@ jobs:
         include:
           - os_type: ubuntu
             dockerfile: Dockerfile.ubuntu
-            tag_suffix: release
+            tag_suffix: 
           - os_type: alpine
             dockerfile: Dockerfile.alpine
-            tag_suffix: release-alpine
+            tag_suffix: alpine
           - os_type: alpine-liberica
             dockerfile: Dockerfile.alpine-liberica
-            tag_suffix: release-alpine-liberica
+            tag_suffix: alpine-liberica
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
