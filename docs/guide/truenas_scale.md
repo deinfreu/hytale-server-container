@@ -27,4 +27,4 @@ echo "op add USERNAME" > /tmp/hytale-console.in
 
 ---
 
-**Go to the [Support page](./support.md) if you need help!
+Go to the [Support page](../installation/support.md) if you need help!
