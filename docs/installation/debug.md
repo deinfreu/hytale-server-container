@@ -11,5 +11,4 @@ If you are experiencing issues with your installation, I have included an automa
 
 ### 🛠️ How to Enable Diagnostics
 
-- Make sure you don't have the slim image. Simply remove '-slim' from the docker image name.
-- Enable the enviroment variable DEBUG and set it to "TRUE".
+- Enable the enviroment variable DEBUG and set it to "TRUE". The DEBUG mode will run some automated test that come with the docker hytale server container image.

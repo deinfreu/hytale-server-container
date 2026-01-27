@@ -26,6 +26,8 @@ docker run \
   deinfreu/hytale-server:experimental
 ```
 
+---
+
 ### Method B: Docker compose
 
 1.  **Prepare a Directory:** Create a dedicated folder inside your home directory to keep your project organized:
@@ -115,4 +117,4 @@ If you're running Docker Desktop on Windows with WSL, the default `/etc/machine-
 
 ---
 
-\*\*Go to the [Next page](./running_server.md)!
+Go to the [Next page](./running_server.md)!
