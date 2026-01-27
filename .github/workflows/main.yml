@@ -65,8 +65,8 @@ jobs:
           platforms: linux/amd64
           tags: |
             ghcr.io/deinfreu/hytale-server:${{ matrix.tag_suffix }}
-          cache-from: type=gha,scope=${{ matrix.tag_suffix }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.tag_suffix }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Build & push to Docker Hub
         uses: docker/build-push-action@v6
         with:
@@ -76,5 +76,5 @@ jobs:
           platforms: linux/amd64
           tags: |
             deinfreu/hytale-server:${{ matrix.tag_suffix }}
-          cache-from: type=gha,scope=${{ matrix.tag_suffix }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.tag_suffix }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
