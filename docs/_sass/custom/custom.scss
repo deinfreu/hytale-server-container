@@ -71,14 +71,14 @@ html {
   scrollbar-gutter: stable;
 }
 
-/* This targets the specific content area */
-#main-content {
-  transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+/* Target the main container */
+#top {
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
   opacity: 1;
 }
 
-/* The state during the swap */
-html.is-animating #main-content {
+/* State when the page is changing */
+html.is-animating #top {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(5px);
 }

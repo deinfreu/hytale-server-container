@@ -53,32 +53,30 @@ layout: table_wrappers
 
 <script>
   const swup = new Swup({
-    containers: ["#main-content"] // Targeting your specific ID
+    containers: ["#top"] // Pointing swup to your div
   });
 
-  function reinitJustTheDocs() {
-    // 1. Re-initialize the theme logic (Search, Mobile Nav)
-    if (typeof jtd !== 'undefined') {
-        // Just the Docs doesn't always have a public 'init' method depending on the version,
-        // so we re-run the core initialization if it's available.
-        if (jtd.init) jtd.init();
+  function reinitTheme() {
+    // 1. Re-initialize Just the Docs core logic
+    // This fixes the mobile menu and navigation expanders
+    if (window.jtd && jtd.init) {
+      jtd.init();
     }
 
-    // 2. Fix Anchor Links: Just the Docs uses custom code for those clickable headers
-    // Re-running this ensures the SVGs and links in headers function.
-    if (window.initSearch) window.initSearch();
-
-    // 3. Accessibility: Move focus to the top of the new content
-    const mainContent = document.getElementById('main-content');
-    if (mainContent) {
-        mainContent.setAttribute('tabindex', '-1');
-        mainContent.focus();
+    // 2. Re-initialize Search
+    // Since the search input is inside #top, it gets replaced.
+    // We must tell the search script to re-bind to the new input.
+    if (window.initSearch) {
+      window.initSearch();
     }
+
+    // 3. Reset scroll and UI state
+    document.body.classList.remove('nav-open');
   }
 
-  // Run the fix every time a new page is loaded via Swup
+  // Run the fixes after the content is replaced
   swup.hooks.on('page:view', () => {
-    reinitJustTheDocs();
+    reinitTheme();
     window.scrollTo(0, 0);
   });
 </script>
