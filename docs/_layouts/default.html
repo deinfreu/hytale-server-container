@@ -73,13 +73,47 @@ layout: table_wrappers
 
   swup.hooks.on('page:view', () => {
     reinitJustTheDocs();
-    
+
     window.scrollTo(0, 0);
   });
 
   swup.hooks.on('click:link', () => {
     document.body.classList.remove('nav-open');
   });
+
+  swup.hooks.on('page:view', () => {
+    fixJustTheDocsNav();
+    // Re-run search if the search script is available
+    if (window.initSearch) window.initSearch();
+
+    window.scrollTo(0, 0);
+  });
+
+  function fixJustTheDocsNav() {
+    // 1. Force the theme to re-initialize its internal event listeners
+    if (window.jtd && typeof jtd.init === 'function') {
+      jtd.init();
+    }
+
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.nav-list-link').forEach(link => {
+      // Check if link matches current URL
+      if (link.getAttribute('href') === currentPath ||
+        link.getAttribute('href') === currentPath + '/' ||
+        currentPath.startsWith(link.getAttribute('href'))) {
+        link.classList.add('active');
+        // Just the Docs uses font-weight 600 for active
+        link.style.fontWeight = "600";
+      } else {
+        link.classList.remove('active');
+        link.style.fontWeight = "400";
+      }
+    });
+
+    document.body.classList.remove('nav-open');
+    const menuBtn = document.getElementById('menu-button');
+    if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+  }
 </script>
 
 </html>
