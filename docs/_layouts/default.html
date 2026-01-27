@@ -50,6 +50,7 @@ layout: table_wrappers
 </body>
 
 <script src="https://unpkg.com/swup@4"></script>
+<script src="https://unpkg.com/swup@4"></script>
 <script>
   const swup = new Swup({
     containers: ["#main-content"],
@@ -60,11 +61,9 @@ layout: table_wrappers
     if (window.jtd && typeof jtd.init === 'function') {
       jtd.init();
     }
-
     if (window.initSearch) {
       window.initSearch();
     }
-
     document.body.classList.remove('nav-open');
     const menuBtn = document.getElementById('menu-button');
     if (menuBtn) {
@@ -74,21 +73,31 @@ layout: table_wrappers
 
   function syncSidebar() {
     const currentPath = window.location.pathname;
+    const homePaths = ['/hytale-server-container/', '/hytale-server-container/index.html'];
 
-    document.querySelectorAll('.nav-list-link').forEach(link => {
-      const linkPath = link.getAttribute('href');
+    document.querySelectorAll('.nav-list-link').forEach((link, index) => {
+      let linkPath = link.getAttribute('href');
+      
+      // Fix for the Home link missing href or being the first element
+      if (!linkPath && index === 0) {
+        linkPath = '/hytale-server-container/';
+      }
 
       link.classList.remove('active');
       link.style.fontWeight = "400";
       link.style.color = "";
+      
+      const parentLi = link.closest('.nav-list-item');
+      if (parentLi) parentLi.classList.remove('active');
 
-      if (linkPath === currentPath || 
-          linkPath === currentPath + '/' || 
-          (currentPath === '/hytale-server-container/' && linkPath.includes('index.html'))) {
-        
+      const isHome = homePaths.includes(currentPath) && (linkPath === '/hytale-server-container/' || index === 0);
+      const isMatch = linkPath === currentPath || linkPath === currentPath + '/';
+
+      if (isHome || isMatch) {
         link.classList.add('active');
         link.style.fontWeight = "600";
         link.style.color = "#4593fb";
+        if (parentLi) parentLi.classList.add('active');
 
         let parent = link.closest('.nav-list-item');
         while (parent) {
@@ -108,7 +117,6 @@ layout: table_wrappers
     reinitJustTheDocs();
     syncSidebar();
     window.scrollTo(0, 0);
-
     const mainContent = document.getElementById('main-content');
     if (mainContent) {
       mainContent.setAttribute('tabindex', '-1');
