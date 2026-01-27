@@ -19,7 +19,7 @@ RUN find scripts -type f -name "*.sh" -exec dos2unix {} + && \
     dos2unix entrypoint.sh && chmod -R +x scripts && chmod +x entrypoint.sh
 
 # STAGE 2: Final Runtime
-FROM bellsoft/liberica-openjre-alpine-musl:25.0.1-11
+FROM bellsoft/liberica-openjre-alpine-musl:25.0.2-12
 
 # Build arguments for customizable UID/GID
 ARG UID=1000
