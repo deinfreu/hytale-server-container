@@ -13,6 +13,7 @@ LICENSE
 CONTRIBUTING.md
 .editorconfig
 /docs
+/examples
 
 # Docker files (The Dockerfile itself isn't needed inside the image)
 Dockerfile
