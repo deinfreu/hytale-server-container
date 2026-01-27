@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "4. Running the server"
+title: "3. Running the server"
 parent: "📥 Installation"
 nav_order: 3
 ---

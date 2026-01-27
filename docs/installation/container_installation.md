@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "3. Container installation"
+title: "2. Container Installation"
 parent: "📥 Installation"
 nav_order: 2
 ---

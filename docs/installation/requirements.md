@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "2. System Requirements"
+title: "1. Requirements"
 parent: "📥 Installation"
 nav_order: 1
 ---
