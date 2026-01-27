@@ -25,15 +25,13 @@ Welcome to the official documentation for **`deinfreu/hytale-server`**, the comp
 
 ## Getting Started
 
-Ready to host your world? Follow our step-by-step guides to get started:
+Ready to host your world? Ensure you have the correct hardware and a valid Hytale license before proceeding:
 
-1.  **[Requirements](./installation/requirements.md):** Hytale game license necessary.
-2.  **[System Requirements](./installation/system_requirements.md):** Check if your hardware is ready.
-3.  **[Container Installation](./installation/container_installation.md):** Deploy your first server using CLI or Compose.
-4.  **[Running the server](./installation/running_container.md):** Explenation how to run the setup and run the hytale server.
-4.  **[Debug](./installation/debug.md):** Learn how to debug your installation.
-5.  **[Support](./installation/support.md.md):** Is your installation not working?
-6.  **[Optimizations](./optimizations.md):** Want to go fast? Read here about all the optimizations.
+1.  **[Requirements](./installation/requirements.md):** Prerequisites.
+2.  **[Container Installation](./installation/container_installation.md):** Deploy your first server using CLI or Compose.
+3.  **[Running the server](./installation/running_server.md):** Explenation how to run the setup and run the hytale server.
+4.  **[Support](./installation/support.md.md):** Is your installation not working?
+5.  **[Optimizations](./optimizations.md):** Want to go fast? Read here about all the optimizations.
 
 ---
 
