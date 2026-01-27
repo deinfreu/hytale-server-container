@@ -5,7 +5,7 @@ nav_order: 6
 description: "Frequently Asked Questions for the Hytale Docker Server"
 ---
 
-# ❓ Frequently Asked Questions
+## Frequently Asked Questions
 
 Find solutions to common issues encountered when setting up or managing your Hytale server.
 

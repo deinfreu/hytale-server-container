@@ -5,6 +5,8 @@ parent: "📓 Guide"
 nav_order: 1
 ---
 
+## TrueNAS Scale
+
 Take a look at the [example](https://github.com/deinfreu/hytale-server-container/tree/main/examples/truenas_scale) files in the GitHub repository for setting up Hytale Server Container on TrueNAS Scale.
 
 To create a custom app in TrueNAS Scale, follow these steps:

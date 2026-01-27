@@ -6,6 +6,7 @@ nav_order: 3
 ---
 
 ## Running the Container
+
 We are now going to start the server!
 
 1. **Authenticate the `hytale-downloader` CLI tool**
@@ -26,4 +27,4 @@ We are now going to start the server!
 
 ---
 
-**Go to the [Debug page](./debug.md) or the [Support page](./support.md) if you need help!
+Go to the [Support page](/installation/support.md) if you need help!

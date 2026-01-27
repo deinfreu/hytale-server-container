@@ -5,13 +5,13 @@ parent: "⚙️ Technical Info"
 nav_order: 1
 ---
 
-# Hytale specific settings
+## Hytale specific settings
 
 Here you can find the hytale specific settings
 
 ---
 
-### Hytale downloader CLI tool
+## Hytale downloader CLI tool
 
 You can interface with this tool by entering your docker terminal. More information [here](../installation/container_installation.md).
 
@@ -26,7 +26,7 @@ You can use the following commands:
 | hytale-downloader -patchline pre-release     | Download from pre-release channel                |
 | hytale-downloader -skip-update-check         | Skip automatic update check                      |
 
-### Updating Hytale Server
+## Updating Hytale Server
 
 If you want to automatically update Hytale to the newest version:
 
@@ -37,6 +37,6 @@ If you want to automatically update Hytale to the newest version:
 
 The update process only replaces server binaries - your configs, worlds, and mods are preserved.
 
-### Hytale server variables
+## Hytale server variables
 
 Check the variables in the [docker technical page](./docker.md) which you can use to set server settings 
