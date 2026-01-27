@@ -53,28 +53,21 @@ layout: table_wrappers
 
 <script>
   const swup = new Swup({
-    containers: ["#top"] // Pointing swup to your div
+    containers: ["#top"]
   });
 
   function reinitTheme() {
-    // 1. Re-initialize Just the Docs core logic
-    // This fixes the mobile menu and navigation expanders
     if (window.jtd && jtd.init) {
       jtd.init();
     }
 
-    // 2. Re-initialize Search
-    // Since the search input is inside #top, it gets replaced.
-    // We must tell the search script to re-bind to the new input.
     if (window.initSearch) {
       window.initSearch();
     }
 
-    // 3. Reset scroll and UI state
     document.body.classList.remove('nav-open');
   }
 
-  // Run the fixes after the content is replaced
   swup.hooks.on('page:view', () => {
     reinitTheme();
     window.scrollTo(0, 0);
