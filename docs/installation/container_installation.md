@@ -23,6 +23,7 @@ docker run \
   -v "hytale-server:/home/container" \
   -v "/etc/machine-id:/etc/machine-id:ro" \
   --restart unless-stopped \
+  -it \
   deinfreu/hytale-server:latest
 ```
 
@@ -59,6 +60,8 @@ docker run \
         volumes:
           - ./data:/home/container
           - /etc/machine-id:/etc/machine-id:ro
+        tty: true
+        stdin_open: true
     ```
 
 3.  Now get out of the nano text editor and save the file:
