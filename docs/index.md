@@ -8,7 +8,13 @@ permalink: /
 
 # Hytale Docker Server
 
-Welcome to the official documentation for **`deinfreu/hytale-server`**, the complete hytale server container solution. This hytale server docker container provides a high-performance, containerized environment for hosting Hytale servers with ease, featuring automated binary management and cross-platform support.
+{: .fs-9 }
+
+A high-performance Docker container for hosting Hytale servers. Features automated binary management, cross-platform support, and built-in diagnostic tools.
+{: .fs-6 .fw-300 }
+
+[Getting started](/installation/requirements.md){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[View it on GitHub](https://github.com/deinfreu/hytale-server-container){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
 
