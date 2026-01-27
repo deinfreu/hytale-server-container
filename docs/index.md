@@ -3,7 +3,6 @@ layout: default
 title: 🏠 Home
 nav_order: 1
 description: "Hytale server container Documentation Home"
-permalink: /
 ---
 
 # Hytale Docker Server
