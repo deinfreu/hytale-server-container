@@ -173,6 +173,7 @@ printf "\n"
 
 # Execute Java server as non-root user
 exec $RUNTIME sh -c "cat \"$AUTH_PIPE\" - | exec stdbuf -oL -eL java $JAVA_ARGS \
+    $HYTALE_CACHE_OPT \
     -Duser.timezone=\"$TZ\" \
     -Dterminal.jline=false \
     -Dterminal.ansi=true \
