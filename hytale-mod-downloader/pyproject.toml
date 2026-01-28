@@ -1,0 +1,10 @@
+[project]
+name = "hytale-mod-downloader"
+version = "0.1.0"
+description = "Automaticly download Mods latest release from Curseforge based on project IDs"
+requires-python = ">=3.12"
+dependencies = [
+    "argparse>=1.4.0",
+    "beautifulsoup4>=4.14.3",
+    "requests>=2.32.5",
+]

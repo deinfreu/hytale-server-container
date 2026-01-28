@@ -28,6 +28,7 @@ dist/
 /data
 **/data
 **/data/**
+hytale-mod-downloader/.venv
 
 # OS specific files
 .DS_Store
