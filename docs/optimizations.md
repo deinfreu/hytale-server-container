@@ -2,7 +2,7 @@
 layout: default
 title: "🚀 Speed Optimizations"
 nav_order: 5
-description: "Speed optimisations for your hytale server"
+description: "Speed optimizations for your Hytale server"
 ---
 
 More info coming soon

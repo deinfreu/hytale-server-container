@@ -14,7 +14,7 @@ services:
     environment:
       - JEKYLL_ENV=development
       - PAGES_REPO_NWO=deinfreu/hytale-server-container
-    command: bundle exec jekyll serve --host 0.0.0.0 --livereload --force_polling
+    command: bundle exec jekyll serve --host 0.0.0.0 --livereload --force_polling --incremental --watch
 
 volumes:
   bundle_cache:

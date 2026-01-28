@@ -5,9 +5,9 @@
   align-items: center;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
-  color: #f5f6fa;
   padding-right: 1rem;
   padding-left: 1rem;
+  font-weight: 500;
 }
 
 @media (min-width: 50rem) {
@@ -35,75 +35,73 @@
   }
 }
 
-.site-title-custom:hover {
-  background-image: linear-gradient(-90deg,
-      #201f23 0%,
-      rgba(32, 31, 35, 0.8) 80%,
-      rgba(32, 31, 35, 0) 100%);
-}
-
 .site-title-custom {
   font-size: 1rem !important;
   font-weight: 700 !important;
-}
-
-/* Color */
-
-.side-bar {
-  background-color: oklch(12.9% 0.042 264.695) !important;
-}
-
-body {
-  background-color: oklch(12.9% 0.042 264.695) !important;
-}
-
-.main-header {
-  background-color: oklch(12.9% 0.042 264.695) !important;
-}
-
-.search-input {
-  background-color: oklch(12.9% 0.042 264.695) !important;
-  border-color: oklch(18% 0.05 264.695) !important;
-  color: oklch(90% 0.02 264.695) !important;
 }
 
 html {
   scrollbar-gutter: stable;
 }
 
-/* This animates the whole page smoothly */
+/* Smooth page animations with view transitions */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.3s;
+  animation-duration: 0.25s;
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Optional: If you want ONLY the content to slide like we had before */
+/* Content area animations */
 #main-content {
   view-transition-name: main-content;
 }
 
 ::view-transition-old(main-content) {
-  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both fade-out;
+  animation: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both fade-out;
 }
 
 ::view-transition-new(main-content) {
-  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both fade-in;
+  animation: 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 100ms both fade-in;
 }
 
 @keyframes fade-out {
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(10px); }
+  from { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
+  to { 
+    opacity: 0; 
+    transform: translateY(6px);
+  }
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(-6px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
 }
 
 @view-transition {
   navigation: auto;
 }
 
-body {
-  font-family: "Libre Franklin", sans-serif;
+h1 {
+  font-weight: 700;
+}
+
+div.highlighter-rouge div.highlight {
+    overflow-x: auto;
+    padding: 0.75rem;
+    margin: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+}
+
+code {
+  font-size: 1em;
 }

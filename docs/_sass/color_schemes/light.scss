@@ -1,0 +1,16 @@
+$color-scheme: light !default;
+$body-background-color: #f8fafc !default;
+$body-heading-color: #020617 !default;
+$body-text-color: #334155 !default;
+$link-color: $blue-000 !default;
+$nav-child-link-color: #334155 !default;
+$sidebar-color: #f8fafc !default;
+$base-button-color: #f7f7f7 !default;
+$btn-primary-color: $blue-100 !default;
+$code-background-color: #f1f5f9 !default;
+$feedback-color: darken($sidebar-color, 3%) !default;
+$table-background-color: #f8fafc !default;
+$search-background-color: #f8fafc !default;
+$search-result-preview-color: #334155 !default;
+
+@import "./vendor/accessible-pygments/github-light";

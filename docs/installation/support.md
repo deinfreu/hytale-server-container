@@ -11,7 +11,7 @@ If you are experiencing issues with your installation, I have included an automa
 
 ### How to Enable Diagnostics
 
-- Enable the enviroment variable DEBUG and set it to "TRUE". The DEBUG mode will run some automated test that come with the docker hytale server container image.
+- Enable the environment variable DEBUG and set it to "TRUE". The DEBUG mode will run some automated tests that come with the Docker Hytale server container image.
 
 ---
 
@@ -20,7 +20,7 @@ If you are experiencing issues with your installation, I have included an automa
 Need help with your Hytale server docker installation? I got you covered!
 
 ### Quick Start
-Start with the [FAQ](https://deinfreu.github.io/hytale-server-container/faq) for common solutions to frequently asked questions.
+Start with the [FAQ](https://hytale-server-container.com/faq) for common solutions to frequently asked questions.
 
 ### Installation Issues? Use Discord
 

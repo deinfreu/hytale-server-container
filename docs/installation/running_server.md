@@ -15,7 +15,7 @@ We are now going to start the server!
 
 2. **Downloading, installing and running the server**
 
-    Please be patient; the server is downloading and extracting the necessary files. You will not see any progress on the screen. After that it is starting the server. This can take a while depending on your internet connection speed and hardware.
+    Please be patient; the server is downloading and extracting the necessary files. You will not see any progress on the screen. After that, it will start the server. This can take a while depending on your internet connection speed and hardware.
 
 3. **Authenticate the server** 
 
@@ -23,8 +23,9 @@ We are now going to start the server!
 
 4. **Done!**
 
-> Info: If you want to run commands in the hytale server directly from the console. You can use `docker attach CONTAINER_NAME` to attach to the server console. 
+{: .info }
+> If you want to run commands in the hytale server directly from the console. You can use `docker attach CONTAINER_NAME` to attach to the server console. 
 
 ---
 
-Go to the [Support page](/installation/support.md) if you need help!
+Go to the [Support page](/support.md) if you need help!
