@@ -12,8 +12,8 @@ ga_tracking_anonymize_ip: true # Use GDPR compliant Google Analytics settings (t
 remote_theme: just-the-docs/just-the-docs
 
 # URL settings
-baseurl: "/hytale-server-container" 
-url: "https://hytale-server-container.com/"
+baseurl: "" 
+url: "https://hytale-server-container.com"
 repository: deinfreu/hytale-server-container
 permalink: pretty
 
@@ -45,3 +45,5 @@ exclude:
   - README.md
   - .gitignore
   - dev/
+  - Gemfile
+  - Gemfile.lock
