@@ -96,6 +96,9 @@ out/
 *.so
 *.exe
 
+# Jekyll build output
+docs/_site
+
 # ----------------------
 # Misc
 # ----------------------

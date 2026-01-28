@@ -1,3 +1,78 @@
+# Docker Hytale Server Container
+
+## Project Overview
+Docker Hytale Server Container is a production-ready containerized solution for hosting Hytale dedicated game servers. This project provides automated binary management, cross-platform support, and built-in diagnostic tools for running Hytale servers in Docker environments.
+
+## Key Features
+- Fast server startup (7 seconds with CACHE=TRUE)
+- Automated Hytale server binary downloads and updates via hytale-downloader CLI
+- Multi-architecture support (x86_64, ARM64 planned)
+- Built-in debug mode for network and security auditing
+- Optimized Alpine and Ubuntu-based Docker images
+- Volume and bind mount support for persistent data
+- Production and development environment configurations
+
+## Technology Stack
+- Docker and Docker Compose
+- Alpine Linux and Ubuntu base images
+- Java/JVM runtime (Liberica and standard JDK variants)
+- Bash scripting for automation
+- Jekyll for documentation site
+
+## Installation Methods
+1. Docker CLI: Single command deployment with docker run
+2. Docker Compose: YAML-based configuration for persistent setups
+3. Platform-specific guides for TrueNAS Scale, Unraid, Windows WSL2
+
+## Environment Variables
+- SERVER_IP: Server bind address (default: 0.0.0.0)
+- SERVER_PORT: Game server port (default: 5520)
+- PROD: Production mode toggle (TRUE/FALSE)
+- DEBUG: Enable diagnostic tools (TRUE/FALSE)
+- TZ: Timezone configuration
+- CACHE: Enable fast startup caching
+
+## Storage
+- Bind mount: ./data:/home/container for local file access
+- Volume mount: Named Docker volumes for managed storage
+- Persistent storage for game files, world data, and configurations
+
+## Authentication
+Server requires Hytale account authentication via web-based flow during initial setup and server startup
+
+## Community
+- 10+ active contributors
+- 150+ Discord community members
+- GitHub repository for issues and feature requests
+- Active support channels for troubleshooting
+
+## Documentation Structure
+- Installation requirements and prerequisites
+- Container installation guides (CLI and Compose)
+- Server running and authentication steps
+- Platform-specific deployment guides
+- FAQ and troubleshooting
+- Technical documentation for Docker, security, and Hytale specifics
+
+## Use Cases
+- Self-hosting Hytale game servers
+- Testing mods and custom configurations
+- Running persistent multiplayer worlds
+- Development and production server deployments
+- Multi-platform server hosting
+
+## License
+Apache 2.0
+
+## Repository
+https://github.com/deinfreu/hytale-server-container
+
+## Documentation
+https://hytale-server-container.com
+
+## Docker Hub
+https://hub.docker.com/r/deinfreu/hytale-server
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -9,6 +84,6 @@
     "@type": "Person",
     "name": "deinfreu"
   },
-  "description": "A high-performance Dockerized solution for running Hytale dedicated servers with ease."
+  "description": "Deploy your Docker Hytale game server with production-ready Docker Compose templates for Hytale self-hosting. This community-focused Docker Hytale image is maintained by 10+ contributors and simplifies server deployment by combining optimized networking with built-in security and debugging tools. Perfect for Docker Hytale self-hosting with Docker Compose, this container provides a consistent environment in one command. Join our active Discord to connect with other server owners running their Docker Hytale game servers, whether you're testing mods or hosting a persistent world."
 }
 </script>

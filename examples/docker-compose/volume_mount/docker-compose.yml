@@ -1,0 +1,21 @@
+services:
+    hytale:
+        image: deinfreu/hytale-server:experimental
+        container_name: hytale-server
+        environment:
+            SERVER_IP: "0.0.0.0"
+            SERVER_PORT: "5520"
+            PROD: "FALSE"
+            DEBUG: "FALSE"
+            TZ: "Europe/Amsterdam"
+        restart: unless-stopped
+        ports:
+        - "5520:5520/udp"
+        volumes:
+        - hytale-data:/home/container
+        - /etc/machine-id:/etc/machine-id:ro
+        tty: true
+        stdin_open: true
+
+volumes:
+    hytale-data:

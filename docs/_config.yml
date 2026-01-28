@@ -10,11 +10,11 @@ ga_tracking_anonymize_ip: true # Use GDPR compliant Google Analytics settings (t
 
 # Theme settings
 remote_theme: just-the-docs/just-the-docs
-color_scheme: dark # Perfect for gaming/server projects
 
 # URL settings
-url: "https://hytale-server-container.com"
-baseurl: ""                               
+baseurl: "/hytale-server-container" 
+url: "https://hytale-server-container.com/"
+repository: deinfreu/hytale-server-container
 permalink: pretty
 
 # Aux links (Top right buttons)
@@ -29,12 +29,22 @@ callouts:
   warning:
     title: Warning
     color: red
+  important:
+    title: Important
+    color: yellow
   info:
     title: Info
     color: blue
-  tip:
-    title: Tip
-    color: purple
   note:
     title: Note
-    color: purple 
+    color: purple
+
+# Development settings
+incremental: false  # Disable cache for reliable rebuilds
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - Dockerfile
+  - docker-compose.yml
+  - README.md
+  - .gitignore

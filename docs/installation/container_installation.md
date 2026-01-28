@@ -41,7 +41,7 @@ docker run \
     nano docker-compose.yml
     ```
 
-    add this docker-compose.yml information to the file:
+    Add this docker-compose.yml information to the file:
 
     ```yaml
     services:
@@ -71,10 +71,8 @@ docker run \
     | Linux / Windows (WSL) | Press Ctrl + O    | Press Enter              | Press Ctrl + X      |
     | macOS                 | Press Control + O | Press Return             | Press Control + X   |
 
-    > **Automatic folder creation:** When you start the container, a `data` folder will be created automatically next to your `docker-compose.yml`.
-
-    > **[IMPORTANT]**
-    > Your game files, world data, and configurations will be stored in this `data` folder. Because this folder is mapped to the container, your progress is saved even if you stop or delete the Docker container.
+    {: .important }
+    > This `data` folder will be created on your host OS in the same directory as your `docker-compose.yml` file. Your game files, world data, and configurations are stored here and persist even if you stop or delete the Docker container. If you prefer to use volume mounts instead of bind mounts, see the [volume mount example](https://github.com/deinfreu/hytale-server-container/tree/main/examples/docker-compose/volume_mount).
 
 4.  Run the docker compose file!
 
@@ -82,7 +80,8 @@ docker run \
     docker compose up
     ```
 
-    > Tip: do not use -d. We need to use the terminal to authenticate the server.
+    {: .info }
+    > Do not use -d (detached mode). We need to use the terminal to authenticate the server.
 
 ---
 
@@ -90,4 +89,4 @@ Running a special OS like TrueNAS Scale, Unraid or Windows WSL2? Check out the [
 
 ---
 
-Go to the [Next page](./running_server.md)!
+[Continue to the next steps →](./running_server.md)

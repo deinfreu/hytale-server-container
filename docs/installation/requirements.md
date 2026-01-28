@@ -33,4 +33,4 @@ The Docker image is built for 64-bit environments. 32-bit systems are not suppor
 
 ---
 
-**Go to the [Next page](./container_installation.md)!**
+[Continue to the next steps →](./container_installation.md)

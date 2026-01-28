@@ -35,4 +35,5 @@ If you're running Docker Desktop on Windows with the "docker-desktop" Linux imag
 
 3. **Restart the server** and authenticate it. You'll be fine going forward.
 
-> **Note:** This creates a local `machine-id` file that persists with your project, ensuring consistent authentication across container restarts.
+{: .note }
+>This creates a local `machine-id` file that persists with your project, ensuring consistent authentication across container restarts.
