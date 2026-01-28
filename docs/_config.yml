@@ -42,9 +42,6 @@ callouts:
 # Development settings
 incremental: false  # Disable cache for reliable rebuilds
 exclude:
-  - Gemfile
-  - Gemfile.lock
-  - Dockerfile
-  - docker-compose.yml
   - README.md
   - .gitignore
+  - dev/
