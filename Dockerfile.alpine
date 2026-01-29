@@ -58,6 +58,7 @@ RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc
 
 # Install FEX for ARM64 emulation of x86-64 binaries
 RUN if [ "$(uname -m)" = "aarch64" ]; then \
+        echo "[INFO] Detected ARM64 (aarch64), building and installing FEX-Emu..."; \
         apk add --no-cache git cmake build-base python3 py3-pip ninja clang lld pkgconf qt5-qtbase-dev qt5-qtbase-private-dev && \
         pip install --no-cache-dir packaging setuptools && \
         git clone --depth 1 --branch FEX-2501 --recurse-submodules https://github.com/FEX-Emu/FEX.git /tmp/fex && \
@@ -68,6 +69,8 @@ RUN if [ "$(uname -m)" = "aarch64" ]; then \
         ninja install && \
         cd / && rm -rf /tmp/fex && \
         apk del git cmake build-base python3 py3-pip ninja clang lld qt5-qtbase-dev qt5-qtbase-private-dev; \
+    else \
+        echo "[INFO] Detected x86_64, skipping FEX-Emu build (not required)"; \
     fi
 
 # Setup User (with UID/GID conflict handling)

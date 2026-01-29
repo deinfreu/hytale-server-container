@@ -48,6 +48,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # 1.1. Install FEX for ARM64 emulation of x86-64 binaries
 RUN if [ "$(uname -m)" = "aarch64" ]; then \
+        echo "[INFO] Detected ARM64 (aarch64), building and installing FEX-Emu..."; \
         apt-get update && apt-get install -y --no-install-recommends \
         git cmake build-essential ninja-build python3 clang lld pkg-config && \
         git clone --depth 1 --branch FEX-2501 --recurse-submodules https://github.com/FEX-Emu/FEX.git /tmp/fex && \
@@ -60,6 +61,8 @@ RUN if [ "$(uname -m)" = "aarch64" ]; then \
         apt-get purge -y git cmake build-essential ninja-build python3 clang lld && \
         apt-get autoremove -y && \
         rm -rf /var/lib/apt/lists/*; \
+    else \
+        echo "[INFO] Detected x86_64, skipping FEX-Emu build (not required)"; \
     fi
 
 # 2. Add Gosu
