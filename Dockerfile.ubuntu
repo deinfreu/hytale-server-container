@@ -49,7 +49,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 1.1. Install FEX for ARM64 emulation of x86-64 binaries
 RUN if [ "$(uname -m)" = "aarch64" ]; then \
         apt-get update && apt-get install -y --no-install-recommends \
-        git cmake build-essential ninja-build python3 clang lld && \
+        git cmake build-essential ninja-build python3 clang lld pkg-config && \
         git clone --depth 1 --branch FEX-2501 --recurse-submodules https://github.com/FEX-Emu/FEX.git /tmp/fex && \
         cd /tmp/fex && \
         mkdir build && cd build && \
