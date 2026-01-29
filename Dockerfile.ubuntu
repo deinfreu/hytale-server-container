@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # --- STAGE 1: Builder ---
-FROM eclipse-temurin:25-jre AS builder
+FROM eclipse-temurin:25-jdk AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl p7zip-full dos2unix && \
@@ -25,7 +25,7 @@ RUN find scripts -type f -name "*.sh" -exec dos2unix {} + && \
     chmod +x entrypoint.sh
 
 # --- STAGE 2: Final Runtime ---
-FROM eclipse-temurin:25-jre
+FROM eclipse-temurin:25-jdk
 
 # Build arguments for customizable UID/GID
 ARG UID=1000
