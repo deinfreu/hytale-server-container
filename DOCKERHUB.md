@@ -1,9 +1,9 @@
 <div align="center" width="100%">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/deinfreu/hytale-server-container/blob/main/assets/images/logo_Dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/deinfreu/hytale-server-container/blob/main/assets/images/logo_Light.png">
-  <img alt="Docker Hytale Server Logo" src="https://github.com/deinfreu/hytale-server-container/blob/main/assets/images/logo_Light.png" width="800">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/deinfreu/hytale-server-container/blob/main/assets/images/logo_Dark.png?raw=true">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/deinfreu/hytale-server-container/blob/main/assets/images/logo_Light.png?raw=true">
+  <img alt="Docker Hytale Server Logo" src="https://github.com/deinfreu/hytale-server-container/blob/main/assets/images/logo_Light.png?raw=true" width="800">
 </picture>
 
 [![GitHub stars](https://img.shields.io/github/stars/deinfreu/hytale-server-container?style=for-the-badge&color=daaa3f)](https://github.com/deinfreu/hytale-server-container)
@@ -19,8 +19,8 @@ Deploy a Hytale dedicated server with a community-focused Docker image by 10+ co
 
 ## Support & Resources
 
-* **Documentation:** Detailed performance optimizations and security specifications are located in the [Project Docs](https://hytale-server-container.com/?utm_source=github&utm_medium=social&utm_campaign=github_readme).
-* **Troubleshooting:** Check the [support](https://hytale-server-container.com/installation/support//?utm_source=github&utm_medium=social&utm_campaign=github_readme) page and our [Security Policy](SECURITY.md) before reporting issues. You can also visit our [Discord](https://discord.com/invite/2kn2T6zpaV)
+* **Documentation:** Detailed performance optimizations and security specifications are located in the [Project Docs](https://hytale-server-container.com/?utm_source=dockerhub&utm_medium=social&utm_campaign=dockerhub_readme).
+* **Troubleshooting:** Check the [support](https://hytale-server-container.com/installation/support/?utm_source=dockerhub&utm_medium=social&utm_campaign=dockerhub_readme) page and our [Security Policy](SECURITY.md) before reporting issues. You can also visit our [Discord](https://discord.com/invite/2kn2T6zpaV)
 
 ## Quick start
 

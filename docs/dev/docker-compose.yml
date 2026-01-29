@@ -9,12 +9,12 @@ services:
       - "4000:4000"
       - "35729:35729"  # LiveReload port
     volumes:
-      - .:/site
+      - ..:/site
       - bundle_cache:/usr/local/bundle
     environment:
       - JEKYLL_ENV=development
       - PAGES_REPO_NWO=deinfreu/hytale-server-container
-    command: bundle exec jekyll serve --host 0.0.0.0 --livereload --force_polling --incremental --watch
+    command: bundle exec jekyll serve --host 0.0.0.0 --livereload --force_polling --incremental --watch --baseurl ""
 
 volumes:
   bundle_cache:

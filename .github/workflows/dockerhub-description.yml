@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - README.md
+      - DOCKERHUB.md
       - .github/workflows/dockerhub-description.yml
   workflow_dispatch:
 
@@ -57,4 +57,5 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           repository: deinfreu/hytale-server
           short-description: ${{ steps.get_info.outputs.DOCKER_DESC }}
+          readme-filepath: DOCKERHUB.md
           enable-url-completion: true

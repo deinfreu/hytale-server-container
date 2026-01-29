@@ -1,9 +1,9 @@
-name: "Main Branch: Conditional Build"
+name: "Staging Branch: Conditional Build"
 
 on:
   push:
     branches:
-      - main
+      - staging
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
   build:
     name: "🐳 Build & Push Images"
     needs: setup
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -29,13 +29,13 @@ jobs:
         include:
           - os_type: ubuntu
             dockerfile: Dockerfile.ubuntu
-            tag_suffix: latest
+            tag_suffix: staging
           - os_type: alpine
             dockerfile: Dockerfile.alpine
-            tag_suffix: latest-alpine
+            tag_suffix: staging-alpine
           - os_type: alpine-liberica
             dockerfile: Dockerfile.alpine-liberica
-            tag_suffix: latest-alpine-liberica
+            tag_suffix: staging-alpine-liberica
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -55,7 +55,7 @@ jobs:
       - name: Extract version from branch
         id: get_version
         run: |
-          echo "version=main" >> $GITHUB_OUTPUT
+          echo "version=staging" >> $GITHUB_OUTPUT
       - name: Build & push to GitHub Container Registry
         uses: docker/build-push-action@v6
         with:
@@ -65,8 +65,8 @@ jobs:
           platforms: linux/amd64
           tags: |
             ghcr.io/deinfreu/hytale-server:${{ matrix.tag_suffix }}
-          cache-from: type=gha,scope=${{ matrix.tag_suffix }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.tag_suffix }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Build & push to Docker Hub
         uses: docker/build-push-action@v6
         with:
@@ -76,5 +76,5 @@ jobs:
           platforms: linux/amd64
           tags: |
             deinfreu/hytale-server:${{ matrix.tag_suffix }}
-          cache-from: type=gha,scope=${{ matrix.tag_suffix }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.tag_suffix }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -1,15 +1,10 @@
-name: "Release: Tag ➔ Docker Hub & GitHub"
+name: "Main Branch: Conditional Build"
 
 on:
   push:
-    tags:
-      - 'v*.*.*'
+    branches:
+      - main
   workflow_dispatch:
-
-permissions:
-  contents: read
-  packages: write
-  actions: write
 
 jobs:
   setup:
@@ -26,6 +21,7 @@ jobs:
   build:
     name: "🐳 Build & Push Images"
     needs: setup
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -33,13 +29,13 @@ jobs:
         include:
           - os_type: ubuntu
             dockerfile: Dockerfile.ubuntu
-            tag_suffix: 
+            tag_suffix: latest
           - os_type: alpine
             dockerfile: Dockerfile.alpine
-            tag_suffix: alpine
+            tag_suffix: latest-alpine
           - os_type: alpine-liberica
             dockerfile: Dockerfile.alpine-liberica
-            tag_suffix: alpine-liberica
+            tag_suffix: latest-alpine-liberica
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -56,20 +52,10 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Extract version from tag
+      - name: Extract version from branch
         id: get_version
         run: |
-          raw_tag="${GITHUB_REF#refs/tags/}"
-          version="${raw_tag#v}"
-          echo "version=$version" >> $GITHUB_OUTPUT
-      - name: Set tag prefix
-        id: set_tag
-        run: |
-          if [ -z "${{ matrix.tag_suffix }}" ]; then
-            echo "tag_prefix=" >> $GITHUB_OUTPUT
-          else
-            echo "tag_prefix=${{ matrix.tag_suffix }}-" >> $GITHUB_OUTPUT
-          fi
+          echo "version=main" >> $GITHUB_OUTPUT
       - name: Build & push to GitHub Container Registry
         uses: docker/build-push-action@v6
         with:
@@ -78,7 +64,7 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ghcr.io/deinfreu/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
+            ghcr.io/deinfreu/hytale-server:${{ matrix.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Build & push to Docker Hub
@@ -89,6 +75,6 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            deinfreu/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
+            deinfreu/hytale-server:${{ matrix.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

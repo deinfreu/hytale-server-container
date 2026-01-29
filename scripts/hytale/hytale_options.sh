@@ -7,6 +7,8 @@ set -eu
 log_section "Server Options Management"
 
 # Initialize options to ensure they are empty if not set
+export HYTALE_CACHE_OPT=""
+export HYTALE_CACHE_LOG_OPT=""
 export HYTALE_HELP_OPT=""
 export HYTALE_ACCEPT_EARLY_PLUGINS_OPT=""
 export HYTALE_ALLOW_OP_OPT=""
@@ -384,8 +386,19 @@ fi
 log_step "AOT Cache"
 if [ "${HYTALE_CACHE:-}" = "TRUE" ]; then
     export HYTALE_CACHE_OPT="-XX:AOTCache=$HYTALE_CACHE_DIR"
-    printf "${GREEN}enabled${NC} (dir: ${CYAN}${HYTALE_CACHE_DIR}${NC})\n"
+    printf "${GREEN}enabled${NC} (file: ${CYAN}${HYTALE_CACHE_DIR}${NC})\n"
 else
+    export HYTALE_CACHE_OPT=""
+    printf "${DIM}disabled${NC}\n"
+fi
+
+# AOT Cache Log
+log_step "AOT Cache Log"
+if [ "${HYTALE_CACHE_LOG:-}" = "TRUE" ]; then
+    export HYTALE_CACHE_LOG_OPT="-Xlog:aot"
+    printf "${GREEN}enabled${NC}\n"
+else
+    export HYTALE_CACHE_LOG_OPT=""
     printf "${DIM}disabled${NC}\n"
 fi
 
