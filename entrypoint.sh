@@ -104,6 +104,14 @@ fi
 # --- 3. Startup Preparation ---
 log_section "Process Execution"
 log_step "Finalizing Environment"
+rm -rf $BASE_DIR/mods/*.jar
+cd "$SCRIPTS_PATH/hytale-mod-downloader"
+python main.py --mod-ids "$HYTALE_MODS" --output-dir "$BASE_DIR/mods"
+for modfile in "$BASE_DIR/mods/"*.zip; do
+    if [ -f "$modfile" ]; then
+        7z x "$modfile" -o"$GAME_DIR" -y
+    fi
+done
 cd "$BASE_DIR"
 log_success
 
