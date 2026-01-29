@@ -23,8 +23,9 @@ export NO_COLOR="${NO_COLOR:-FALSE}"
 
 # --- Hytale specific environment variables ---
 export HYTALE_HELP="${HYTALE_HELP:-FALSE}"
+export HYTALE_CACHE_LOG="${HYTALE_CACHE_LOG:-FALSE}"
 export HYTALE_CACHE="${HYTALE_CACHE:-FALSE}"
-export HYTALE_CACHE_DIR="${HYTALE_CACHE_DIR:-$GAME_DIR/Server/HytaleServer.aot}"
+export HYTALE_CACHE_DIR="${HYTALE_CACHE_DIR:-game/Server/HytaleServer.aot}"
 export HYTALE_ACCEPT_EARLY_PLUGINS="${HYTALE_ACCEPT_EARLY_PLUGINS:-FALSE}"
 export HYTALE_ALLOW_OP="${HYTALE_ALLOW_OP:-FALSE}"
 export HYTALE_AUTH_MODE="${HYTALE_AUTH_MODE:-}"
@@ -173,6 +174,8 @@ printf "\n"
 
 # Execute Java server as non-root user
 exec $RUNTIME sh -c "( tail -f \"$AUTH_PIPE\" & cat ) | exec stdbuf -oL -eL java $JAVA_ARGS \
+    $HYTALE_CACHE_OPT \
+    $HYTALE_CACHE_LOG_OPT \
     -Duser.timezone=\"$TZ\" \
     -Dterminal.jline=false \
     -Dterminal.ansi=true \
