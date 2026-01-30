@@ -56,21 +56,12 @@ ENV USER=container \
 # Install dependencies
 RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc6-compat libstdc++ gcompat 7zip coreutils
 
-# Install FEX for ARM64 emulation of x86-64 binaries
+# Install QEMU for ARM64 emulation of x86-64 binaries
 RUN if [ "$(uname -m)" = "aarch64" ]; then \
-        echo "[INFO] Detected ARM64 (aarch64), building and installing FEX-Emu..."; \
-        apk add --no-cache git cmake build-base python3 py3-pip ninja clang lld pkgconf qt5-qtbase-dev qt5-qtbase-private-dev && \
-        pip install --no-cache-dir packaging setuptools && \
-        git clone --depth 1 --branch FEX-2501 --recurse-submodules https://github.com/FEX-Emu/FEX.git /tmp/fex && \
-        cd /tmp/fex && \
-        mkdir build && cd build && \
-        CC=clang CXX=clang++ cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release -DENABLE_LTO=True -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -G Ninja .. && \
-        ninja && \
-        ninja install && \
-        cd / && rm -rf /tmp/fex && \
-        apk del git cmake build-base python3 py3-pip ninja clang lld qt5-qtbase-dev qt5-qtbase-private-dev; \
+        echo "[INFO] Detected ARM64 (aarch64), installing QEMU for x86_64 emulation..."; \
+        apk add --no-cache qemu-user-static binfmt-support || true; \
     else \
-        echo "[INFO] Detected x86_64, skipping FEX-Emu build (not required)"; \
+        echo "[INFO] Detected x86_64, skipping QEMU install (not required)"; \
     fi
 
 # Setup User (with UID/GID conflict handling)
