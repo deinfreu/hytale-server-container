@@ -8,9 +8,13 @@ WORKDIR /build
 
 # Download and extract Hytale Downloader
 RUN curl -L -o hytale.zip https://downloader.hytale.com/hytale-downloader.zip && \
-        7z x hytale.zip -y -o./hytale -mmt=on && \
-        mv ./hytale/hytale-downloader-linux-amd64 ./hytale-downloader && \
+    7z x hytale.zip -y -o./hytale -mmt=on && \
+    mv ./hytale/hytale-downloader-linux-amd64 ./hytale-downloader && \
     chmod +x ./hytale-downloader && rm -rf hytale hytale.zip
+
+# Prepare scripts
+COPY scripts/ ./scripts/
+COPY entrypoint.sh .
 RUN find scripts -type f -name "*.sh" -exec dos2unix {} + && \
     dos2unix entrypoint.sh && chmod -R +x scripts && chmod +x entrypoint.sh
 
