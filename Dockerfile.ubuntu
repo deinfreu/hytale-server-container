@@ -43,7 +43,7 @@ ENV USER=container \
 
 # 1. Install Runtime Dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    tini curl iproute2 ca-certificates tzdata jq p7zip-full && \
+    tini curl iproute2 ca-certificates tzdata jq p7zip-full rlwrap && \
     rm -rf /var/lib/apt/lists/*
 
 # 1.1. Install QEMU static binary for x86_64 emulation (host must register binfmt)

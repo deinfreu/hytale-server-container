@@ -34,7 +34,7 @@ while true; do
     START_TIME=$(date +%s)
 
     # Launch Java server process with all configured options
-    $RUNTIME sh -c "( tail -f \"$AUTH_PIPE\" & cat ) | stdbuf -oL -eL java $JAVA_ARGS \
+    $RUNTIME sh -c "( tail -f \"$AUTH_PIPE\" & cat ) | stdbuf -oL -eL rlwrap -a -N -c java $JAVA_ARGS \
         $HYTALE_CACHE_OPT \
         $HYTALE_CACHE_LOG_OPT \
         -Duser.timezone=\"$TZ\" \
