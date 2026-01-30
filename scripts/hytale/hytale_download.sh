@@ -44,21 +44,21 @@ log_warning "HytaleServer.jar not found." "Downloading fresh installation..."
 
 log_step "Download Status"
 
-# Determine user switching command
+# Run hytale-downloader as container user with proper HOME set
 if [ "$(id -u)" = "0" ]; then
+    # Running as root, switch to container user
     if command -v gosu >/dev/null 2>&1; then
-        SWITCH_USER="gosu container:container"
+        gosu container:container env HOME=/home/container sh -c 'cd $HOME && hytale-downloader'
     elif command -v su-exec >/dev/null 2>&1; then
-        SWITCH_USER="su-exec container:container"
+        su-exec container:container env HOME=/home/container sh -c 'cd $HOME && hytale-downloader'
     else
-        SWITCH_USER=""
+        # Fallback - no user switching available
+        hytale-downloader
     fi
 else
-    SWITCH_USER=""
+    # Already running as non-root
+    hytale-downloader
 fi
-
-# Run hytale-downloader as container user
-$SWITCH_USER hytale-downloader
 
 ZIP_FILE=$(ls "$BASE_DIR"/[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9][0-9]*.zip 2>/dev/null | head -n 1)
 
