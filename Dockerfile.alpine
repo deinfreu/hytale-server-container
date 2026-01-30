@@ -83,6 +83,9 @@ RUN if getent passwd ${UID} > /dev/null 2>&1; then \
         adduser -S -D -h ${HOME} -u ${UID} -G ${USER} ${USER}; \
     fi
 
+# Ensure home directory exists with proper ownership
+RUN mkdir -p ${HOME} && chown -R ${USER}:${USER} ${HOME}
+
 # Copy artifacts from builder
 COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader-bin
 COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scripts/

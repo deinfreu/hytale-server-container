@@ -77,7 +77,10 @@ RUN if getent passwd ${UID} > /dev/null 2>&1; then \
         useradd -m -d ${HOME} -u ${UID} -g ${USER} -s /bin/sh ${USER}; \
     fi
 
-# 4. Copy Prepared Files from Builder
+# 4. Ensure home directory exists with proper ownership
+RUN mkdir -p ${HOME} && chown -R ${USER}:${USER} ${HOME}
+
+# 5. Copy Prepared Files from Builder
 # Using --chown here is much more efficient than running 'chown -R' on a new layer
 COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader-bin
 COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scripts/
