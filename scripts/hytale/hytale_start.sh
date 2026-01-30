@@ -1,6 +1,9 @@
 #!/bin/sh
 set -eu
 
+# Load dependencies
+. "$SCRIPTS_PATH/utils.sh"
+
 # Hytale Server Launcher with Update Support
 # Handles /update download command (exit code 8) and staged update application
 
@@ -19,8 +22,6 @@ while true; do
         [ -f "updater/staging/Server/HytaleServer.aot" ] && cp -f updater/staging/Server/HytaleServer.aot Server/
         [ -d "updater/staging/Server/Licenses" ] && rm -rf Server/Licenses && cp -r updater/staging/Server/Licenses Server/
         [ -f "updater/staging/Assets.zip" ] && cp -f updater/staging/Assets.zip ./
-        [ -f "updater/staging/start.sh" ] && cp -f updater/staging/start.sh ./
-        [ -f "updater/staging/start.bat" ] && cp -f updater/staging/start.bat ./
         rm -rf updater/staging
         APPLIED_UPDATE=true
         log_success
