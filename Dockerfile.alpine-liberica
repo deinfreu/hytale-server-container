@@ -56,10 +56,11 @@ ENV USER=container \
 # Install dependencies
 RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc6-compat libstdc++ gcompat 7zip coreutils
 
-# Install QEMU for ARM64 emulation of x86-64 binaries
+# Install and register QEMU for ARM64 emulation of x86-64 binaries
 RUN if [ "$(uname -m)" = "aarch64" ]; then \
         echo "[INFO] Detected ARM64 (aarch64), installing QEMU for x86_64 emulation..."; \
         apk add --no-cache qemu-user-static binfmt-support || true; \
+        qemu-x86_64 --version || { echo "QEMU x86_64 not available"; exit 1; }; \
     else \
         echo "[INFO] Detected x86_64, skipping QEMU install (not required)"; \
     fi
