@@ -70,7 +70,12 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
 # Setup User (with UID/GID conflict handling)
 RUN if getent passwd ${UID} > /dev/null 2>&1; then \
         EXISTING_USER=$(getent passwd ${UID} | cut -d: -f1); \
+        EXISTING_GROUP=$(getent passwd ${UID} | cut -d: -f4); \
         deluser ${EXISTING_USER} && \
+        if getent group ${GID} > /dev/null 2>&1; then \
+            GROUP_NAME=$(getent group ${GID} | cut -d: -f1); \
+            delgroup ${GROUP_NAME}; \
+        fi; \
         addgroup -S -g ${GID} ${USER} && \
         adduser -S -D -h ${HOME} -u ${UID} -G ${USER} ${USER}; \
     else \
