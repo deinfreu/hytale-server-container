@@ -64,7 +64,14 @@ COPY --from=tianon/gosu:1.19 /gosu /usr/local/bin/
 # 3. Setup User (with UID/GID logic)
 RUN if getent passwd ${UID} > /dev/null 2>&1; then \
         EXISTING_USER=$(getent passwd ${UID} | cut -d: -f1); \
-        usermod -l ${USER} -d ${HOME} -m ${EXISTING_USER}; \
+        EXISTING_GROUP=$(getent passwd ${UID} | cut -d: -f4); \
+        if getent group ${GID} > /dev/null 2>&1; then \
+            GROUP_NAME=$(getent group ${GID} | cut -d: -f1); \
+            groupmod -n ${USER} ${GROUP_NAME}; \
+        else \
+            groupadd -g ${GID} ${USER}; \
+        fi; \
+        usermod -l ${USER} -d ${HOME} -m -g ${USER} ${EXISTING_USER}; \
     else \
         groupadd -g ${GID} ${USER} && \
         useradd -m -d ${HOME} -u ${UID} -g ${USER} -s /bin/sh ${USER}; \

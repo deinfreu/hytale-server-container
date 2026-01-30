@@ -23,6 +23,9 @@ sh "$SCRIPTS_PATH/hytale/hytale_binary_handler.sh"
 # Manage server configuration files
 sh "$SCRIPTS_PATH/hytale/hytale_config.sh"
 
+# Set file permissions
+. "$SCRIPTS_PATH/checks/permissions.sh"
+
 # Convert environment variables to CLI options
 . "$SCRIPTS_PATH/hytale/hytale_options.sh"
 
