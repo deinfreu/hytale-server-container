@@ -10,17 +10,7 @@ WORKDIR /build
 RUN curl -L -o hytale.zip https://downloader.hytale.com/hytale-downloader.zip && \
         7z x hytale.zip -y -o./hytale -mmt=on && \
         mv ./hytale/hytale-downloader-linux-amd64 ./hytale-downloader && \
-        chmod +x ./hytale-downloader && rm -rf hytale hytale.zip && \
-        # If on arm64, create a wrapper to force QEMU usage
-        if [ "$(uname -m)" = "aarch64" ]; then \
-            echo '#!/bin/sh\nexec /usr/bin/qemu-x86_64-static /build/hytale-downloader "$@"' > /build/hytale-downloader-wrapper && \
-            chmod +x /build/hytale-downloader-wrapper && \
-            mv /build/hytale-downloader-wrapper /build/hytale-downloader; \
-        fi
-
-# Prepare scripts
-COPY scripts/ ./scripts/
-COPY entrypoint.sh .
+    chmod +x ./hytale-downloader && rm -rf hytale hytale.zip
 RUN find scripts -type f -name "*.sh" -exec dos2unix {} + && \
     dos2unix entrypoint.sh && chmod -R +x scripts && chmod +x entrypoint.sh
 
@@ -83,9 +73,18 @@ RUN if getent passwd ${UID} > /dev/null 2>&1; then \
     fi
 
 # Copy artifacts from builder
-COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader
+COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader-bin
 COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scripts/
 COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
+
+# Create QEMU wrapper for hytale-downloader on ARM64
+RUN if [ "$(uname -m)" = "aarch64" ]; then \
+        echo '#!/bin/sh' > /usr/local/bin/hytale-downloader && \
+        echo 'exec /usr/bin/qemu-x86_64-static /usr/local/bin/hytale-downloader-bin "$@"' >> /usr/local/bin/hytale-downloader && \
+        chmod +x /usr/local/bin/hytale-downloader; \
+    else \
+        mv /usr/local/bin/hytale-downloader-bin /usr/local/bin/hytale-downloader; \
+    fi
 
 # Image metadata file
 RUN printf "buildtime=%s\nversion=%s\nrevision=%s\n" "${BUILDTIME}" "${VERSION}" "${REVISION}" > /etc/image.properties

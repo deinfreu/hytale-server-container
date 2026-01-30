@@ -14,18 +14,7 @@ RUN curl -L -o hytale.zip https://downloader.hytale.com/hytale-downloader.zip &&
         7z x hytale.zip -y -o./hytale -mmt=on && \
         mv ./hytale/hytale-downloader-linux-amd64 ./hytale-downloader && \
         chmod +x ./hytale-downloader && \
-        rm hytale.zip && \
-        # If on arm64, create a wrapper to force QEMU usage
-        if [ "$(uname -m)" = "aarch64" ]; then \
-            echo '#!/bin/sh\nexec /usr/bin/qemu-x86_64-static /build/hytale-downloader "$@"' > /build/hytale-downloader-wrapper && \
-            chmod +x /build/hytale-downloader-wrapper && \
-            mv /build/hytale-downloader-wrapper /build/hytale-downloader; \
-        fi
-
-# 2. Prepare Scripts (fixing line endings and permissions)
-COPY scripts/ ./scripts/
-COPY entrypoint.sh .
-RUN find scripts -type f -name "*.sh" -exec dos2unix {} + && \
+    rm hytale.zip
     dos2unix entrypoint.sh && \
     chmod -R +x scripts && \
     chmod +x entrypoint.sh
@@ -76,9 +65,18 @@ RUN if getent passwd ${UID} > /dev/null 2>&1; then \
 
 # 4. Copy Prepared Files from Builder
 # Using --chown here is much more efficient than running 'chown -R' on a new layer
-COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader
+COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader-bin
 COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scripts/
 COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
+
+# 4.1. Create QEMU wrapper for hytale-downloader on ARM64
+RUN if [ "$(uname -m)" = "aarch64" ]; then \
+        echo '#!/bin/sh' > /usr/local/bin/hytale-downloader && \
+        echo 'exec /usr/bin/qemu-x86_64-static /usr/local/bin/hytale-downloader-bin "$@"' >> /usr/local/bin/hytale-downloader && \
+        chmod +x /usr/local/bin/hytale-downloader; \
+    else \
+        mv /usr/local/bin/hytale-downloader-bin /usr/local/bin/hytale-downloader; \
+    fi
 
 # 5. Build Metadata
 ARG BUILDTIME=local
