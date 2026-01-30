@@ -47,10 +47,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 # 1.1. Install QEMU static binary for x86_64 emulation (host must register binfmt)
-RUN if [ "$(uname -m)" = "aarch64" ]; then \
-        echo "[INFO] Detected ARM64 (aarch64), installing QEMU static binary for x86_64 emulation..."; \
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        echo "[INFO] Detected ARM64, installing QEMU static binary for x86_64 emulation..."; \
         apt-get update && apt-get install -y --no-install-recommends qemu-user-static && \
-        cp /usr/bin/qemu-x86_64-static /usr/bin/qemu-x86_64-static || true; \
         rm -rf /var/lib/apt/lists/*; \
     else \
         echo "[INFO] Detected x86_64, skipping QEMU install (not required)"; \
@@ -75,7 +75,8 @@ COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scrip
 COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
 
 # 4.1. Create QEMU wrapper for hytale-downloader on ARM64
-RUN if [ "$(uname -m)" = "aarch64" ]; then \
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
         echo '#!/bin/sh' > /usr/local/bin/hytale-downloader && \
         echo 'exec /usr/bin/qemu-x86_64-static /usr/local/bin/hytale-downloader-bin "$@"' >> /usr/local/bin/hytale-downloader && \
         chmod +x /usr/local/bin/hytale-downloader; \
