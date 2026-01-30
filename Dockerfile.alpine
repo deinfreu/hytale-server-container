@@ -8,9 +8,15 @@ WORKDIR /build
 
 # Download and extract Hytale Downloader
 RUN curl -L -o hytale.zip https://downloader.hytale.com/hytale-downloader.zip && \
-    7z x hytale.zip -y -o./hytale -mmt=on && \
-    mv ./hytale/hytale-downloader-linux-amd64 ./hytale-downloader && \
-    chmod +x ./hytale-downloader && rm -rf hytale hytale.zip
+        7z x hytale.zip -y -o./hytale -mmt=on && \
+        mv ./hytale/hytale-downloader-linux-amd64 ./hytale-downloader && \
+        chmod +x ./hytale-downloader && rm -rf hytale hytale.zip && \
+        # If on arm64, create a wrapper to force QEMU usage
+        if [ "$(uname -m)" = "aarch64" ]; then \
+            echo '#!/bin/sh\nexec /usr/bin/qemu-x86_64-static /build/hytale-downloader "$@"' > /build/hytale-downloader-wrapper && \
+            chmod +x /build/hytale-downloader-wrapper && \
+            mv /build/hytale-downloader-wrapper /build/hytale-downloader; \
+        fi
 
 # Prepare scripts
 COPY scripts/ ./scripts/
