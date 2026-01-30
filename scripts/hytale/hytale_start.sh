@@ -88,10 +88,11 @@ while true; do
     cd "$GAME_DIR"
     
     # Exit code 8 = restart to apply update from /update download command
+    # Exit the container with code 8 so Docker can restart it
     if [ $EXIT_CODE -eq 8 ]; then
-        log_step "Restarting to apply update"
+        log_step "Server requesting restart (exit code 8) - triggering container restart"
         log_success
-        continue
+        exit 8
     fi
     
     # Warn on crash shortly after update

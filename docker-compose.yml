@@ -13,7 +13,7 @@ services:
       DEBUG: "FALSE"
       TZ: "Europe/London"
       HYTALE_BACKUP: "TRUE"
-    restart: unless-stopped
+    restart: on-failure
     ports:
       - "5520:5520/udp"
     volumes:
