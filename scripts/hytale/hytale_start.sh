@@ -9,6 +9,8 @@ cd "$GAME_DIR"
 
 # Server restart loop - handles /update download command (exit code 8)
 while true; do
+    APPLIED_UPDATE=false
+    
     # Apply staged update if present (from /update download command)
     if [ -f "updater/staging/Server/HytaleServer.jar" ]; then
         log_step "Applying staged update"
@@ -17,12 +19,18 @@ while true; do
         [ -f "updater/staging/Server/HytaleServer.aot" ] && cp -f updater/staging/Server/HytaleServer.aot Server/
         [ -d "updater/staging/Server/Licenses" ] && rm -rf Server/Licenses && cp -r updater/staging/Server/Licenses Server/
         [ -f "updater/staging/Assets.zip" ] && cp -f updater/staging/Assets.zip ./
+        [ -f "updater/staging/start.sh" ] && cp -f updater/staging/start.sh ./
+        [ -f "updater/staging/start.bat" ] && cp -f updater/staging/start.bat ./
         rm -rf updater/staging
+        APPLIED_UPDATE=true
         log_success
     fi
 
     # Run server from inside Server/ folder (like start.sh does)
     cd Server
+
+    # Track start time for crash detection
+    START_TIME=$(date +%s)
 
     # Launch Java server process with all configured options
     $RUNTIME sh -c "( tail -f \"$AUTH_PIPE\" & cat ) | stdbuf -oL -eL java $JAVA_ARGS \
@@ -73,6 +81,7 @@ while true; do
         --bind \"$SERVER_IP:$SERVER_PORT\" 2>&1 | tee \"$AUTH_OUTPUT_LOG\""
     
     EXIT_CODE=$?
+    ELAPSED=$(($(date +%s) - START_TIME))
     
     # Return to game directory for next iteration
     cd "$GAME_DIR"
@@ -82,6 +91,18 @@ while true; do
         log_step "Restarting to apply update"
         log_success
         continue
+    fi
+    
+    # Warn on crash shortly after update
+    if [ $EXIT_CODE -ne 0 ] && [ "$APPLIED_UPDATE" = true ] && [ $ELAPSED -lt 30 ]; then
+        log_error "Server crashed ${ELAPSED}s after update" "Exit code: $EXIT_CODE"
+        printf "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n"
+        printf "${YELLOW}Update Failed${NC}\n"
+        printf "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n\n"
+        printf "Server crashed within ${ELAPSED}s of applying the update.\n"
+        printf "This may indicate the update is incompatible.\n\n"
+        printf "${DIM}Check logs in: /home/container/Server/logs/${NC}\n\n"
+        printf "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n"
     fi
     
     # Any other exit code, stop the container
