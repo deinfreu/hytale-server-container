@@ -5,12 +5,12 @@ set -eu
 . "$SCRIPTS_PATH/utils.sh"
 
 # Hytale Server Launcher with Update Support
-# Handles /update download command (exit code 8) and staged update application
+# Handles /update apply --force command (exit code 8) and staged update application
 
 # Change to game directory (where Assets.zip and Server/ subdirectory are)
 cd "$GAME_DIR"
 
-# Server restart loop - handles /update download command (exit code 8)
+# Server restart loop - handles /update apply --force command (exit code 8)
 while true; do
     APPLIED_UPDATE=false
     
@@ -79,7 +79,7 @@ while true; do
         $HYTALE_VERSION_OPT \
         $HYTALE_WORLD_GEN_OPT \
         --assets \"$GAME_DIR/Assets.zip\" \
-        --bind \"$SERVER_IP:$SERVER_PORT\" 2>&1 | tee \"$AUTH_OUTPUT_LOG\""
+        --bind \"$SERVER_IP:$SERVER_PORT\" 2>&1 | sed 's/\r$//' | tee \"$AUTH_OUTPUT_LOG\""
     
     EXIT_CODE=$?
     ELAPSED=$(($(date +%s) - START_TIME))
