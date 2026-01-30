@@ -43,7 +43,22 @@ extract_server() {
 log_warning "HytaleServer.jar not found." "Downloading fresh installation..."
 
 log_step "Download Status"
-hytale-downloader
+
+# Determine user switching command
+if [ "$(id -u)" = "0" ]; then
+    if command -v gosu >/dev/null 2>&1; then
+        SWITCH_USER="gosu container:container"
+    elif command -v su-exec >/dev/null 2>&1; then
+        SWITCH_USER="su-exec container:container"
+    else
+        SWITCH_USER=""
+    fi
+else
+    SWITCH_USER=""
+fi
+
+# Run hytale-downloader as container user
+$SWITCH_USER hytale-downloader
 
 ZIP_FILE=$(ls "$BASE_DIR"/[0-9][0-9][0-9][0-9].[0-9][0-9].[0-9][0-9]*.zip 2>/dev/null | head -n 1)
 
