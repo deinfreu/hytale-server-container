@@ -60,7 +60,9 @@ RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
         echo "[INFO] Detected ARM64, installing QEMU static binary for x86_64 emulation..."; \
-        apk add --no-cache qemu-user-static || true; \
+        apk add --no-cache qemu-x86_64 && \
+        # Verify QEMU is installed and accessible
+        which qemu-x86_64-static || which qemu-x86_64 || { echo "ERROR: QEMU not found"; exit 1; }; \
     else \
         echo "[INFO] Detected x86_64, skipping QEMU install (not required)"; \
     fi
@@ -84,8 +86,9 @@ COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
 # Create QEMU wrapper for hytale-downloader on ARM64
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        QEMU_BIN=$(which qemu-x86_64-static || which qemu-x86_64) && \
         echo '#!/bin/sh' > /usr/local/bin/hytale-downloader && \
-        echo 'exec /usr/bin/qemu-x86_64-static /usr/local/bin/hytale-downloader-bin "$@"' >> /usr/local/bin/hytale-downloader && \
+        echo "exec $QEMU_BIN /usr/local/bin/hytale-downloader-bin \"\$@\"" >> /usr/local/bin/hytale-downloader && \
         chmod +x /usr/local/bin/hytale-downloader; \
     else \
         mv /usr/local/bin/hytale-downloader-bin /usr/local/bin/hytale-downloader; \

@@ -51,6 +51,8 @@ ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
         echo "[INFO] Detected ARM64, installing QEMU static binary for x86_64 emulation..."; \
         apt-get update && apt-get install -y --no-install-recommends qemu-user-static && \
+        # Verify QEMU is installed and accessible
+        which qemu-x86_64-static || { echo "ERROR: QEMU not found"; exit 1; }; \
         rm -rf /var/lib/apt/lists/*; \
     else \
         echo "[INFO] Detected x86_64, skipping QEMU install (not required)"; \
@@ -77,8 +79,9 @@ COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
 # 4.1. Create QEMU wrapper for hytale-downloader on ARM64
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        QEMU_BIN=$(which qemu-x86_64-static) && \
         echo '#!/bin/sh' > /usr/local/bin/hytale-downloader && \
-        echo 'exec /usr/bin/qemu-x86_64-static /usr/local/bin/hytale-downloader-bin "$@"' >> /usr/local/bin/hytale-downloader && \
+        echo "exec $QEMU_BIN /usr/local/bin/hytale-downloader-bin \"\$@\"" >> /usr/local/bin/hytale-downloader && \
         chmod +x /usr/local/bin/hytale-downloader; \
     else \
         mv /usr/local/bin/hytale-downloader-bin /usr/local/bin/hytale-downloader; \
