@@ -7,16 +7,23 @@ set -eu
 log_section "File Permissions Check"
 
 # Define the game directory
-GAME_DIR="${GAME_DIR:-$HOME/game/Server}"
+GAME_DIR="${GAME_DIR:-/home/container}"
+BASE_DIR="${BASE_DIR:-/home/container}"
 
-if [ ! -d "$GAME_DIR" ]; then
-    log_warning "Game directory not found" "Skipping permissions check."
+# Ensure home directory has proper ownership
+log_step "Setting Home Directory Ownership"
+chown -R container:container "$BASE_DIR" 2>/dev/null || true
+chmod 755 "$BASE_DIR" 2>/dev/null || true
+log_success
+
+if [ ! -d "$GAME_DIR/Server" ]; then
+    log_warning "Server directory not found" "Skipping detailed permissions check."
     return 0
 fi
 
 log_step "Setting Server Binary Permissions"
 # Make server binaries executable (755)
-find "$GAME_DIR" -maxdepth 1 -type f \( -name "*.jar" -o -name "*.aot" \) -exec chmod 755 {} \; 2>/dev/null || true
+find "$GAME_DIR/Server" -maxdepth 1 -type f \( -name "*.jar" -o -name "*.aot" \) -exec chmod 755 {} \; 2>/dev/null || true
 log_success
 
 log_step "Setting Executable File Permissions"
@@ -28,16 +35,16 @@ log_success
 
 log_step "Setting Config File Permissions"
 # Set config files to read/write (644)
-find "$GAME_DIR" -maxdepth 1 -type f \( -name "*.json" -o -name "*.enc" -o -name "*.bak" \) -exec chmod 644 {} \; 2>/dev/null || true
+find "$GAME_DIR/Server" -maxdepth 1 -type f \( -name "*.json" -o -name "*.enc" -o -name "*.bak" \) -exec chmod 644 {} \; 2>/dev/null || true
 log_success
 
 log_step "Setting Directory Permissions"
 # Set directories to 755
-find "$GAME_DIR" -type d -exec chmod 755 {} \; 2>/dev/null || true
+find "$GAME_DIR/Server" -type d -exec chmod 755 {} \; 2>/dev/null || true
 log_success
 
-log_step "Setting Ownership"
-# Ensure all files are owned by the container user
+log_step "Verifying Ownership"
+# Final verification that all files are owned by the container user
 chown -R container:container "$GAME_DIR" 2>/dev/null || true
 log_success
 

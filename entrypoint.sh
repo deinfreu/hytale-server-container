@@ -14,6 +14,13 @@ export SCRIPTS_PATH="/usr/local/bin/scripts"
 # Load utility functions for logging
 . "$SCRIPTS_PATH/utils.sh"
 
+# --- Ensure proper ownership of home directory (critical for file writes) ---
+if [ "$(id -u)" = "0" ]; then
+    # Running as root - ensure container user's home is properly owned
+    chown -R container:container /home/container 2>/dev/null || true
+    chmod 755 /home/container 2>/dev/null || true
+fi
+
 # --- Initialization Phase ---
 # CRITICAL ORDER: Binary handler must run BEFORE config management
 
