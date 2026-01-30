@@ -14,9 +14,6 @@ export SCRIPTS_PATH="/usr/local/bin/scripts"
 # Load utility functions for logging
 . "$SCRIPTS_PATH/utils.sh"
 
-# Check CPU architecture compatibility
-sh "$SCRIPTS_PATH/checks/arch_check.sh"
-
 # --- Initialization Phase ---
 # CRITICAL ORDER: Binary handler must run BEFORE config management
 
