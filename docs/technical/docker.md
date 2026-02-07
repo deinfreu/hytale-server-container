@@ -5,7 +5,7 @@ parent: "⚙️ Technical Info"
 nav_order: 2
 ---
 
-## Docker Configuration Reference
+# Docker Configuration Reference
 
 The Hytale server container is highly configurable through environment variables. These allow you to tune performance, security, and automation without modifying the internal container files.
 

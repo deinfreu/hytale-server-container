@@ -5,4 +5,4 @@ nav_order: 5
 description: "Speed optimizations for your Hytale server"
 ---
 
-More info coming soon
+# Hytale docker server optimizations

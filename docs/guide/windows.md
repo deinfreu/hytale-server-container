@@ -5,7 +5,7 @@ parent: "📓 Guide"
 nav_order: 3
 ---
 
-## Windows (Docker Desktop with WSL2)
+# Windows (Docker Desktop with WSL2)
 
 If you're running Docker Desktop on Windows with the "docker-desktop" Linux image, the default `/etc/machine-id` volume binding should work out of the box. However, if you're running Ubuntu in WSL2, you'll need to follow these steps to ensure persistent server authorization:
 

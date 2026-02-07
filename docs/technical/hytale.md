@@ -5,7 +5,7 @@ parent: "⚙️ Technical Info"
 nav_order: 1
 ---
 
-## Hytale specific settings
+# Hytale specific settings
 
 Here you can find the hytale specific settings
 

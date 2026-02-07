@@ -5,7 +5,7 @@ parent: "📥 Installation"
 nav_order: 3
 ---
 
-## Running the Container
+# Running the Container
 
 We are now going to start the server!
 

@@ -5,7 +5,7 @@ parent: "📥 Installation"
 nav_order: 1
 ---
 
-## Requirements & Licensing
+# Requirements & Licensing
 
 Before deploying the container, ensure your environment meets the following hardware and licensing requirements.
 

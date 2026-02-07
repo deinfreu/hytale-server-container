@@ -5,6 +5,8 @@ parent: "📥 Installation"
 nav_order: 4
 ---
 
+# Support
+
 ## Debug Mode
 
 If you are experiencing issues with your installation, I have included an automated diagnostic script that audits your **network configurations** and **security settings** during the container startup.

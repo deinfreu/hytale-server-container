@@ -5,7 +5,7 @@ parent: "📥 Installation"
 nav_order: 2
 ---
 
-## Container installation
+# Container installation
 
 ### Method A: Docker CLI
 
