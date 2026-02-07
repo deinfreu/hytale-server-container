@@ -4,6 +4,70 @@ layout: table_wrappers
 <!doctype html>
 
 <html lang="{{ site.lang | default: 'en-US' }}">
+  <style>
+    :root {
+      background-color: #f8fafc;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        background-color: #020617;
+      }
+    }
+
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 10000;
+      visibility: visible;
+      opacity: 1;
+      transition: opacity 0.25s ease-out;
+    }
+
+    html.loading {
+      overflow: hidden;
+    }
+    html.loaded #preloader {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #preloader {
+        background-color: #020617;
+      }
+    }
+    @media (prefers-color-scheme: light) {
+      #preloader {
+        background-color: #f8fafc;
+      }
+    }
+  </style>
+
+  <script>
+    (function () {
+      document.documentElement.classList.add('loading');
+      const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const theme = darkModeQuery.matches ? 'dark' : 'light';
+
+      const loader = document.createElement('div');
+      loader.id = 'preloader';
+      loader.style.backgroundColor = theme === 'dark' ? '#020617' : '#f8fafc';
+
+      const observer = new MutationObserver(function (mutations, obs) {
+        if (document.body) {
+          document.body.appendChild(loader);
+          obs.disconnect();
+        }
+      });
+      observer.observe(document.documentElement, { childList: true });
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
   {% include head.html %}
 
   <body>
@@ -90,7 +154,6 @@ layout: table_wrappers
           requestAnimationFrame(() => {
             document.documentElement.classList.remove('loading');
             document.documentElement.classList.add('loaded');
-
           });
         }
 

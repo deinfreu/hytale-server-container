@@ -95,3 +95,5 @@ div.highlighter-rouge div.highlight {
 code {
   font-size: 1em;
 }
+
+@media (min-width: 31.25rem) { .site-title {font-size: 1.125rem !important;line-height: 1.25;} }
