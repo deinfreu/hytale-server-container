@@ -1,0 +1,132 @@
+---
+layout: default
+title: "❓ FAQ"
+nav_order: 6
+description: "Frequently Asked Questions for the Hytale Docker Server"
+---
+
+<h2>Frequently Asked Questions</h2>
+
+<p>
+  Find solutions to common issues encountered when setting up or managing your
+  Hytale server.
+</p>
+
+<hr />
+
+Installation
+<details>
+  <summary>
+    <h4 style="display: inline-block">
+      Server requires re-authentication after every restart
+    </h4>
+  </summary>
+  <p>
+    This happens because the container does not have access to the host’s Linux
+    hardware ID. Without it, the server generates a new identity on each
+    restart.
+  </p>
+
+  <p>Mount the machine-id volume:</p>
+
+  <pre><code>/etc/machine-id:/etc/machine-id:ro</code></pre>
+
+  <p>Docker run:</p>
+
+  <pre><code>-v "/etc/machine-id:/etc/machine-id:ro"</code></pre>
+</details>
+
+<details>
+  <summary>
+    <h4 style="display: inline-block">Linux Permission Errors</h4>
+  </summary>
+  <p>
+    If the container crashes or logs file access errors, this is usually a
+    volume permission issue.
+  </p>
+
+  <pre><code>sudo chown -R 1000:1000 data</code></pre>
+</details>
+
+<details>
+  <summary>
+    <h4 style="display: inline-block">I can't run the server on ARM64</h4>
+  </summary>
+  <p>
+    The <code>hytale-downloader</code> CLI tool does not currently support
+    ARM64.
+  </p>
+</details>
+
+<hr />
+
+<h3>Updates & game files.</h3>
+
+<details>
+  <summary>
+    <h4 style="display: inline-block">
+      How can I update the Hytale server to the latest version?
+    </h4>
+  </summary>
+
+  <blockquote class="warning">
+    <p>
+      Create a backup of your server files before performing an update to
+      prevent data loss.
+    </p>
+  </blockquote>
+
+  <ol>
+    <li>
+      <p>
+        Run the following command to access the terminal inside your container:
+      </p>
+      <pre><code>docker exec -it hytale-server /bin/sh</code></pre>
+    </li>
+
+    <li>
+      <p>Run the <code>hytale-downloader</code> CLI tool:</p>
+      <pre><code>hytale-downloader</code></pre>
+    </li>
+
+    <li>
+      <p>
+        Restart the Docker container. The script will automatically install the
+        new files.
+      </p>
+    </li>
+  </ol>
+</details>
+
+<hr />
+
+<h3>In-game commands</h3>
+
+<details>
+  <summary>
+    <h4 style="display: inline-block">
+      How can I give myself permissions in-game?
+    </h4>
+  </summary>
+
+  <blockquote class="warning">
+    <p>
+      Create a backup of your server files before performing an update to
+      prevent data loss.
+    </p>
+  </blockquote>
+
+  <div class="note">
+    <p>
+      Enable interactive mode by setting <code>tty: true</code> and
+      <code>stdin_open: true</code> in your Docker Compose file, or use
+      <code>docker run -it</code>.
+    </p>
+  </div>
+
+  <pre><code>docker attach CONTAINER_NAME</code></pre>
+
+  <p>Once attached, run:</p>
+
+  <pre><code>/op add USERNAME</code></pre>
+</details>
