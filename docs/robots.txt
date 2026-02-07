@@ -1,49 +1,78 @@
 # --------------------------------------------------
-# SITEMAP LOCATION (Critical for Discovery)
+# SITEMAP
 # --------------------------------------------------
-Sitemap: https://hytale-server-container.com/sitemap
+Sitemap: https://hytale-server-container.com/sitemap.xml
+
 
 # --------------------------------------------------
-# ALLOW GOOGLE AND COMMON BOTS
+# GOOGLE (NO RESTRICTIONS)
 # --------------------------------------------------
-User-agent: *
-Allow: /
-
-# Specifically ensuring Googlebot has no hurdles
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 0
 
 User-agent: Google-Extended
 Allow: /
 
-# AI and Search Bot Permissions
-User-agent: OAI-SearchBot
-Allow: /
-User-agent: GPTBot
-Allow: /
-User-agent: ChatGPT-User
-Allow: /
-User-agent: ClaudeBot
-Allow: /
-User-agent: Claude-SearchBot
-Allow: /
-User-agent: PerplexityBot
-Allow: /
-User-agent: Perplexity-User
-Allow: /
-User-agent: Applebot
-Allow: /
-User-agent: Applebot-Extended
-Allow: /
-User-agent: YouBot
-Allow: /
-User-agent: Bytespider
-Allow: /
-User-agent: Diffbot
-Allow: /
 
 # --------------------------------------------------
-# BLOCKING HARMFUL / AGGRESSIVE BOTS
+# MAJOR SEARCH ENGINES
+# --------------------------------------------------
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+
+# --------------------------------------------------
+# AI / LLM / DATASET CRAWLERS
+# --------------------------------------------------
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+
+
+# --------------------------------------------------
+# BLOCK AGGRESSIVE SEO / SCRAPERS
 # --------------------------------------------------
 User-agent: AhrefsBot
 Disallow: /
@@ -60,20 +89,16 @@ Disallow: /
 User-agent: Rogerbot
 Disallow: /
 
-User-agent: EmailCollector
+User-agent: Bytespider
 Disallow: /
 
-User-agent: EmailSiphon
+User-agent: YouBot
 Disallow: /
 
-User-agent: WebReaper
-Disallow: /
-
-User-agent: Sysomos
-Disallow: /
 
 # --------------------------------------------------
-# GLOBAL SETTINGS
+# DEFAULT RULE (POLITE THROTTLING)
 # --------------------------------------------------
 User-agent: *
-Crawl-delay: 10
+Allow: /
+Crawl-delay: 3
