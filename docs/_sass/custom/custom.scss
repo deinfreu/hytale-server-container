@@ -1,45 +1,99 @@
 .site-title-custom {
-    flex-grow: 1;
-    display: flex;
-    height: 100%;
-    align-items: center;
-    padding-top: .75rem;
-    padding-bottom: .75rem;
-    color: #f5f6fa;
-    padding-right: 1rem;
-    padding-left: 1rem
+  flex-grow: 1;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  font-weight: 500;
 }
 
 @media (min-width: 50rem) {
-    .site-title-custom {
-        padding-right:2rem;
-        padding-left: 2rem
-    }
+  .site-title-custom {
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
 }
 
 .site-title-custom {
-    font-size: 1.125rem !important
+  font-size: 1.125rem !important;
 }
 
 @media (min-width: 31.25rem) {
-    .site-title-custom {
-        font-size:1.125rem !important;
-        line-height: 1.25
-    }
+  .site-title-custom {
+    font-size: 1.125rem !important;
+    line-height: 1.25;
+  }
 }
 
 @media (min-width: 50rem) {
-    .site-title-custom {
-        padding-top:.5rem;
-        padding-bottom: .5rem
-    }
-}
-
-.site-title-custom:hover {
-    background-image: linear-gradient(-90deg, #201f23 0%, rgba(32,31,35,0.8) 80%, rgba(32,31,35,0) 100%)
+  .site-title-custom {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
 }
 
 .site-title-custom {
-    font-size: 1rem !important;
-    font-weight: 700 !important
+  font-size: 1rem !important;
+  font-weight: 700 !important;
 }
+
+html {
+  scrollbar-gutter: stable;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.25s;
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+#main-content {
+  view-transition-name: main-content;
+}
+
+::view-transition-old(main-content) {
+  animation: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both fade-out;
+}
+
+::view-transition-new(main-content) {
+  opacity: 0;
+}
+
+html.loaded ::view-transition-new(main-content) {
+  animation: 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 100ms both fade-in;
+}
+
+@keyframes fade-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(6px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+h1 {
+  font-weight: 700;
+}
+
+div.highlighter-rouge div.highlight {
+    overflow-x: auto;
+    padding: 0.75rem;
+    margin: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+}
+
+code {
+  font-size: 1em;
+}
+
+@media (min-width: 31.25rem) { .site-title {font-size: 1.125rem !important;line-height: 1.25;} }

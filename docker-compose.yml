@@ -1,0 +1,23 @@
+services:
+  hytale:
+    # Use 'build' instead of 'image'
+    build: 
+      context: .
+      dockerfile: Dockerfile.ubuntu
+    container_name: hytale-server
+    user: "1000:1000"
+    environment:
+      SERVER_IP: "0.0.0.0"
+      SERVER_PORT: "5520"
+      PROD: "FALSE"
+      DEBUG: "FALSE"
+      TZ: "Europe/London"
+      HYTALE_BACKUP: "TRUE"
+    restart: unless-stopped
+    ports:
+      - "5520:5520/udp"
+    volumes:
+      - ./data:/home/container
+      - /etc/machine-id:/etc/machine-id:ro
+    tty: true
+    stdin_open: true

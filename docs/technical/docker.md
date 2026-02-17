@@ -5,7 +5,7 @@ parent: "⚙️ Technical Info"
 nav_order: 2
 ---
 
-# 🐳 Docker Configuration Reference
+# Docker Configuration Reference
 
 The Hytale server container is highly configurable through environment variables. These allow you to tune performance, security, and automation without modifying the internal container files.
 
@@ -22,12 +22,13 @@ The Hytale server container is highly configurable through environment variables
 
 ---
 
-## 🎮 Hytale Server Options
+## Hytale Server Options
 
 Options are listed in the same order as they appear in `java -jar HytaleServer.jar --help`.
 
 | Variable                          | Description                                                                                                                                                             | Default     |
 |-----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| `HYTALE_HELP`                     | Show all the flags                                                                                                                                                      | `FALSE`     |
 | `HYTALE_CACHE`                    | Enables the Ahead-Of-Time cache                                                                                                                                         | `FALSE`     |
 | `HYTALE_CACHE_DIR`                | Sets the location of the Ahead-Of-Time cache file                                                                                                                       | `./Server/HytaleServer.aot` |
 | `HYTALE_ACCEPT_EARLY_PLUGINS`     | Allow loading early or experimental plugins (unsupported and may cause stability issues)                                                                                | `FALSE`     |
@@ -69,7 +70,7 @@ Options are listed in the same order as they appear in `java -jar HytaleServer.j
 
 ---
 
-## ⚙️ Hytale Settings (config.json)
+## Hytale Settings (config.json)
 
 These variables directly inject values into the `home/container/config.json` file on startup.
 
@@ -86,7 +87,7 @@ These variables directly inject values into the `home/container/config.json` fil
 
 ---
 
-## 📂 Volume Mapping (Persistence)
+## Volume Mapping (Persistence)
 
 To ensure your world, player data, and configurations are saved when the container restarts, you **must** map a volume to the internal working directory.
 

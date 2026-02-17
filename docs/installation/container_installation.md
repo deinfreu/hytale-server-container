@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "3. Container installation"
+title: "2. Container Installation"
 parent: "📥 Installation"
-nav_order: 3
+nav_order: 2
 ---
 
-## 📥 Container installation
+# Container installation
 
 ### Method A: Docker CLI
 
@@ -23,9 +23,11 @@ docker run \
   -v "hytale-server:/home/container" \
   -v "/etc/machine-id:/etc/machine-id:ro" \
   --restart unless-stopped \
-  -t -i \
-  deinfreu/hytale-server:experimental
+  -it \
+  deinfreu/hytale-server:latest
 ```
+
+---
 
 ### Method B: Docker compose
 
@@ -39,12 +41,12 @@ docker run \
     nano docker-compose.yml
     ```
 
-    add this docker-compose.yml information to the file:
+    Add this docker-compose.yml information to the file:
 
     ```yaml
     services:
       hytale:
-        image: deinfreu/hytale-server:experimental
+        image: deinfreu/hytale-server:latest
         container_name: hytale-server
         environment:
           SERVER_IP: "0.0.0.0"
@@ -69,10 +71,8 @@ docker run \
     | Linux / Windows (WSL) | Press Ctrl + O    | Press Enter              | Press Ctrl + X      |
     | macOS                 | Press Control + O | Press Return             | Press Control + X   |
 
-    > **Automatic folder creation:** When you start the container, a `data` folder will be created automatically next to your `docker-compose.yml`.
-
-    > **[IMPORTANT]**
-    > Your game files, world data, and configurations will be stored in this `data` folder. Because this folder is mapped to the container, your progress is saved even if you stop or delete the Docker container.
+    {: .important }
+    > This `data` folder will be created on your host OS in the same directory as your `docker-compose.yml` file. Your game files, world data, and configurations are stored here and persist even if you stop or delete the Docker container. If you prefer to use volume mounts instead of bind mounts, see the [volume mount example](https://github.com/deinfreu/hytale-server-container/tree/main/examples/docker-compose/volume_mount).
 
 4.  Run the docker compose file!
 
@@ -80,42 +80,13 @@ docker run \
     docker compose up
     ```
 
-    > Tip: do not use -d. We need to use the terminal to authenticate the server.
+    {: .info }
+    > Do not use -d (detached mode). We need to use the terminal to authenticate the server.
 
 ---
 
-### Windows Users (Docker Desktop with WSL)
-
-If you're running Docker Desktop on Windows with WSL, the default `/etc/machine-id` volume binding won't work. Follow these steps instead:
-
-1. **Modify the volume binding** in your `docker-compose.yml`:
-
-   Change this:
-
-   ```yaml
-   volumes:
-     - ./data:/home/container
-     - /etc/machine-id:/etc/machine-id:ro
-   ```
-
-   To this:
-
-   ```yaml
-   volumes:
-     - ./data:/home/container
-     - ./machine-id:/etc/machine-id:ro
-   ```
-
-2. **Generate a machine-id file** by opening PowerShell in the same directory as your `docker-compose.yml` and running:
-
-   ```powershell
-   [guid]::NewGuid().ToString("N") | Out-File -Encoding ascii -NoNewline .\machine-id
-   ```
-
-3. **Restart the server** and authenticate it. You'll be fine going forward.
-
-> **Note:** This creates a local `machine-id` file that persists with your project, ensuring consistent authentication across container restarts.
+Running a special OS like TrueNAS Scale, Unraid or Windows WSL2? Check out the [Guide section](../guide/index.md) for specific instructions!
 
 ---
 
-\*\*Go to the [Next page](./running_server.md)!
+[Continue to the next steps →](./running_server.md)

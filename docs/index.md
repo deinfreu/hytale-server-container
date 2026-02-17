@@ -1,45 +1,45 @@
 ---
 layout: default
-title: 🏠 Home
+title: hytale docker
 nav_order: 1
-description: "Hytale Docker Server Documentation Home"
-permalink: /
+description: "Hytale server container Documentation Home"
 ---
 
-# 🐳 Hytale Docker Server
+# Hytale Docker Server
+{: .fs-9 }
 
-Welcome to the official documentation for the **`deinfreu/hytale-server`**. This project provides a high-performance, containerized environment for hosting Hytale servers with ease, featuring automated binary management cross-platform and Pterodactyl support.
+A high-performance Docker container for hosting Hytale servers. Features automated binary management, cross-platform support, and built-in diagnostic tools.
+{: .fs-6 .fw-400 }
 
-To get the most performance out of your server, I suggest taking a look at the [optimizations](./optimizations.md) page!
-
----
-
-## ✨ Key Features
-
-* **🚀 Fast server startup:** Startup your server in 7 seconds with `CACHE=TRUE`
-* **⚡ Easy Deployment:** Go to the installation pages to get started
-* **🤖 Smart CLI:** Includes the `hytale-downloader` tool to manage server binaries and check for updates automatically. You can just use "hytale-downloader" in the terminal to accecs it.
-* **🍓 Multi-Arch Support:** Optimized for `x86_64` (`ARM64` coming soon [more info](https://x.com/slikey/status/2010869532454510999)).
-* **🛠️ Diagnostic Suite:** Built-in debug mode to audit your network and security settings automatically.
-* **📉 Slim Images:** Optimized, lightweight image variants for production environments.
+[Getting started](/installation/requirements.md){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[View it on GitHub](https://github.com/deinfreu/hytale-server-container){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
 
-## 🚀 Getting Started
+## Key Features
 
-Ready to host your world? Follow our step-by-step guides to get started:
-
-1.  **[Requirements](./installation/requirements.md):** Hytale game license necessary.
-2.  **[System Requirements](./installation/system_requirements.md):** Check if your hardware is ready.
-3.  **[Container Installation](./installation/container_installation.md):** Deploy your first server using CLI or Compose.
-4.  **[Running the server](./installation/running_container.md):** Explenation how to run the setup and run the hytale server.
-4.  **[Debug](./installation/debug.md):** Learn how to debug your installation.
-5.  **[Support](./installation/support.md.md):** Is your installation not working?
-6.  **[Optimizations](./optimizations.md):** Want to go fast? Read here about all the optimizations.
+* **Fast server startup:** Startup your server in 7 seconds with `CACHE=TRUE`
+* **Easy Deployment:** Go to the [requirements](https://hytale-server-container.com/installation/) pages to get started
+* **Smart CLI:** Includes the `hytale-downloader` tool to manage server binaries and check for updates automatically. You can just use "hytale-downloader" in the terminal to access it.
+* **Multi-Arch Support:** Optimized for `x86_64` (`ARM64` coming soon [more info](https://x.com/slikey/status/2010869532454510999)).
+* **Diagnostic Suite:** Built-in debug mode to audit your network and security settings automatically.
+* **Slim Images:** Optimized, lightweight image variants for production environments.
 
 ---
 
-## 🆘 Need Help?
+## Getting Started
+
+Ready to host your world? Ensure you have the correct hardware and a valid Hytale license before proceeding:
+
+1.  **[Requirements](./installation/requirements.md):** Prerequisites.
+2.  **[Container Installation](./installation/container_installation.md):** Deploy your first server using CLI or Compose.
+3.  **[Running the server](./installation/running_server.md):** Explanation on how to run the setup and run the Hytale server.
+4.  **[Support](./installation/support.md):** Is your installation not working?
+5.  **[Optimizations](./optimizations.md):** Want to go fast? Read here about all the optimizations.
+
+---
+
+## Need Help?
 
 If you run into trouble, we have resources available:
 

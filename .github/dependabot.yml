@@ -8,7 +8,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    target-branch: "experimental"
+    target-branch: "main"
     labels:
       - "docker"
       - "dependencies"
@@ -18,7 +18,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "experimental"
+    target-branch: "main"
     labels:
       - "github-actions"
       - "dependencies"

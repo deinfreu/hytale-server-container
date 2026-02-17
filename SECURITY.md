@@ -36,5 +36,5 @@ Always run this container with memory and CPU limits to prevent a rogue Hytale p
 ### 4. Keep Images Updated
 We regularly rebuild this image to include the latest JRE security patches. Enable automated updates or periodically pull the latest tag:
 ```bash
-docker pull ghcr.io/deinfreu/hytale-server-container:experimental
+docker pull ghcr.io/deinfreu/hytale-server-container:latest
 ```

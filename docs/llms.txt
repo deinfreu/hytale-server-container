@@ -1,14 +1,46 @@
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Docker Hytale Server",
-  "operatingSystem": "Linux, Windows, Docker",
-  "applicationCategory": "GameApplication",
-  "author": {
-    "@type": "Person",
-    "name": "deinfreu"
-  },
-  "description": "A high-performance Dockerized solution for running Hytale dedicated servers with ease."
-}
-</script>
+# Docker Hytale Server Container
+
+Repository: https://github.com/deinfreu/hytale-server-container
+Documentation: https://hytale-server-container.com
+Docker Hub: https://hub.docker.com/r/deinfreu/hytale-server
+License: Apache-2.0
+
+## Description
+Containerized solution for running Hytale dedicated game servers.
+Provides automated server binary management, persistent storage support, and configurable runtime modes for development and production environments.
+
+## Core Capabilities
+- Automated Hytale server binary download and updates
+- Fast startup with optional caching
+- Configurable production and debug modes
+- Persistent storage for server data and worlds
+- Optimized container images (Alpine and Ubuntu)
+- Cross-platform Docker support (x86_64, ARM64 planned)
+
+## Configuration
+Server behavior is controlled via environment variables, including:
+- Network binding and port configuration
+- Production and debug mode toggles
+- Startup caching
+- Timezone configuration
+
+## Storage
+- Persistent storage is supported via Docker volumes or bind mounts
+- Server binaries, world data, and configuration files are stored outside the container filesystem
+
+## Authentication
+Hytale account authentication is required during initial server setup and startup via a web-based flow.
+
+## Documentation & Guides
+Comprehensive documentation is available, including:
+- General setup and requirements
+- Platform-specific deployment guides (TrueNAS Scale, Unraid, Windows WSL2)
+- Server authentication and runtime behavior
+- Troubleshooting and FAQs
+- Technical details related to Docker, security, and Hytale server operation
+
+## Use Cases
+- Self-hosting Hytale dedicated servers
+- Mod development and testing
+- Persistent multiplayer worlds
+- Development and production server deployments

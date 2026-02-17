@@ -1,0 +1,126 @@
+---
+layout: table_wrappers
+---
+<!doctype html>
+<html lang="{{ site.lang | default: 'en-US' }}">
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('theme');
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = savedTheme || (systemDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.classList.add('loading');
+    })();
+  </script>
+
+  <style>
+    html {
+      scrollbar-gutter: stable;
+    }
+    :root {
+      background-color: #f8fafc;
+    }
+    [data-theme='dark'] {
+      background-color: #020617;
+    }
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      background-color: #f8fafc;
+      transition: opacity 0.4s ease-out, visibility 0.4s;
+    }
+    [data-theme='dark'] #preloader {
+      background-color: #020617;
+    }
+    .loaded #preloader {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  </style>
+
+  {% include head.html %}
+
+  <body>
+    <div id="preloader"></div>
+
+    <a class="skip-to-main" href="#main-content">Skip to main content</a>
+
+    {% include icons/icons.html %}
+
+    {% if page.nav_enabled == true %}
+      {% include components/sidebar.html %}
+    {% elsif layout.nav_enabled == true and page.nav_enabled == nil %}
+      {% include components/sidebar.html %}
+    {% elsif site.nav_enabled != false and layout.nav_enabled == nil and page.nav_enabled == nil %}
+      {% include components/sidebar.html %}
+    {% endif %}
+
+    <div class="main" id="top">
+      {% include components/header.html %}
+
+      <div class="main-content-wrap">
+        {% include components/breadcrumbs.html %}
+
+        <div id="main-content" class="main-content">
+          <main>
+            {% if site.heading_anchors != false %}
+              {% include vendor/anchor_headings.html html=content beforeHeading="true" anchorBody="<svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg>" anchorClass="anchor-heading" anchorAttrs="aria-labelledby=\"%html_id%\"" %}
+            {% else %}
+              {{ content }}
+            {% endif %}
+
+            {% if page.has_toc != false %}
+              {% include components/children_nav.html %}
+            {% endif %}
+          </main>
+
+          {% include components/footer.html %}
+        </div>
+      </div>
+
+      {% if site.search_enabled != false %}
+        {% include components/search_footer.html %}
+      {% endif %}
+    </div>
+
+    {% if site.mermaid %}
+      {% include components/mermaid.html %}
+    {% endif %}
+
+    <script>
+      (function () {
+        const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function syncTheme() {
+          const currentTheme = document.documentElement.getAttribute('data-theme');
+          if (window.jtd && typeof window.jtd.setTheme === 'function') {
+            window.jtd.setTheme(currentTheme);
+          }
+        }
+
+        function finalizePage() {
+          syncTheme();
+          document.documentElement.classList.replace('loading', 'loaded');
+        }
+
+        if (document.readyState === 'complete') {
+          finalizePage();
+        } else {
+          window.addEventListener('load', finalizePage);
+          setTimeout(finalizePage, 2500);
+        }
+
+        darkModeQuery.addEventListener('change', (e) => {
+          const newTheme = e.matches ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', newTheme);
+          syncTheme();
+        });
+      })();
+    </script>
+  </body>
+</html>

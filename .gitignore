@@ -24,7 +24,6 @@ TestResults.xml
 
 #Hytale specific
 /data
-docker-compose.yml
 
 .idea/
 *.sublime-project
@@ -66,15 +65,12 @@ __pycache__/
 *.log
 *.pid
 *.sock
-docker-compose.override.yml
-docker-compose.yml
 .env
+docker-compose.yml
 
 # ----------------------
 # Hytale / project-specific
 # ----------------------
-# Ignore all data folders inside examples
-examples/**/data/
 *.jar
 
 # Persistent runtime folders
@@ -100,6 +96,9 @@ out/
 *.o
 *.so
 *.exe
+
+# Jekyll build output
+docs/_site
 
 # ----------------------
 # Misc

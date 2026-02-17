@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - README.md
+      - DOCKERHUB.md
       - .github/workflows/dockerhub-description.yml
   workflow_dispatch:
 
@@ -25,7 +25,7 @@ jobs:
         id: get_info
         run: |
           # 1. Fetch metadata
-          JSON_DATA=$(curl -s "https://hub.docker.com/v2/repositories/deinfreu/hytale-server/tags/experimental-alpine-liberica")
+          JSON_DATA=$(curl -s "https://hub.docker.com/v2/repositories/deinfreu/hytale-server/tags/latest-alpine-liberica")
           
           # 2. Extract size and convert to MB
           SIZE_BYTES=$(echo $JSON_DATA | jq -r '.full_size')
@@ -57,4 +57,5 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           repository: deinfreu/hytale-server
           short-description: ${{ steps.get_info.outputs.DOCKER_DESC }}
+          readme-filepath: DOCKERHUB.md
           enable-url-completion: true

@@ -1,21 +1,20 @@
 # Site settings
-title: Hytale Docker Server
+title: Hytale Server Container
 description: A lightweight Dockerized environment for Hytale servers.
 theme: jekyll-remote-theme
-
 favicon_ico: "favicon.ico"
 
+# Google Analytics settings
 ga_tracking: G-L109Y1GVHR
 ga_tracking_anonymize_ip: true # Use GDPR compliant Google Analytics settings (true/nil by default)
 
 # Theme settings
 remote_theme: just-the-docs/just-the-docs
-color_scheme: dark # Perfect for gaming/server projects
 
 # URL settings
-# Replace 'deinfreu' with your GitHub username if different
-baseurl: "/hytale-server-container" 
-url: "https://deinfreu.github.io/hytale-server-container/"
+baseurl: "" 
+url: "https://hytale-server-container.com"
+repository: deinfreu/hytale-server-container
 permalink: pretty
 
 # Aux links (Top right buttons)
@@ -24,3 +23,27 @@ aux_links:
     - "https://github.com/deinfreu/hytale-server-container"
   "Docker Hub":
     - "https://hub.docker.com/r/deinfreu/hytale-server" # Update if different
+
+# Custoimization settings
+callouts:
+  warning:
+    title: Warning
+    color: red
+  important:
+    title: Important
+    color: yellow
+  info:
+    title: Info
+    color: blue
+  note:
+    title: Note
+    color: purple
+
+# Development settings
+incremental: false  # Disable cache for reliable rebuilds
+exclude:
+  - README.md
+  - .gitignore
+  - dev/
+  - Gemfile
+  - Gemfile.lock

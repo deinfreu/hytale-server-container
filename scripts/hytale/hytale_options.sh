@@ -7,6 +7,9 @@ set -eu
 log_section "Server Options Management"
 
 # Initialize options to ensure they are empty if not set
+export HYTALE_CACHE_OPT=""
+export HYTALE_CACHE_LOG_OPT=""
+export HYTALE_HELP_OPT=""
 export HYTALE_ACCEPT_EARLY_PLUGINS_OPT=""
 export HYTALE_ALLOW_OP_OPT=""
 export HYTALE_AUTH_MODE_OPT=""
@@ -44,6 +47,15 @@ export HYTALE_VALIDATE_WORLD_GEN_OPT=""
 export HYTALE_VERSION_OPT=""
 export HYTALE_WORLD_GEN_OPT=""
 
+# Enable help option    
+log_step "Enable help option"
+if [ "${HYTALE_HELP:-}" = "TRUE" ]; then
+    export HYTALE_HELP_OPT="--help"
+    printf "${GREEN}enabled${NC}\n"
+else
+    printf "${DIM}disabled${NC}\n"
+fi
+
 # Accept Early Plugins
 log_step "Accept Early Plugins"
 if [ "${HYTALE_ACCEPT_EARLY_PLUGINS:-}" = "TRUE" ]; then
@@ -65,11 +77,11 @@ fi
 # Authentication Mode
 log_step "Authentication Mode"
 if [ -n "${HYTALE_AUTH_MODE:-}" ]; then
-    if [ "$HYTALE_AUTH_MODE" = "authenticated" ] || [ "$HYTALE_AUTH_MODE" = "offline" ]; then
+    if [ "$HYTALE_AUTH_MODE" = "authenticated" ] || [ "$HYTALE_AUTH_MODE" = "insecure" ] || [ "$HYTALE_AUTH_MODE" = "offline" ]; then
         export HYTALE_AUTH_MODE_OPT="--auth-mode=$HYTALE_AUTH_MODE"
         printf "${GREEN}$HYTALE_AUTH_MODE${NC}\n"
     else
-        printf "${RED}invalid: $HYTALE_AUTH_MODE${NC} (use 'authenticated' or 'offline')${NC}\n"
+        printf "${RED}invalid: $HYTALE_AUTH_MODE${NC} (use 'authenticated', 'insecure' or 'offline')${NC}\n"
     fi
 else
     printf "${DIM}default (authenticated)${NC}\n"
@@ -374,8 +386,19 @@ fi
 log_step "AOT Cache"
 if [ "${HYTALE_CACHE:-}" = "TRUE" ]; then
     export HYTALE_CACHE_OPT="-XX:AOTCache=$HYTALE_CACHE_DIR"
-    printf "${GREEN}enabled${NC} (dir: ${CYAN}${HYTALE_CACHE_DIR}${NC})\n"
+    printf "${GREEN}enabled${NC} (file: ${CYAN}${HYTALE_CACHE_DIR}${NC})\n"
 else
+    export HYTALE_CACHE_OPT=""
+    printf "${DIM}disabled${NC}\n"
+fi
+
+# AOT Cache Log
+log_step "AOT Cache Log"
+if [ "${HYTALE_CACHE_LOG:-}" = "TRUE" ]; then
+    export HYTALE_CACHE_LOG_OPT="-Xlog:aot"
+    printf "${GREEN}enabled${NC}\n"
+else
+    export HYTALE_CACHE_LOG_OPT=""
     printf "${DIM}disabled${NC}\n"
 fi
 
