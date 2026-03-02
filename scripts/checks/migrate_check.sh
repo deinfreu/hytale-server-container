@@ -34,16 +34,25 @@ else
     exit 1
 fi
 
-# Move remaining files in game/ root (Assets.zip, start.sh, start.bat, etc.)
+# Remove auth.enc if it was copied over — forces fresh authentication
+log_step "Remove auth.enc"
+if [ -f "$TARGET_ROOT/Server/auth.enc" ]; then
+    rm -f "$TARGET_ROOT/Server/auth.enc"
+    log_success
+else
+    printf "${DIM}not present (skip)${NC}\n"
+fi
+
+# Move remaining files in game/ root (Assets.zip, start.sh, start.bat, etc.) into Server/
 for item in $(ls -A "$LEGACY_ROOT" 2>/dev/null); do
     if [ "$item" = "Server" ]; then
         continue
     fi
     log_step "Move $item"
-    if mv "$LEGACY_ROOT/$item" "$TARGET_ROOT/"; then
+    if mv "$LEGACY_ROOT/$item" "$TARGET_ROOT/Server/"; then
         log_success
     else
-        log_error "Failed to move $item" "Check permissions on $TARGET_ROOT"
+        log_error "Failed to move $item" "Check permissions on $TARGET_ROOT/Server"
         exit 1
     fi
 done
