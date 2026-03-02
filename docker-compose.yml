@@ -2,7 +2,7 @@ services:
   hytale:
     # Use 'build' instead of 'image'
     container_name: hytale-server
-    image: deinfreu/hytale-server:staging
+    image: deinfreu/hytale-server:latest
     user: "1000:1000"
     environment:
       SERVER_IP: "0.0.0.0"
