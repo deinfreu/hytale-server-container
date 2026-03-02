@@ -14,6 +14,7 @@ export SCRIPTS_PATH="/usr/local/bin/scripts"
 # Load utility functions for logging
 . "$SCRIPTS_PATH/utils.sh"
 
+<<<<<<< HEAD
 # --- Ensure proper ownership of home directory (critical for file writes) ---
 if [ "$(id -u)" = "0" ]; then
     # Running as root - ensure container user's home is properly owned
@@ -41,6 +42,13 @@ if [ "$(uname -m)" = "aarch64" ] || [ "$(uname -m)" = "arm64" ]; then
     fi
     log_success
 fi
+=======
+# Check if running old folder structure and migrate if necessary
+sh "$SCRIPTS_PATH/checks/migrate_check.sh"
+
+# Check CPU architecture compatibility
+sh "$SCRIPTS_PATH/checks/arch_check.sh"
+>>>>>>> cdfd146 (feat: add legacy path migration script)
 
 # --- Initialization Phase ---
 # CRITICAL ORDER: Binary handler must run BEFORE config management

@@ -17,11 +17,12 @@ extract_and_stage_server() {
     
     if [ "${DEBUG:-FALSE}" = "TRUE" ]; then
         printf "      ${DIM}↳ Source:${NC} %s\n" "$(basename "$zip_file")"
-        printf "      ${DIM}↳ Staging:${NC} ${GREEN}%s${NC}\n" "$GAME_DIR/updater/staging"
+        printf "      ${DIM}↳ Target:${NC} ${GREEN}%s${NC}\n" "$BASE_DIR"
     fi
     
-    # Extract to staging area
-    if 7z x "$zip_file" -aoa -bsp1 -mmt=on -o"$GAME_DIR/updater/staging" >/dev/null 2>&1; then
+    # SAFE EXTRACTION: Only overwrites files from the archive
+    # Files not in the archive (user data, configs, mods) remain untouched
+    if 7z x "$zip_file" -aoa -bsp1 -mmt=on -o"$BASE_DIR" >/dev/null 2>&1; then
         log_success
     else
         log_error "Extraction failed" "Check disk space or 7z compatibility."
