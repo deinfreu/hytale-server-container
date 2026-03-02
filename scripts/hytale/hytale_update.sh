@@ -60,7 +60,7 @@ extract_and_stage_server() {
     chown -R container:container "$BASE_DIR" 2>/dev/null || true
     
     log_step "File Permissions"
-    chmod -R 755 "$GAME_DIR" && log_success || log_warning "Chmod failed" "May need manual adjustment."
+    chmod -R 755 "$BASE_DIR" && log_success || log_warning "Chmod failed" "May need manual adjustment."
 }
 
 # Main logic - update existing installation
