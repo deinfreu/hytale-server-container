@@ -1,10 +1,8 @@
 services:
   hytale:
     # Use 'build' instead of 'image'
-    build: 
-      context: .
-      dockerfile: Dockerfile.ubuntu
     container_name: hytale-server
+    image: deinfreu/hytale-server:staging
     user: "1000:1000"
     environment:
       SERVER_IP: "0.0.0.0"
