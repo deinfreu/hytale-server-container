@@ -34,15 +34,6 @@ else
     exit 1
 fi
 
-# Remove auth.enc if it was copied over — forces fresh authentication
-log_step "Remove auth.enc"
-if [ -f "$TARGET_ROOT/Server/auth.enc" ]; then
-    rm -f "$TARGET_ROOT/Server/auth.enc"
-    log_success
-else
-    printf "${DIM}not present (skip)${NC}\n"
-fi
-
 # Move remaining files in game/ root (Assets.zip, start.sh, start.bat, etc.) into Server/
 for item in $(ls -A "$LEGACY_ROOT" 2>/dev/null); do
     if [ "$item" = "Server" ]; then
