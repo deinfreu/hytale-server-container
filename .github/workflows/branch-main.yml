@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "version=main" >> $GITHUB_OUTPUT
       - name: Build & push to GitHub Container Registry
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./${{ matrix.dockerfile }}
@@ -68,7 +68,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Build & push to Docker Hub
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./${{ matrix.dockerfile }}
