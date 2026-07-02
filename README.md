@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=deinfreu&project=hytale-server-container&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 <div align="center" width="100%">
 
 <picture>
