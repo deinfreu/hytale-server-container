@@ -83,8 +83,10 @@ RUN if getent passwd ${UID} > /dev/null 2>&1; then \
         adduser -S -D -h ${HOME} -u ${UID} -G ${USER} ${USER}; \
     fi
 
-# Ensure home directory exists with proper ownership
-RUN mkdir -p ${HOME} && chown -R ${USER}:${USER} ${HOME}
+# Ensure home directory exists with proper ownership and permissions before volume definition
+RUN mkdir -p ${HOME} && \
+    chown -R ${USER}:${USER} ${HOME} && \
+    chmod 755 ${HOME}
 
 # Copy artifacts from builder
 COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader-bin
@@ -107,7 +109,10 @@ RUN printf "buildtime=%s\nversion=%s\nrevision=%s\n" "${BUILDTIME}" "${VERSION}"
 
 # Final setup
 WORKDIR ${HOME}
-USER ${USER}
+
+# Declare the volume inside the image metadata to enforce ownership hints
+VOLUME [ "/home/container" ]
+
 EXPOSE ${SERVER_PORT}/udp
 STOPSIGNAL SIGTERM
 HEALTHCHECK --interval=30s --timeout=5s --start-period=2m --retries=3 CMD ss -ulpn | grep -q ":${SERVER_PORT}" || exit 1

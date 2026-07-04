@@ -77,11 +77,12 @@ RUN if getent passwd ${UID} > /dev/null 2>&1; then \
         useradd -m -d ${HOME} -u ${UID} -g ${USER} -s /bin/sh ${USER}; \
     fi
 
-# 4. Ensure home directory exists with proper ownership
-RUN mkdir -p ${HOME} && chown -R ${USER}:${USER} ${HOME}
+# Ensure home directory exists with proper ownership and permissions before volume definition
+RUN mkdir -p ${HOME} && \
+    chown -R ${USER}:${USER} ${HOME} && \
+    chmod 755 ${HOME}
 
 # 5. Copy Prepared Files from Builder
-# Using --chown here is much more efficient than running 'chown -R' on a new layer
 COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader-bin
 COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scripts/
 COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
@@ -105,7 +106,10 @@ RUN printf "buildtime=${BUILDTIME}\nversion=${VERSION}\nrevision=${REVISION}\n" 
 
 # Final Config
 WORKDIR ${HOME}
-USER ${USER}
+
+# Declare the volume inside the image metadata to enforce ownership hints for the host mount
+VOLUME [ "/home/container" ]
+
 EXPOSE ${SERVER_PORT}/udp
 STOPSIGNAL SIGTERM
 
