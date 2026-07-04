@@ -8,6 +8,11 @@ stdbuf -oL -eL true 2>/dev/null && USE_STDBUF=true || USE_STDBUF=false
 # Bootstrap SCRIPTS_PATH for environment loading
 export SCRIPTS_PATH="/usr/local/bin/scripts"
 
+# Fix host mount permissions while we are root at boot
+if [ "$(id -u)" = "0" ]; then
+    chown -R container:container /home/container
+fi
+
 # Load all environment variables and configuration defaults
 . "$SCRIPTS_PATH/environment.sh"
 
