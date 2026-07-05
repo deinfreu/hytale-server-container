@@ -1,0 +1,101 @@
+name: "Publish Branch Build"
+
+# Description: Dynamically handles image compilation for rolling branches.
+# 1. Triggers on changes pushed to either 'main' or 'staging'.
+# 2. Automatically resolves target branch to map correct tags (latest vs staging).
+# 3. Restricts platform flags depending on context to optimize production runs.
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    name: "🐳 Build & Push Images"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os_type: ubuntu
+            dockerfile: Dockerfile.ubuntu
+            base_suffix: ""
+          - os_type: alpine
+            dockerfile: Dockerfile.alpine
+            base_suffix: "alpine"
+          - os_type: alpine-liberica
+            dockerfile: Dockerfile.alpine-liberica
+            base_suffix: "alpine-liberica"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Resolve Deployment Context
+        id: context
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          BASE_SUFFIX="${{ matrix.base_suffix }}"
+          
+          if [ "$BRANCH" = "main" ]; then
+              if [ -z "$BASE_SUFFIX" ]; then
+                  TAG_NAME="latest"
+              else
+                  TAG_NAME="latest-$BASE_SUFFIX"
+              fi
+              PLATFORMS="linux/amd64"
+              NEEDS_QEMU="false"
+          else
+              if [ -z "$BASE_SUFFIX" ]; then
+                  TAG_NAME="staging"
+              else
+                  TAG_NAME="staging-$BASE_SUFFIX"
+              fi
+              PLATFORMS="linux/amd64,linux/arm64"
+              NEEDS_QEMU="true"
+          fi
+          
+          echo "tag_suffix=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "platforms=$PLATFORMS" >> $GITHUB_OUTPUT
+          echo "needs_qemu=$NEEDS_QEMU" >> $GITHUB_OUTPUT
+
+      # Start QEMU only if we're actually going to build arm64 (staging)
+      - name: Set up QEMU
+        if: steps.context.outputs.needs_qemu == 'true'
+        uses: docker/setup-qemu-action@v4.2.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4.2.0
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4.4.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4.4.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Combined build: builds once and pushes to both registries at the same time
+      - name: Build & Push Images
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./${{ matrix.dockerfile }}
+          push: true
+          platforms: ${{ steps.context.outputs.platforms }}
+          tags: |
+            ghcr.io/deinfreu/hytale-server:${{ steps.context.outputs.tag_suffix }}
+            deinfreu/hytale-server:${{ steps.context.outputs.tag_suffix }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

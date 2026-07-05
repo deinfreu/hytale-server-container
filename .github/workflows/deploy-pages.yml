@@ -1,14 +1,22 @@
-name: "📄 Deploy GitHub Pages"
+name: "Deploy Documentation Site"
+
+# Description: Compiles and publishes the project documentation to GitHub Pages.
+# 1. Triggers exclusively when changes are made inside the 'docs/' directory.
+# 2. Builds static pages using Jekyll from './docs' into './_site'.
+# 3. Dynamically injects an SEO-optimized sitemap mapped to the production domain.
+# 4. Packages and securely deploys the build artifact via the GitHub Pages runtime.
 
 on:
   push:
     branches: ["main"]
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
-  
 
 concurrency:
   group: "pages"
@@ -23,37 +31,17 @@ jobs:
     env:
       TZ: Europe/Amsterdam
     steps:
-      - name: Check Current Time
-        run: date
-
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
+        uses: actions/jekyll-build-pages@v1.0.13
         with:
           source: ./docs
           destination: ./_site
-
-      - name: 🔍 Debug - List files AFTER Jekyll build
-        run: |
-          echo "=== All files in workspace root ==="
-          ls -la
-          echo ""
-          echo "=== Files in _site directory (recursive) ==="
-          ls -laR ./_site/
-          echo ""
-          echo "=== Count of files in _site ==="
-          find ./_site -type f | wc -l
-          echo ""
-          echo "=== Checking if _site exists ==="
-          [ -d "./_site" ] && echo "_site directory EXISTS" || echo "_site directory MISSING"
-          echo ""
-          echo "=== _site directory permissions ==="
-          ls -ld ./_site
 
       - name: Generate Sitemap
         uses: cicirello/generate-sitemap@v1.10.4
@@ -62,24 +50,6 @@ jobs:
           path-to-root: ./_site
           drop-html-extension: true
 
-      - name: 🔍 Debug - Check sitemap generation
-        run: |
-          echo "=== Looking for sitemap files ==="
-          find ./_site -name "*sitemap*" -o -name "*urlset*"
-          echo ""
-          echo "=== Files in _site root after sitemap ==="
-          ls -lah ./_site/
-          echo ""
-          if [ -f "./_site/sitemap.xml" ]; then
-            echo "=== Sitemap.xml content (first 50 lines) ==="
-            head -n 50 ./_site/sitemap.xml
-          else
-            echo "⚠️ sitemap.xml NOT FOUND"
-          fi
-          echo ""
-          echo "=== Complete file tree of _site ==="
-          tree ./_site/ || find ./_site -type f
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
@@ -87,4 +57,4 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

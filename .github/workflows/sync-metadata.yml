@@ -1,42 +1,44 @@
-name: 📦 Set descripton to github and dockerhub
+name: "Sync Metadata"
+
+# Description: This workflow automatically fetches the latest Docker image size 
+# and synchronizes the repository descriptions across GitHub and Docker Hub
+# whenever the main README is updated.
 
 on:
   push:
     branches:
       - main
     paths:
-      - DOCKERHUB.md
-      - .github/workflows/dockerhub-description.yml
+      - 'README.md'
   workflow_dispatch:
 
 permissions:
-  contents: write
-  packages: write
-  actions: write
+  contents: read
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 📏 Get Actual Image Size
         id: get_info
         run: |
-          # 1. Fetch metadata
-          JSON_DATA=$(curl -s "https://hub.docker.com/v2/repositories/deinfreu/hytale-server/tags/latest-alpine-liberica")
+          # 1. Fetch metadata with authentication to avoid API rate limits
+          TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "${{ secrets.DOCKER_HUB_USERNAME }}", "password": "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
+          JSON_DATA=$(curl -s -H "Authorization: JWT ${TOKEN}" "https://hub.docker.com/v2/repositories/deinfreu/hytale-server/tags/latest-alpine-liberica")
           
-          # 2. Extract size and convert to MB
-          SIZE_BYTES=$(echo $JSON_DATA | jq -r '.full_size')
-          SIZE_MB=$(echo "scale=1; $SIZE_BYTES / 1048576" | bc)
+          # 2. Extract size and convert to MB met awk
+          SIZE_BYTES=$(echo "$JSON_DATA" | jq -r '.full_size')
+          SIZE_MB=$(echo "$SIZE_BYTES" | awk '{printf "%.1f", $1 / 1048576}')
           
           # 3. Create the strings
           # Long version for GitHub
           GH_DESC="Hytale Docker Server 📦 ${SIZE_MB}MB (Alpine/Liberica) • Secure non-root execution • QUIC/UDP • Built-in Production & Debug diagnostics • Pterodactyl coming soon..."
           
-          # Short version for Docker Hub (Optimized 100 chars)
-          DH_DESC="📦 ${SIZE_MB}MB (Alpine/Liberica) • Non-root • QUIC Enabled • Prod & Debug • Pterodactyl coming soon..."
+          # Short version for Docker Hub
+          DH_DESC="📦 ${SIZE_MB}MB (Alpine/Liberica) • Non-root • QUIC • Prod/Debug • Pterodactyl soon"
           
           # 4. EXPORT THEM PROPERLY
           echo "GITHUB_DESC=$GH_DESC" >> $GITHUB_OUTPUT
@@ -45,7 +47,7 @@ jobs:
       - name: 🐙 Update GitHub Repository Description
         run: |
           curl -X PATCH \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: token ${{ secrets.MY_REPO_PAT }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }} \
             -d "{\"description\":\"${{ steps.get_info.outputs.GITHUB_DESC }}\"}"

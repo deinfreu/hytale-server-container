@@ -1,0 +1,160 @@
+name: "Release: Tag ➔ Docker Hub & GitHub"
+
+# Description: Automated CI/CD pipeline triggered by version tags (v*.*.*).
+# 1. Builds and publishes multi-flavor Docker images simultaneously to both GHCR and Docker Hub.
+# 2. Automatically compiles a markdown changelog, filters contributors, and deploys a formal GitHub Release.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    name: "🐳 Build & Push Images"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os_type: ubuntu
+            dockerfile: Dockerfile.ubuntu
+            tag_suffix: ""
+          - os_type: alpine
+            dockerfile: Dockerfile.alpine
+            tag_suffix: "alpine"
+          - os_type: alpine-liberica
+            dockerfile: Dockerfile.alpine-liberica
+            tag_suffix: "alpine-liberica"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4.2.0
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4.4.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4.4.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          raw_tag="${GITHUB_REF#refs/tags/}"
+          version="${raw_tag#v}"
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Set tag prefix
+        id: set_tag
+        run: |
+          if [ -z "${{ matrix.tag_suffix }}" ]; then
+            echo "tag_prefix=" >> $GITHUB_OUTPUT
+          else
+            echo "tag_prefix=${{ matrix.tag_suffix }}-" >> $GITHUB_OUTPUT
+          fi
+
+      # Combined step: builds once and pushes directly to both registries
+      - name: Build & Push Images
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./${{ matrix.dockerfile }}
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/deinfreu/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
+            deinfreu/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  github_release:
+    name: "🚀 Create GitHub Release"
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get previous tag or initial commit
+        id: previoustag
+        run: |
+          # Haal de vorige tag op. Als deze niet bestaat, pak de allereerste commit als fallback.
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -A1 "${{ github.ref_name }}" | tail -n1 || true)
+          if [ -z "$PREVIOUS_TAG" ] || [ "$PREVIOUS_TAG" = "${{ github.ref_name }}" ]; then
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+            echo "Geen eerdere tag gevonden. Fallback naar eerste commit: $PREVIOUS_TAG"
+          fi
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREVIOUS_TAG="${{ steps.previoustag.outputs.previous_tag }}"
+          CURRENT_TAG="${{ github.ref_name }}"
+          
+          CHANGELOG=$(git log ${PREVIOUS_TAG}..${CURRENT_TAG} --pretty=format:"- %s (%h)" --no-merges || echo "Eerste release")
+          
+          {
+            echo 'changelog<<EOF'
+            echo "$CHANGELOG"
+            echo EOF
+          } >> $GITHUB_OUTPUT
+
+      - name: Generate contributors list
+        id: contributors
+        run: |
+          PREVIOUS_TAG="${{ steps.previoustag.outputs.previous_tag }}"
+          CURRENT_TAG="${{ github.ref_name }}"
+          
+          # Toont Git auteursnamen (zonder @ aangezien dit geen GitHub handles zijn)
+          CONTRIBUTORS=$(git log --pretty=format:"- %an" --no-merges ${PREVIOUS_TAG}..${CURRENT_TAG} | sort -u | grep -v "deinfreu" || true)
+          
+          if [ -z "$CONTRIBUTORS" ]; then
+            CONTRIBUTORS="- Geen externe bijdragen in deze release."
+          fi
+          
+          {
+            echo 'contributors<<EOF'
+            echo "$CONTRIBUTORS"
+            echo EOF
+          } >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## Changes since ${{ steps.previoustag.outputs.previous_tag }}
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ---
+            
+            ## Contributors
+            
+            A special thank you to everyone who contributed to this release!
+            
+            ${{ steps.contributors.outputs.contributors }}
+            
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
