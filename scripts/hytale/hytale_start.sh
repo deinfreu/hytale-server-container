@@ -79,7 +79,7 @@ while true; do
         $HYTALE_VERSION_OPT \
         $HYTALE_WORLD_GEN_OPT \
         --assets \"$GAME_DIR/Assets.zip\" \
-        --bind \"$SERVER_IP:$SERVER_PORT\" 2>&1 | sed 's/\r$//' | tee \"$AUTH_OUTPUT_LOG\""
+        --bind \"$SERVER_IP:$SERVER_PORT\" 2>&1 | stdbuf -oL -eL sed 's/\r$//' | stdbuf -oL -eL tee \"$AUTH_OUTPUT_LOG\""
     
     EXIT_CODE=$?
     ELAPSED=$(($(date +%s) - START_TIME))
