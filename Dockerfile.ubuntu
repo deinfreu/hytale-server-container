@@ -46,23 +46,57 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tini curl iproute2 ca-certificates tzdata jq p7zip-full && \
     rm -rf /var/lib/apt/lists/*
 
+# 1.1. Install QEMU static binary for x86_64 emulation (host must register binfmt)
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        echo "[INFO] Detected ARM64, installing QEMU static binary for x86_64 emulation..."; \
+        apt-get update && apt-get install -y --no-install-recommends qemu-user-static && \
+        # Verify QEMU is installed and accessible
+        which qemu-x86_64-static || { echo "ERROR: QEMU not found"; exit 1; }; \
+        rm -rf /var/lib/apt/lists/*; \
+    else \
+        echo "[INFO] Detected x86_64, skipping QEMU install (not required)"; \
+    fi
+
 # 2. Add Gosu
 COPY --from=tianon/gosu:1.19 /gosu /usr/local/bin/
 
 # 3. Setup User (with UID/GID logic)
 RUN if getent passwd ${UID} > /dev/null 2>&1; then \
         EXISTING_USER=$(getent passwd ${UID} | cut -d: -f1); \
-        usermod -l ${USER} -d ${HOME} -m ${EXISTING_USER}; \
+        EXISTING_GROUP=$(getent passwd ${UID} | cut -d: -f4); \
+        if getent group ${GID} > /dev/null 2>&1; then \
+            GROUP_NAME=$(getent group ${GID} | cut -d: -f1); \
+            groupmod -n ${USER} ${GROUP_NAME}; \
+        else \
+            groupadd -g ${GID} ${USER}; \
+        fi; \
+        usermod -l ${USER} -d ${HOME} -m -g ${USER} ${EXISTING_USER}; \
     else \
         groupadd -g ${GID} ${USER} && \
         useradd -m -d ${HOME} -u ${UID} -g ${USER} -s /bin/sh ${USER}; \
     fi
 
-# 4. Copy Prepared Files from Builder
-# Using --chown here is much more efficient than running 'chown -R' on a new layer
-COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader
+# Ensure home directory exists with proper ownership and permissions before volume definition
+RUN mkdir -p ${HOME} && \
+    chown -R ${USER}:${USER} ${HOME} && \
+    chmod 755 ${HOME}
+
+# 5. Copy Prepared Files from Builder
+COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader-bin
 COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scripts/
 COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
+
+# 4.1. Create QEMU wrapper for hytale-downloader on ARM64
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        QEMU_BIN=$(which qemu-x86_64-static) && \
+        echo '#!/bin/sh' > /usr/local/bin/hytale-downloader && \
+        echo "exec $QEMU_BIN /usr/local/bin/hytale-downloader-bin \"\$@\"" >> /usr/local/bin/hytale-downloader && \
+        chmod +x /usr/local/bin/hytale-downloader; \
+    else \
+        mv /usr/local/bin/hytale-downloader-bin /usr/local/bin/hytale-downloader; \
+    fi
 
 # 5. Build Metadata
 ARG BUILDTIME=local
@@ -72,7 +106,10 @@ RUN printf "buildtime=${BUILDTIME}\nversion=${VERSION}\nrevision=${REVISION}\n" 
 
 # Final Config
 WORKDIR ${HOME}
-USER ${USER}
+
+# Declare the volume inside the image metadata to enforce ownership hints for the host mount
+VOLUME [ "/home/container" ]
+
 EXPOSE ${SERVER_PORT}/udp
 STOPSIGNAL SIGTERM
 

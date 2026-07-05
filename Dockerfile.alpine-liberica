@@ -56,10 +56,26 @@ ENV USER=container \
 # Install dependencies
 RUN apk add --no-cache tini su-exec curl iproute2 ca-certificates tzdata jq libc6-compat libstdc++ gcompat 7zip coreutils
 
+# Install QEMU static binary for x86_64 emulation (host must register binfmt)
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        echo "[INFO] Detected ARM64, installing QEMU static binary for x86_64 emulation..."; \
+        apk add --no-cache qemu-x86_64 && \
+        # Verify QEMU is installed and accessible
+        which qemu-x86_64-static || which qemu-x86_64 || { echo "ERROR: QEMU not found"; exit 1; }; \
+    else \
+        echo "[INFO] Detected x86_64, skipping QEMU install (not required)"; \
+    fi
+
 # Setup User (with UID/GID conflict handling)
 RUN if getent passwd ${UID} > /dev/null 2>&1; then \
         EXISTING_USER=$(getent passwd ${UID} | cut -d: -f1); \
+        EXISTING_GROUP=$(getent passwd ${UID} | cut -d: -f4); \
         deluser ${EXISTING_USER} && \
+        if getent group ${GID} > /dev/null 2>&1; then \
+            GROUP_NAME=$(getent group ${GID} | cut -d: -f1); \
+            delgroup ${GROUP_NAME}; \
+        fi; \
         addgroup -S -g ${GID} ${USER} && \
         adduser -S -D -h ${HOME} -u ${UID} -G ${USER} ${USER}; \
     else \
@@ -67,17 +83,36 @@ RUN if getent passwd ${UID} > /dev/null 2>&1; then \
         adduser -S -D -h ${HOME} -u ${UID} -G ${USER} ${USER}; \
     fi
 
+# Ensure home directory exists with proper ownership and permissions before volume definition
+RUN mkdir -p ${HOME} && \
+    chown -R ${USER}:${USER} ${HOME} && \
+    chmod 755 ${HOME}
+
 # Copy artifacts from builder
-COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader
+COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader-bin
 COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scripts/
 COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
+
+# Create QEMU wrapper for hytale-downloader on ARM64
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        QEMU_BIN=$(which qemu-x86_64-static || which qemu-x86_64) && \
+        echo '#!/bin/sh' > /usr/local/bin/hytale-downloader && \
+        echo "exec $QEMU_BIN /usr/local/bin/hytale-downloader-bin \"\$@\"" >> /usr/local/bin/hytale-downloader && \
+        chmod +x /usr/local/bin/hytale-downloader; \
+    else \
+        mv /usr/local/bin/hytale-downloader-bin /usr/local/bin/hytale-downloader; \
+    fi
 
 # Image metadata file
 RUN printf "buildtime=%s\nversion=%s\nrevision=%s\n" "${BUILDTIME}" "${VERSION}" "${REVISION}" > /etc/image.properties
 
 # Final setup
 WORKDIR ${HOME}
-USER ${USER}
+
+# Declare the volume inside the image metadata to enforce ownership hints
+VOLUME [ "/home/container" ]
+
 EXPOSE ${SERVER_PORT}/udp
 STOPSIGNAL SIGTERM
 HEALTHCHECK --interval=30s --timeout=5s --start-period=2m --retries=3 CMD ss -ulpn | grep -q ":${SERVER_PORT}" || exit 1
