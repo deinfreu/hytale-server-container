@@ -1,5 +1,3 @@
-### AL ###
-#Template for AL projects for Dynamics 365 Business Central
 #launch.json folder
 .vscode/
 
@@ -25,11 +23,13 @@ TestResults.xml
 #Hytale specific
 /data
 
+#Coding
 .idea/
 *.sublime-project
 *.sublime-workspace
 *.sw?
 *.code-workspace
+.clinerules
 
 # ----------------------
 # OS-specific files
