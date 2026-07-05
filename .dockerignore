@@ -3,6 +3,9 @@
 .gitignore
 .github
 
+# Coding files
+.clinerules
+
 # Specific repo files
 /assets
 
