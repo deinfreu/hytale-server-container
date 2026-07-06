@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # STAGE 1: Builder
-FROM alpine:3.23 AS builder
+FROM alpine:3.24 AS builder
 RUN apk add --no-cache curl unzip 7zip dos2unix
 
 WORKDIR /build
