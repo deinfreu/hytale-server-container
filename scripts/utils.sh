@@ -26,6 +26,18 @@ else
     SYM_WARN="${YELLOW}⚠${NC}"
 fi
 
+# --- Logging Helpers ---
+
+log_break() {
+    # If a number is passed (e.g., log_break 2), it loops that many times.
+    # Otherwise, it prints a single blank line.
+    local lines="${1:-1}"
+    while [ "$lines" -gt 0 ]; do
+        printf "\n"
+        lines=$((lines - 1))
+    done
+}
+
 log_section() {
     # %b allows backslash escapes in the arguments
     printf "\n${BOLD}${CYAN}SECTION:${NC} ${BOLD}%s${NC}\n" "${1:-}"
