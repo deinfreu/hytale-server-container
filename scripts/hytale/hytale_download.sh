@@ -4,49 +4,40 @@ set -eu
 # Load dependencies
 . "$SCRIPTS_PATH/utils.sh"
 
-log_section "Starting authentication flow"
-
 # ==========================================
 # HELPER FUNCTIONS
 # ==========================================
 
 extract_server() {
     local zip_file="$1"
-    
+
     if [ "${DEBUG:-FALSE}" = "TRUE" ]; then
         printf "      ${DIM}↳ Source:${NC} %s\n" "$(basename "$zip_file")"
-        printf "      ${DIM}↳ Target:${NC} ${GREEN}%s${NC}\n" "$BASE_DIR"
+        printf "      ${DIM}↳ Target:${NC} %s\n" "$BASE_DIR"
     fi
-    
-    # Extracting zip file -q = quiet (saves I/O time), -o = overwrite without prompting (safe update).
+
     if unzip -qo "$zip_file" -d "$BASE_DIR"; then
         log_success
-        if [ "${DEBUG:-FALSE}" = "TRUE" ]; then
-            printf "      ${DIM}↳ Note:${NC} Server binaries updated. User data preserved.\n"
-        fi
     else
         log_error "Extraction failed" "Check disk space or zip file integrity."
         exit 1
     fi
-    
-    # Post-Extraction Cleanup
+
+    # Remove downloaded zip
     log_step "Post-extraction cleanup"
     rm -f "$zip_file"
     log_success
-    
-    # Permissions and Ownership
+
+    # Set ownership and permissions
     log_step "Setting file permissions"
     chown -R container:container "$BASE_DIR" 2>/dev/null || true
     chmod -R 755 "$BASE_DIR" && log_success || log_warning "Chmod failed" "May need manual adjustment."
 }
 
 run_downloader() {
-
     log_step "Authenticating and fetching binaries"
-
     log_break 2
 
-    # Run downloader under the correct user context
     if [ "$(id -u)" = "0" ]; then
         if command -v gosu >/dev/null 2>&1; then
             gosu container:container env HOME=/home/container sh -c 'cd $HOME && hytale-downloader'
@@ -64,10 +55,9 @@ run_downloader() {
 # MAIN EXECUTION FLOW
 # ==========================================
 
-# 1. Trigger the download
 run_downloader
 
-# 2. Locate the freshly downloaded ZIP file (Optimized native shell loop)
+# Locate the downloaded ZIP file
 ZIP_FILE=""
 for f in "$BASE_DIR"/*.zip; do
     if [ -e "$f" ]; then
@@ -83,6 +73,6 @@ fi
 
 log_break
 
-# 3. Extract and clean up
+# Extract and clean up
 log_step "Extracting... (Please wait)"
 extract_server "$ZIP_FILE"

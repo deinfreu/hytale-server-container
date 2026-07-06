@@ -1,83 +1,104 @@
 #!/bin/bash
 set -e
 
+# ==========================================
+# HELPER FUNCTIONS
+# ==========================================
+
+check_arch() {
+    local arch=$(uname -m)
+    if [ "$arch" != "aarch64" ] && [ "$arch" != "arm64" ]; then
+        echo "Warning: This script is designed for ARM64/aarch64 systems."
+        echo "   Detected architecture: $arch"
+        read -p "Continue anyway? (y/N) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            exit 0
+        fi
+    fi
+}
+
+check_docker() {
+    if ! command -v docker &> /dev/null; then
+        echo "Error: Docker is not installed or not in PATH"
+        echo "   Please install Docker first: https://docs.docker.com/engine/install/"
+        exit 1
+    fi
+}
+
+get_docker_cmd() {
+    if [ "$EUID" -eq 0 ]; then
+        echo "docker"
+    elif docker ps &> /dev/null; then
+        echo "docker"
+    elif sudo -n docker ps &> /dev/null 2>&1; then
+        echo "sudo docker"
+    else
+        echo "sudo docker"
+    fi
+}
+
+install_binfmt() {
+    local cmd="$1"
+    if $cmd run --privileged --rm tonistiigi/binfmt --install amd64; then
+        return 0
+    fi
+    return 1
+}
+
+verify_installation() {
+    local cmd="$1"
+    $cmd run --privileged --rm tonistiigi/binfmt | grep -q "qemu-x86_64"
+}
+
+# ==========================================
+# MAIN EXECUTION FLOW
+# ==========================================
+
 echo "=================================="
 echo "ARM64 Host Setup for Hytale Server"
 echo "=================================="
 echo ""
 
-# Check if running on ARM64
-ARCH=$(uname -m)
-if [ "$ARCH" != "aarch64" ] && [ "$ARCH" != "arm64" ]; then
-    echo "⚠️  Warning: This script is designed for ARM64/aarch64 systems."
-    echo "   Detected architecture: $ARCH"
-    echo ""
-    read -p "Continue anyway? (y/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 0
-    fi
-fi
+check_arch
+check_docker
 
-# Check if Docker is available
-if ! command -v docker &> /dev/null; then
-    echo "❌ Error: Docker is not installed or not in PATH"
-    echo "   Please install Docker first: https://docs.docker.com/engine/install/"
-    exit 1
-fi
-
-echo "✓ Architecture: $ARCH"
-echo "✓ Docker: $(docker --version)"
+echo "Architecture: $(uname -m)"
+echo "Docker: $(docker --version)"
 echo ""
 
-# Check if running with sufficient privileges
-if [ "$EUID" -eq 0 ]; then 
-    DOCKER_CMD="docker"
-else
-    # Check if user can run docker without sudo
-    if docker ps &> /dev/null; then
-        DOCKER_CMD="docker"
-    elif sudo -n docker ps &> /dev/null 2>&1; then
-        DOCKER_CMD="sudo docker"
-        echo "ℹ️  Using sudo for Docker commands"
-    else
-        echo "⚠️  This script requires Docker privileges."
-        echo "   You may be prompted for your password."
-        DOCKER_CMD="sudo docker"
-    fi
+DOCKER_CMD=$(get_docker_cmd)
+if [ "$DOCKER_CMD" = "sudo docker" ] && [ "$EUID" != 0 ]; then
+    echo "Using sudo for Docker commands"
 fi
 
 echo "Installing QEMU binfmt_misc support for x86_64 emulation..."
 echo ""
 
-# Install binfmt support using tonistiigi/binfmt
-if $DOCKER_CMD run --privileged --rm tonistiigi/binfmt --install amd64; then
+if install_binfmt "$DOCKER_CMD"; then
     echo ""
-    echo "✅ Success! x86_64 emulation is now enabled."
+    echo "Success! x86_64 emulation is now enabled."
     echo ""
-    
-    # Verify installation
-    echo "Verifying installation..."
-    if $DOCKER_CMD run --privileged --rm tonistiigi/binfmt | grep -q "qemu-x86_64"; then
-        echo "✓ qemu-x86_64 emulator is active"
+
+    if verify_installation "$DOCKER_CMD"; then
+        echo "qemu-x86_64 emulator is active"
         echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "=========================================="
         echo "Setup Complete!"
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "=========================================="
         echo ""
-        echo "You can now run the Hytale server container:"
+        echo "Run the Hytale server container:"
         echo "  docker compose up -d"
         echo ""
-        echo "Note: This registration persists until reboot."
-        echo "      Re-run this script after rebooting your system."
-        echo ""
+        echo "Note: Registration persists until reboot."
+        echo "      Re-run this script after rebooting."
     else
-        echo "⚠️  Warning: Installation completed but verification failed"
+        echo "Warning: Installation completed but verification failed"
         echo "   The emulator may still work, try running the container"
     fi
 else
     echo ""
-    echo "❌ Error: Failed to install binfmt support"
+    echo "Error: Failed to install binfmt support"
     echo ""
     echo "Troubleshooting:"
     echo "  1. Ensure Docker is running: sudo systemctl status docker"

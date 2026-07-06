@@ -1,7 +1,9 @@
 #!/bin/sh
 
-# --- Colors & Formatting ---
-# Disable colors if NO_COLOR is set
+# ==========================================
+# COLORS & FORMATTING
+# ==========================================
+
 if [ "${NO_COLOR:-FALSE}" = "TRUE" ]; then
     BOLD=''
     DIM=''
@@ -26,11 +28,11 @@ else
     SYM_WARN="${YELLOW}⚠${NC}"
 fi
 
-# --- Logging Helpers ---
+# ==========================================
+# HELPER FUNCTIONS
+# ==========================================
 
 log_break() {
-    # If a number is passed (e.g., log_break 2), it loops that many times.
-    # Otherwise, it prints a single blank line.
     local lines="${1:-1}"
     while [ "$lines" -gt 0 ]; do
         printf "\n"
@@ -39,7 +41,6 @@ log_break() {
 }
 
 log_section() {
-    # %b allows backslash escapes in the arguments
     printf "\n${BOLD}${CYAN}SECTION:${NC} ${BOLD}%s${NC}\n" "${1:-}"
 }
 
@@ -77,9 +78,12 @@ log_error() {
     if [ -n "${2:-}" ]; then
         printf "      ${DIM}↳ Hint:   %s${NC}\n" "${2}"
     fi
-    
-    # In DEBUG mode, don't exit - just log and continue
+
     if [ "${DEBUG:-FALSE}" != "TRUE" ]; then
         exit 1
     fi
 }
+
+# ==========================================
+# MAIN EXECUTION FLOW
+# ==========================================

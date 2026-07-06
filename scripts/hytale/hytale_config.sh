@@ -1,8 +1,6 @@
 #!/bin/sh
 set -eu
 
-# Hytale Server Configuration Manager - Manages config.json creation, validation, and environment variable overrides
-
 # Load dependencies
 . "$SCRIPTS_PATH/utils.sh"
 
@@ -11,7 +9,10 @@ readonly CONFIG_FILE="${BASE_DIR:-/home/container}/config.json"
 readonly CONFIG_BACKUP_SUFFIX=".invalid.bak"
 readonly CONFIG_TMP_SUFFIX=".tmp"
 
-# Create default configuration template
+# ==========================================
+# HELPER FUNCTIONS
+# ==========================================
+
 create_default_config() {
     cat <<'EOF' > "$CONFIG_FILE"
 {
@@ -41,171 +42,105 @@ create_default_config() {
 EOF
 }
 
-# Validate that config file contains valid JSON - Returns: 0 if valid, 1 if invalid
 validate_config_json() {
     jq empty "$CONFIG_FILE" >/dev/null 2>&1
 }
 
-# Apply environment variable to JSON config - Args: $1=JSON path, $2=value, $3=type (optional: string|number|boolean) - Returns: 0 on success, 1 on failure
 apply_env() {
     local path="$1"
     local value="$2"
     local value_type="${3:-auto}"
     local tmp_file="${CONFIG_FILE}${CONFIG_TMP_SUFFIX}"
 
-    # Skip if environment variable is not set
     [ -z "$value" ] && return 0
 
-    # Apply value based on explicit or inferred type
     case "$value_type" in
         string)
-            # Always treat as string (wrap in quotes)
-            if ! jq "$path = \"$value\"" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null; then
-                printf "      ${YELLOW}⚠ Failed to apply %s${NC}\n" "$path"
-                rm -f "$tmp_file"
-                return 1
-            fi
+            jq "$path = \"$value\"" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null || {
+                printf "      ${YELLOW}⚠ Failed to apply %s${NC}\n" "$path"; rm -f "$tmp_file"; return 1
+            }
             ;;
         number)
-            # Always treat as number (no quotes)
-            if ! jq "$path = ($value | tonumber)" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null; then
-                printf "      ${YELLOW}⚠ Failed to apply %s (invalid number)${NC}\n" "$path"
-                rm -f "$tmp_file"
-                return 1
-            fi
+            jq "$path = ($value | tonumber)" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null || {
+                printf "      ${YELLOW}⚠ Failed to apply %s (invalid number)${NC}\n" "$path"; rm -f "$tmp_file"; return 1
+            }
             ;;
         boolean)
-            # Always treat as boolean (no quotes)
             case "$value" in
-                true|TRUE|1|yes|YES)
-                    if ! jq "$path = true" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null; then
-                        printf "      ${YELLOW}⚠ Failed to apply %s${NC}\n" "$path"
-                        rm -f "$tmp_file"
-                        return 1
-                    fi
-                    ;;
-                false|FALSE|0|no|NO)
-                    if ! jq "$path = false" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null; then
-                        printf "      ${YELLOW}⚠ Failed to apply %s${NC}\n" "$path"
-                        rm -f "$tmp_file"
-                        return 1
-                    fi
-                    ;;
-                *)
-                    printf "      ${YELLOW}⚠ Invalid boolean value for %s: %s${NC}\n" "$path" "$value"
-                    return 1
-                    ;;
+                true|TRUE|1|yes|YES) jq "$path = true" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null || { printf "      ${YELLOW}⚠ Failed to apply %s${NC}\n" "$path"; rm -f "$tmp_file"; return 1; } ;;
+                false|FALSE|0|no|NO)  jq "$path = false" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null || { printf "      ${YELLOW}⚠ Failed to apply %s${NC}\n" "$path"; rm -f "$tmp_file"; return 1; } ;;
+                *) printf "      ${YELLOW}⚠ Invalid boolean value for %s: %s${NC}\n" "$path" "$value"; return 1 ;;
             esac
             ;;
         auto)
-            # Automatic type detection (legacy behavior - less safe)
             case "$value" in
-                true|false)
-                    # Boolean value
-                    if ! jq "$path = $value" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null; then
-                        printf "      ${YELLOW}⚠ Failed to apply %s${NC}\n" "$path"
-                        rm -f "$tmp_file"
-                        return 1
-                    fi
-                    ;;
-                *)
-                    # Default to string for safety
-                    if ! jq "$path = \"$value\"" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null; then
-                        printf "      ${YELLOW}⚠ Failed to apply %s${NC}\n" "$path"
-                        rm -f "$tmp_file"
-                        return 1
-                    fi
-                    ;;
+                true|false) jq "$path = $value" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null || { printf "      ${YELLOW}⚠ Failed to apply %s${NC}\n" "$path"; rm -f "$tmp_file"; return 1; } ;;
+                *)          jq "$path = \"$value\"" "$CONFIG_FILE" > "$tmp_file" 2>/dev/null || { printf "      ${YELLOW}⚠ Failed to apply %s${NC}\n" "$path"; rm -f "$tmp_file"; return 1; } ;;
             esac
             ;;
     esac
 
-    # Atomically replace config file (force to prevent interactive prompts)
     mv -f "$tmp_file" "$CONFIG_FILE"
-    return 0
 }
 
-# Main Configuration Logic
+display_config_value() {
+    local label="$1"
+    local jq_path="$2"
+    local default_val="$3"
+    local color="${4:-GREEN}"
+
+    log_step "$label"
+    local value=$(jq -r "$jq_path" "$CONFIG_FILE" 2>/dev/null || echo "$default_val")
+    if [ -n "$value" ] && [ "$value" != "null" ]; then
+        printf "${color}%s${NC}\n" "$value"
+    else
+        case "$label" in *"Password"*) printf "${DIM}disabled${NC}\n" ;; *) printf "${DIM}not set${NC}\n" ;; esac
+    fi
+}
+
+# ==========================================
+# MAIN EXECUTION FLOW
+# ==========================================
+
 log_section "Server Configuration Management"
 
 # Step 1: Ensure configuration file exists
 if [ ! -f "$CONFIG_FILE" ]; then
-    log_step "Generating new config"
-    create_default_config
-    log_success
+    log_step "Generating new config"; create_default_config; log_success
 else
     log_step "Updating existing config"
-    
-    # Validate existing configuration
     if ! validate_config_json; then
         printf "      ${YELLOW}⚠ Invalid JSON detected. Backing up and recreating...${NC}\n"
         mv -f "$CONFIG_FILE" "${CONFIG_FILE}${CONFIG_BACKUP_SUFFIX}"
         create_default_config
     fi
-    
     log_success
 fi
 
-# Step 2: Apply environment variable overrides and display configuration
+# Step 2: Apply environment variable overrides
 log_step "Applying environment overrides"
-
 apply_env ".ServerName"               "${HYTALE_SERVER_NAME:-}"       "string"
 apply_env ".MOTD"                     "${HYTALE_MOTD:-}"              "string"
 apply_env ".Password"                 "${HYTALE_PASSWORD:-}"          "string"
 apply_env ".MaxPlayers"               "${HYTALE_MAX_PLAYERS:-}"       "number"
-apply_env ".MaxViewRadius"            "${HYTALE_MAX_VIEW_RADIUS:-}"  "number"
+apply_env ".MaxViewRadius"            "${HYTALE_MAX_VIEW_RADIUS:-}"   "number"
 apply_env ".LocalCompressionEnabled"  "${HYTALE_COMPRESSION:-}"       "boolean"
 apply_env ".Defaults.World"           "${HYTALE_WORLD:-}"             "string"
 apply_env ".Defaults.GameMode"        "${HYTALE_GAMEMODE:-}"          "string"
-
 log_success
 
-# Step 3: Display current configuration
+# Step 3: Display configuration summary
 printf "\n"
-log_step "Config Version"
-CONFIG_VERSION=$(jq -r '.Version' "$CONFIG_FILE" 2>/dev/null || echo "3")
-printf "${CYAN}%s${NC}\n" "$CONFIG_VERSION"
-
-log_step "Server Name"
-SERVER_NAME=$(jq -r '.ServerName' "$CONFIG_FILE" 2>/dev/null || echo "Hytale Server")
-printf "${GREEN}%s${NC}\n" "$SERVER_NAME"
-
-log_step "MOTD"
-MOTD=$(jq -r '.MOTD' "$CONFIG_FILE" 2>/dev/null || echo "")
-if [ -n "$MOTD" ]; then
-    printf "${GREEN}%s${NC}\n" "$MOTD"
-else
-    printf "${DIM}not set${NC}\n"
-fi
-
-log_step "Password Protection"
-PASSWORD=$(jq -r '.Password' "$CONFIG_FILE" 2>/dev/null || echo "")
-if [ -n "$PASSWORD" ]; then
-    printf "${GREEN}enabled${NC} (hidden)\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
-
-log_step "Max Players"
-MAX_PLAYERS=$(jq -r '.MaxPlayers' "$CONFIG_FILE" 2>/dev/null || echo "100")
-printf "${GREEN}%s${NC}\n" "$MAX_PLAYERS"
-
-log_step "Max View Radius"
-MAX_VIEW=$(jq -r '.MaxViewRadius' "$CONFIG_FILE" 2>/dev/null || echo "32")
-printf "${GREEN}%s${NC} chunks\n" "$MAX_VIEW"
+display_config_value "Config Version"            ".Version"                            "3"       ""
+display_config_value "Server Name"              ".ServerName"                         "Hytale Server"
+display_config_value "MOTD"                     ".MOTD"                               ""
+display_config_value "Password Protection"      ".Password"                           ""
+display_config_value "Max Players"              ".MaxPlayers"                         "100"
+display_config_value "Max View Radius"          ".MaxViewRadius"                      "32"
 
 log_step "Local Compression"
 COMPRESSION=$(jq -r '.LocalCompressionEnabled' "$CONFIG_FILE" 2>/dev/null || echo "false")
-if [ "$COMPRESSION" = "true" ]; then
-    printf "${GREEN}enabled${NC}\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
+[ "$COMPRESSION" = "true" ] && printf "${GREEN}enabled${NC}\n" || printf "${DIM}disabled${NC}\n"
 
-log_step "Default World"
-WORLD=$(jq -r '.Defaults.World' "$CONFIG_FILE" 2>/dev/null || echo "default")
-printf "${GREEN}%s${NC}\n" "$WORLD"
-
-log_step "Default Game Mode"
-GAMEMODE=$(jq -r '.Defaults.GameMode' "$CONFIG_FILE" 2>/dev/null || echo "Adventure")
-printf "${GREEN}%s${NC}\n" "$GAMEMODE"
+display_config_value "Default World"     ".Defaults.World"     "default"
+display_config_value "Default Game Mode" ".Defaults.GameMode"  "Adventure"

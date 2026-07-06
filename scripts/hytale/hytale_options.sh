@@ -6,6 +6,64 @@ set -eu
 
 log_section "Server Options Management"
 
+# ==========================================
+# HELPER FUNCTIONS
+# ==========================================
+
+set_flag() {
+    local var_name="$1"
+    local flag_val="$2"
+    export "$var_name"="$flag_val"
+}
+
+print_enabled()     { printf "${GREEN}enabled${NC}\n"; }
+print_disabled()    { printf "${DIM}disabled${NC}\n"; }
+print_not_set()     { printf "${DIM}not set${NC}\n"; }
+print_default()     { printf "${DIM}default${NC}\n"; }
+
+check_bool() {
+    local label="$1"
+    local env_var="${2:-}"
+    local inverted="${3:-false}"
+
+    log_step "$label"
+    if [ "$env_var" = "TRUE" ]; then
+        if [ "$inverted" = "true" ]; then print_disabled; else print_enabled; fi
+    else
+        if [ "$inverted" = "true" ]; then print_enabled; else print_disabled; fi
+    fi
+}
+
+check_string() {
+    local label="$1"
+    local env_var="${2:-}"
+    local default_msg="${3:-not set}"
+
+    log_step "$label"
+    if [ -n "$env_var" ]; then
+        printf "${GREEN}%s${NC}\n" "$env_var"
+    else
+        print_not_set
+    fi
+}
+
+check_string_default() {
+    local label="$1"
+    local env_var="${2:-}"
+    local default_val="${3:-default}"
+
+    log_step "$label"
+    if [ -n "$env_var" ]; then
+        printf "${GREEN}%s${NC}\n" "$env_var"
+    else
+        printf "${DIM}default (%s)${NC}\n" "$default_val"
+    fi
+}
+
+# ==========================================
+# MAIN EXECUTION FLOW
+# ==========================================
+
 # Initialize options to ensure they are empty if not set
 export HYTALE_CACHE_OPT=""
 export HYTALE_CACHE_LOG_OPT=""
@@ -47,359 +105,165 @@ export HYTALE_VALIDATE_WORLD_GEN_OPT=""
 export HYTALE_VERSION_OPT=""
 export HYTALE_WORLD_GEN_OPT=""
 
-# Enable help option    
-log_step "Enable help option"
-if [ "${HYTALE_HELP:-}" = "TRUE" ]; then
-    export HYTALE_HELP_OPT="--help"
-    printf "${GREEN}enabled${NC}\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
+# --- Boolean flags ---
+check_bool "Enable help option"          "${HYTALE_HELP:-}"
+[ "${HYTALE_HELP:-}" = "TRUE" ] && set_flag HYTALE_HELP_OPT "--help"
 
-# Accept Early Plugins
-log_step "Accept Early Plugins"
-if [ "${HYTALE_ACCEPT_EARLY_PLUGINS:-}" = "TRUE" ]; then
-    export HYTALE_ACCEPT_EARLY_PLUGINS_OPT="--accept-early-plugins"
-    printf "${GREEN}enabled${NC}\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
+check_bool "Accept Early Plugins"        "${HYTALE_ACCEPT_EARLY_PLUGINS:-}"
+[ "${HYTALE_ACCEPT_EARLY_PLUGINS:-}" = "TRUE" ] && set_flag HYTALE_ACCEPT_EARLY_PLUGINS_OPT "--accept-early-plugins"
 
-# Allow OP
-log_step "Allow OP"
-if [ "${HYTALE_ALLOW_OP:-}" = "TRUE" ]; then
-    export HYTALE_ALLOW_OP_OPT="--allow-op"
-    printf "${GREEN}enabled${NC}\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
+check_bool "Allow OP"                    "${HYTALE_ALLOW_OP:-}"
+[ "${HYTALE_ALLOW_OP:-}" = "TRUE" ] && set_flag HYTALE_ALLOW_OP_OPT "--allow-op"
 
-# Authentication Mode
+check_bool "Bare Mode"                   "${HYTALE_BARE:-}"
+[ "${HYTALE_BARE:-}" = "TRUE" ] && set_flag HYTALE_BARE_OPT "--bare"
+
+check_bool "Disable Asset Compare"       "${HYTALE_DISABLE_ASSET_COMPARE:-}" "true"
+[ "${HYTALE_DISABLE_ASSET_COMPARE:-}" = "TRUE" ] && set_flag HYTALE_DISABLE_ASSET_COMPARE_OPT "--disable-asset-compare"
+
+check_bool "Disable CPB Build"           "${HYTALE_DISABLE_CPB_BUILD:-}" "true"
+[ "${HYTALE_DISABLE_CPB_BUILD:-}" = "TRUE" ] && set_flag HYTALE_DISABLE_CPB_BUILD_OPT "--disable-cpb-build"
+
+check_bool "Disable File Watcher"        "${HYTALE_DISABLE_FILE_WATCHER:-}" "true"
+[ "${HYTALE_DISABLE_FILE_WATCHER:-}" = "TRUE" ] && set_flag HYTALE_DISABLE_FILE_WATCHER_OPT "--disable-file-watcher"
+
+check_bool "Disable Sentry"              "${HYTALE_DISABLE_SENTRY:-}" "true"
+[ "${HYTALE_DISABLE_SENTRY:-}" = "TRUE" ] && set_flag HYTALE_DISABLE_SENTRY_OPT "--disable-sentry"
+
+check_bool "Event Debug"                 "${HYTALE_EVENT_DEBUG:-}"
+[ "${HYTALE_EVENT_DEBUG:-}" = "TRUE" ] && set_flag HYTALE_EVENT_DEBUG_OPT "--event-debug"
+
+check_bool "Generate Schema"             "${HYTALE_GENERATE_SCHEMA:-}"
+[ "${HYTALE_GENERATE_SCHEMA:-}" = "TRUE" ] && set_flag HYTALE_GENERATE_SCHEMA_OPT "--generate-schema"
+
+check_bool "Shutdown After Validate"     "${HYTALE_SHUTDOWN_AFTER_VALIDATE:-}"
+[ "${HYTALE_SHUTDOWN_AFTER_VALIDATE:-}" = "TRUE" ] && set_flag HYTALE_SHUTDOWN_AFTER_VALIDATE_OPT "--shutdown-after-validate"
+
+check_bool "Singleplayer"                "${HYTALE_SINGLEPLAYER:-}"
+[ "${HYTALE_SINGLEPLAYER:-}" = "TRUE" ] && set_flag HYTALE_SINGLEPLAYER_OPT "--singleplayer"
+
+check_bool "Validate Assets"             "${HYTALE_VALIDATE_ASSETS:-}"
+[ "${HYTALE_VALIDATE_ASSETS:-}" = "TRUE" ] && set_flag HYTALE_VALIDATE_ASSETS_OPT "--validate-assets"
+
+check_bool "Validate World Gen"          "${HYTALE_VALIDATE_WORLD_GEN:-}"
+[ "${HYTALE_VALIDATE_WORLD_GEN:-}" = "TRUE" ] && set_flag HYTALE_VALIDATE_WORLD_GEN_OPT "--validate-world-gen"
+
+check_bool "AOT Cache Log"               "${HYTALE_CACHE_LOG:-}"
+if [ "${HYTALE_CACHE_LOG:-}" = "TRUE" ]; then set_flag HYTALE_CACHE_LOG_OPT "-Xlog:aot"; fi
+
+# --- String/Value options ---
 log_step "Authentication Mode"
-if [ -n "${HYTALE_AUTH_MODE:-}" ]; then
-    if [ "$HYTALE_AUTH_MODE" = "authenticated" ] || [ "$HYTALE_AUTH_MODE" = "insecure" ] || [ "$HYTALE_AUTH_MODE" = "offline" ]; then
-        export HYTALE_AUTH_MODE_OPT="--auth-mode=$HYTALE_AUTH_MODE"
-        printf "${GREEN}$HYTALE_AUTH_MODE${NC}\n"
-    else
-        printf "${RED}invalid: $HYTALE_AUTH_MODE${NC} (use 'authenticated', 'insecure' or 'offline')${NC}\n"
-    fi
-else
-    printf "${DIM}default (authenticated)${NC}\n"
-fi
+case "$HYTALE_AUTH_MODE" in
+    authenticated|insecure|offline)
+        set_flag HYTALE_AUTH_MODE_OPT "--auth-mode=$HYTALE_AUTH_MODE"
+        printf "${GREEN}$HYTALE_AUTH_MODE${NC}\n" ;;
+    *) [ -n "${HYTALE_AUTH_MODE:-}" ] && printf "${RED}invalid: $HYTALE_AUTH_MODE${NC} (use 'authenticated', 'insecure' or 'offline')${NC}" ;;
+esac
+[ -z "${HYTALE_AUTH_MODE:-}" ] && print_default
 
-# Backup Configuration
 log_step "Backup Configuration"
 if [ -n "${HYTALE_BACKUP_DIR:-}" ]; then
-    export HYTALE_BACKUP_DIR_OPT="--backup-dir=$HYTALE_BACKUP_DIR"
+    set_flag HYTALE_BACKUP_DIR_OPT "--backup-dir=$HYTALE_BACKUP_DIR"
     printf "${GREEN}enabled${NC} (dir: ${CYAN}${HYTALE_BACKUP_DIR}${NC}"
-
-    # Check if backup on startup is enabled
-    if [ "${HYTALE_BACKUP:-}" = "TRUE" ]; then
-        export HYTALE_BACKUP_OPT="--backup"
-        printf ", startup backup: ${GREEN}yes${NC}"
-    else
-        printf ", startup backup: ${DIM}no${NC}"
-    fi
-
-    # Optional backup settings
-    if [ -n "${HYTALE_BACKUP_FREQUENCY:-}" ]; then
-        export HYTALE_BACKUP_FREQUENCY_OPT="--backup-frequency=$HYTALE_BACKUP_FREQUENCY"
-        printf ", freq: ${CYAN}${HYTALE_BACKUP_FREQUENCY}${NC}"
-    fi
-
-    if [ -n "${HYTALE_BACKUP_MAX_COUNT:-}" ]; then
-        export HYTALE_BACKUP_MAX_COUNT_OPT="--backup-max-count=$HYTALE_BACKUP_MAX_COUNT"
-        printf ", max: ${CYAN}${HYTALE_BACKUP_MAX_COUNT}${NC}"
-    fi
-
+    [ "${HYTALE_BACKUP:-}" = "TRUE" ] && { set_flag HYTALE_BACKUP_OPT "--backup"; printf ", startup backup: ${GREEN}yes${NC}"; } || printf ", startup backup: ${DIM}no${NC}"
+    [ -n "${HYTALE_BACKUP_FREQUENCY:-}" ] && { set_flag HYTALE_BACKUP_FREQUENCY_OPT "--backup-frequency=$HYTALE_BACKUP_FREQUENCY"; printf ", freq: ${CYAN}${HYTALE_BACKUP_FREQUENCY}${NC}"; }
+    [ -n "${HYTALE_BACKUP_MAX_COUNT:-}" ]   && { set_flag HYTALE_BACKUP_MAX_COUNT_OPT   "--backup-max-count=$HYTALE_BACKUP_MAX_COUNT";   printf ", max: ${CYAN}${HYTALE_BACKUP_MAX_COUNT}${NC}"; }
     printf ")\n"
+elif [ "${HYTALE_BACKUP:-}" = "TRUE" ]; then
+    printf "${YELLOW}warning: HYTALE_BACKUP=TRUE requires HYTALE_BACKUP_DIR${NC}\n"
 else
-    if [ "${HYTALE_BACKUP:-}" = "TRUE" ]; then
-        printf "${YELLOW}warning: HYTALE_BACKUP=TRUE requires HYTALE_BACKUP_DIR${NC}\n"
-    else
-        printf "${DIM}not configured${NC}\n"
-    fi
+    print_not_set
 fi
 
-# Bare Mode
-log_step "Bare Mode"
-if [ "${HYTALE_BARE:-}" = "TRUE" ]; then
-    export HYTALE_BARE_OPT="--bare"
-    printf "${GREEN}enabled${NC}\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
+check_string  "Boot Command"        "${HYTALE_BOOT_COMMAND:-}"
+[ -n "${HYTALE_BOOT_COMMAND:-}" ] && set_flag HYTALE_BOOT_COMMAND_OPT "--boot-command=$HYTALE_BOOT_COMMAND"
 
-# Boot Command
-log_step "Boot Command"
-if [ -n "${HYTALE_BOOT_COMMAND:-}" ]; then
-    export HYTALE_BOOT_COMMAND_OPT="--boot-command=$HYTALE_BOOT_COMMAND"
-    printf "${GREEN}set${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
+check_string  "Client PID"          "${HYTALE_CLIENT_PID:-}"
+[ -n "${HYTALE_CLIENT_PID:-}" ]   && set_flag HYTALE_CLIENT_PID_OPT "--client-pid=$HYTALE_CLIENT_PID"
 
-# Client PID
-log_step "Client PID"
-if [ -n "${HYTALE_CLIENT_PID:-}" ]; then
-    export HYTALE_CLIENT_PID_OPT="--client-pid=$HYTALE_CLIENT_PID"
-    printf "${GREEN}$HYTALE_CLIENT_PID${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
+check_string  "Early Plugins Path"  "${HYTALE_EARLY_PLUGINS:-}"
+[ -n "${HYTALE_EARLY_PLUGINS:-}" ] && set_flag HYTALE_EARLY_PLUGINS_OPT "--early-plugins=$HYTALE_EARLY_PLUGINS"
 
-# Disable Asset Compare
-log_step "Asset Compare"
-if [ "${HYTALE_DISABLE_ASSET_COMPARE:-}" = "TRUE" ]; then
-    export HYTALE_DISABLE_ASSET_COMPARE_OPT="--disable-asset-compare"
-    printf "${YELLOW}disabled${NC}\n"
-else
-    printf "${GREEN}enabled${NC}\n"
-fi
-
-# Disable CPB Build
-log_step "CPB Build"
-if [ "${HYTALE_DISABLE_CPB_BUILD:-}" = "TRUE" ]; then
-    export HYTALE_DISABLE_CPB_BUILD_OPT="--disable-cpb-build"
-    printf "${YELLOW}disabled${NC}\n"
-else
-    printf "${GREEN}enabled${NC}\n"
-fi
-
-# Disable File Watcher
-log_step "File Watcher"
-if [ "${HYTALE_DISABLE_FILE_WATCHER:-}" = "TRUE" ]; then
-    export HYTALE_DISABLE_FILE_WATCHER_OPT="--disable-file-watcher"
-    printf "${YELLOW}disabled${NC}\n"
-else
-    printf "${GREEN}enabled${NC}\n"
-fi
-
-# Disable Sentry
-log_step "Sentry"
-if [ "${HYTALE_DISABLE_SENTRY:-}" = "TRUE" ]; then
-    export HYTALE_DISABLE_SENTRY_OPT="--disable-sentry"
-    printf "${YELLOW}disabled${NC}\n"
-else
-    printf "${GREEN}enabled${NC}\n"
-fi
-
-# Early Plugins Path
-log_step "Early Plugins Path"
-if [ -n "${HYTALE_EARLY_PLUGINS:-}" ]; then
-    export HYTALE_EARLY_PLUGINS_OPT="--early-plugins=$HYTALE_EARLY_PLUGINS"
-    printf "${GREEN}$HYTALE_EARLY_PLUGINS${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
-
-# Event Debug
-log_step "Event Debug"
-if [ "${HYTALE_EVENT_DEBUG:-}" = "TRUE" ]; then
-    export HYTALE_EVENT_DEBUG_OPT="--event-debug"
-    printf "${GREEN}enabled${NC}\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
-
-# Force Network Flush
 log_step "Force Network Flush"
 if [ -n "${HYTALE_FORCE_NETWORK_FLUSH:-}" ]; then
-    export HYTALE_FORCE_NETWORK_FLUSH_OPT="--force-network-flush=$HYTALE_FORCE_NETWORK_FLUSH"
+    set_flag HYTALE_FORCE_NETWORK_FLUSH_OPT "--force-network-flush=$HYTALE_FORCE_NETWORK_FLUSH"
     printf "${GREEN}$HYTALE_FORCE_NETWORK_FLUSH${NC}\n"
 else
-    printf "${DIM}default (true)${NC}\n"
+    print_default
 fi
 
-# Generate Schema
-log_step "Generate Schema"
-if [ "${HYTALE_GENERATE_SCHEMA:-}" = "TRUE" ]; then
-    export HYTALE_GENERATE_SCHEMA_OPT="--generate-schema"
-    printf "${GREEN}enabled${NC}\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
+check_string  "Identity Token"      "${HYTALE_IDENTITY_TOKEN:-}"
+[ -n "${HYTALE_IDENTITY_TOKEN:-}" ] && set_flag HYTALE_IDENTITY_TOKEN_OPT "--identity-token=$HYTALE_IDENTITY_TOKEN"
 
-# Identity Token
-log_step "Identity Token"
-if [ -n "${HYTALE_IDENTITY_TOKEN:-}" ]; then
-    export HYTALE_IDENTITY_TOKEN_OPT="--identity-token=$HYTALE_IDENTITY_TOKEN"
-    printf "${GREEN}set${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
-
-# Log Level
 log_step "Log Level"
 if [ -n "${HYTALE_LOG:-}" ]; then
-    export HYTALE_LOG_OPT="--log=$HYTALE_LOG"
+    set_flag HYTALE_LOG_OPT "--log=$HYTALE_LOG"
     printf "${GREEN}$HYTALE_LOG${NC}\n"
 else
-    printf "${DIM}default${NC}\n"
+    print_default
 fi
 
-# Migrate Worlds
-log_step "Migrate Worlds"
-if [ -n "${HYTALE_MIGRATE_WORLDS:-}" ]; then
-    export HYTALE_MIGRATE_WORLDS_OPT="--migrate-worlds=$HYTALE_MIGRATE_WORLDS"
-    printf "${GREEN}$HYTALE_MIGRATE_WORLDS${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
+check_string  "Migrate Worlds"      "${HYTALE_MIGRATE_WORLDS:-}"
+[ -n "${HYTALE_MIGRATE_WORLDS:-}" ] && set_flag HYTALE_MIGRATE_WORLDS_OPT "--migrate-worlds=$HYTALE_MIGRATE_WORLDS"
 
-# Migrations
-log_step "Migrations"
-if [ -n "${HYTALE_MIGRATIONS:-}" ]; then
-    export HYTALE_MIGRATIONS_OPT="--migrations=$HYTALE_MIGRATIONS"
-    printf "${GREEN}set${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
+check_string  "Migrations"          "${HYTALE_MIGRATIONS:-}"
+[ -n "${HYTALE_MIGRATIONS:-}" ]     && set_flag HYTALE_MIGRATIONS_OPT "--migrations=$HYTALE_MIGRATIONS"
 
-# Mods Path
-log_step "Mods Path"
-if [ -n "${HYTALE_MODS:-}" ]; then
-    export HYTALE_MODS_OPT="--mods=$HYTALE_MODS"
-    printf "${GREEN}$HYTALE_MODS${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
+check_string  "Mods Path"           "${HYTALE_MODS:-}"
+[ -n "${HYTALE_MODS:-}" ]          && set_flag HYTALE_MODS_OPT "--mods=$HYTALE_MODS"
 
-# Owner Name
-log_step "Owner Name"
-if [ -n "${HYTALE_OWNER_NAME:-}" ]; then
-    export HYTALE_OWNER_NAME_OPT="--owner-name=$HYTALE_OWNER_NAME"
-    printf "${GREEN}$HYTALE_OWNER_NAME${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
+check_string  "Owner Name"          "${HYTALE_OWNER_NAME:-}"
+[ -n "${HYTALE_OWNER_NAME:-}" ]    && set_flag HYTALE_OWNER_NAME_OPT "--owner-name=$HYTALE_OWNER_NAME"
 
-# Owner UUID
-log_step "Owner UUID"
-if [ -n "${HYTALE_OWNER_UUID:-}" ]; then
-    export HYTALE_OWNER_UUID_OPT="--owner-uuid=$HYTALE_OWNER_UUID"
-    printf "${GREEN}$HYTALE_OWNER_UUID${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
+check_string  "Owner UUID"          "${HYTALE_OWNER_UUID:-}"
+[ -n "${HYTALE_OWNER_UUID:-}" ]    && set_flag HYTALE_OWNER_UUID_OPT "--owner-uuid=$HYTALE_OWNER_UUID"
 
-# Prefab Cache
 log_step "Prefab Cache"
 if [ -n "${HYTALE_PREFAB_CACHE:-}" ]; then
-    export HYTALE_PREFAB_CACHE_OPT="--prefab-cache=$HYTALE_PREFAB_CACHE"
+    set_flag HYTALE_PREFAB_CACHE_OPT "--prefab-cache=$HYTALE_PREFAB_CACHE"
     printf "${GREEN}$HYTALE_PREFAB_CACHE${NC}\n"
 else
-    printf "${DIM}default${NC}\n"
+    print_default
 fi
 
-# Session Token
-log_step "Session Token"
-if [ -n "${HYTALE_SESSION_TOKEN:-}" ]; then
-    export HYTALE_SESSION_TOKEN_OPT="--session-token=$HYTALE_SESSION_TOKEN"
-    printf "${GREEN}set${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
+check_string  "Session Token"       "${HYTALE_SESSION_TOKEN:-}"
+[ -n "${HYTALE_SESSION_TOKEN:-}" ] && set_flag HYTALE_SESSION_TOKEN_OPT "--session-token=$HYTALE_SESSION_TOKEN"
 
-# Shutdown After Validate
-log_step "Shutdown After Validate"
-if [ "${HYTALE_SHUTDOWN_AFTER_VALIDATE:-}" = "TRUE" ]; then
-    export HYTALE_SHUTDOWN_AFTER_VALIDATE_OPT="--shutdown-after-validate"
-    printf "${GREEN}enabled${NC}\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
-
-# Singleplayer
-log_step "Singleplayer"
-if [ "${HYTALE_SINGLEPLAYER:-}" = "TRUE" ]; then
-    export HYTALE_SINGLEPLAYER_OPT="--singleplayer"
-    printf "${GREEN}enabled${NC}\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
-
-# Transport Type
 log_step "Transport Type"
 if [ -n "${HYTALE_TRANSPORT:-}" ]; then
-    export HYTALE_TRANSPORT_OPT="--transport=$HYTALE_TRANSPORT"
+    set_flag HYTALE_TRANSPORT_OPT "--transport=$HYTALE_TRANSPORT"
     printf "${GREEN}$HYTALE_TRANSPORT${NC}\n"
 else
-    printf "${DIM}default (QUIC)${NC}\n"
+    print_default
 fi
 
-# Universe Path
-log_step "Universe Path"
-if [ -n "${HYTALE_UNIVERSE:-}" ]; then
-    export HYTALE_UNIVERSE_OPT="--universe=$HYTALE_UNIVERSE"
-    printf "${GREEN}$HYTALE_UNIVERSE${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
+check_string  "Universe Path"       "${HYTALE_UNIVERSE:-}"
+[ -n "${HYTALE_UNIVERSE:-}" ]      && set_flag HYTALE_UNIVERSE_OPT "--universe=$HYTALE_UNIVERSE"
 
-# Validate Assets
-log_step "Validate Assets"
-if [ "${HYTALE_VALIDATE_ASSETS:-}" = "TRUE" ]; then
-    export HYTALE_VALIDATE_ASSETS_OPT="--validate-assets"
-    printf "${GREEN}enabled${NC}\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
-
-# Validate Prefabs
 log_step "Validate Prefabs"
 if [ -n "${HYTALE_VALIDATE_PREFABS:-}" ]; then
-    export HYTALE_VALIDATE_PREFABS_OPT="--validate-prefabs=$HYTALE_VALIDATE_PREFABS"
+    set_flag HYTALE_VALIDATE_PREFABS_OPT "--validate-prefabs=$HYTALE_VALIDATE_PREFABS"
     printf "${GREEN}$HYTALE_VALIDATE_PREFABS${NC}\n"
 else
-    printf "${DIM}disabled${NC}\n"
+    print_disabled
 fi
 
-# Validate World Gen
-log_step "Validate World Gen"
-if [ "${HYTALE_VALIDATE_WORLD_GEN:-}" = "TRUE" ]; then
-    export HYTALE_VALIDATE_WORLD_GEN_OPT="--validate-world-gen"
-    printf "${GREEN}enabled${NC}\n"
-else
-    printf "${DIM}disabled${NC}\n"
-fi
-
-# Version Info
 log_step "Version Info"
 if [ "${HYTALE_VERSION:-}" = "TRUE" ]; then
-    export HYTALE_VERSION_OPT="--version"
-    printf "${GREEN}enabled${NC}\n"
+    set_flag HYTALE_VERSION_OPT "--version"
+    print_enabled
 else
-    printf "${DIM}disabled${NC}\n"
+    print_disabled
 fi
 
-# World Gen Path
-log_step "World Gen Path"
-if [ -n "${HYTALE_WORLD_GEN:-}" ]; then
-    export HYTALE_WORLD_GEN_OPT="--world-gen=$HYTALE_WORLD_GEN"
-    printf "${GREEN}$HYTALE_WORLD_GEN${NC}\n"
-else
-    printf "${DIM}not set${NC}\n"
-fi
+check_string  "World Gen Path"      "${HYTALE_WORLD_GEN:-}"
+[ -n "${HYTALE_WORLD_GEN:-}" ]     && set_flag HYTALE_WORLD_GEN_OPT "--world-gen=$HYTALE_WORLD_GEN"
 
-# AOT Cache
+# --- AOT Cache (special handling) ---
 log_step "AOT Cache"
 if [ "${HYTALE_CACHE:-}" = "TRUE" ]; then
-    export HYTALE_CACHE_OPT="-XX:AOTCache=$HYTALE_CACHE_DIR"
+    set_flag HYTALE_CACHE_OPT "-XX:AOTCache=$HYTALE_CACHE_DIR"
     printf "${GREEN}enabled${NC} (file: ${CYAN}${HYTALE_CACHE_DIR}${NC})\n"
-else
-    export HYTALE_CACHE_OPT=""
-    printf "${DIM}disabled${NC}\n"
-fi
-
-# AOT Cache Log
-log_step "AOT Cache Log"
-if [ "${HYTALE_CACHE_LOG:-}" = "TRUE" ]; then
-    export HYTALE_CACHE_LOG_OPT="-Xlog:aot"
-    printf "${GREEN}enabled${NC}\n"
-else
-    export HYTALE_CACHE_LOG_OPT=""
-    printf "${DIM}disabled${NC}\n"
 fi
 
 printf "      ${DIM}↳ Server Options:${NC} ${GREEN}Ready${NC}\n"

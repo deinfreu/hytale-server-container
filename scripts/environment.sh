@@ -1,7 +1,10 @@
 #!/bin/sh
 set -eu
 
-# --- Configuration defaults ---
+# ==========================================
+# CONFIGURATION DEFAULTS
+# ==========================================
+
 export SCRIPTS_PATH="/usr/local/bin/scripts"
 export SERVER_PORT="${SERVER_PORT:-5520}"
 export SERVER_IP="${SERVER_IP:-0.0.0.0}"
@@ -17,7 +20,10 @@ export UID="${UID:-1000}"
 export GID="${GID:-1000}"
 export NO_COLOR="${NO_COLOR:-FALSE}"
 
-# --- Hytale specific environment variables ---
+# ==========================================
+# HYTALE OPTIONS
+# ==========================================
+
 export HYTALE_HELP="${HYTALE_HELP:-FALSE}"
 export HYTALE_CACHE_LOG="${HYTALE_CACHE_LOG:-FALSE}"
 export HYTALE_CACHE="${HYTALE_CACHE:-FALSE}"
@@ -61,3 +67,7 @@ export HYTALE_VALIDATE_WORLD_GEN="${HYTALE_VALIDATE_WORLD_GEN:-FALSE}"
 export HYTALE_VERSION="${HYTALE_VERSION:-FALSE}"
 export HYTALE_WORLD_GEN="${HYTALE_WORLD_GEN:-}"
 export RUN_AUTO_AUTH="${RUN_AUTO_AUTH:-TRUE}"
+
+# ==========================================
+# MAIN EXECUTION FLOW
+# ==========================================
