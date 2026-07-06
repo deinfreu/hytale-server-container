@@ -136,7 +136,7 @@ display_config_value "Server Name"              ".ServerName"                   
 display_config_value "MOTD"                     ".MOTD"                               ""
 display_config_value "Password Protection"      ".Password"                           ""
 display_config_value "Max Players"              ".MaxPlayers"                         "100"
-display_config_value "Max View Radius"          ".MaxViewRadius"                      "32"
+display_config_value "Max View Radius"          ".MaxViewRadius"                      "12"
 
 log_step "Local Compression"
 COMPRESSION=$(jq -r '.LocalCompressionEnabled' "$CONFIG_FILE" 2>/dev/null || echo "false")
