@@ -1,7 +1,6 @@
 # Site settings
 title: Hytale Server Container
 description: A lightweight Dockerized environment for Hytale servers.
-theme: jekyll-remote-theme
 favicon_ico: "favicon.ico"
 
 # Google Analytics settings
@@ -49,3 +48,5 @@ exclude:
   - dev/
   - Gemfile
   - Gemfile.lock
+  - vendor/bundle
+  - _site
