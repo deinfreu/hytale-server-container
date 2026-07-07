@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Support"
-parent: "📥 Installation"
+parent: "Installation"
 nav_order: 4
 ---
 

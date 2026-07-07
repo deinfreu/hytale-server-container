@@ -23,6 +23,8 @@ aux_links:
     - "https://github.com/deinfreu/hytale-server-container"
   "Docker Hub":
     - "https://hub.docker.com/r/deinfreu/hytale-server" # Update if different
+  "Discord":
+    - "https://discord.gg/M8yrdnHb32" # Update if different
 
 # Custoimization settings
 callouts:

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "About"
-nav_order: 8
+nav_order: 6
 description: "About this project"
 ---
 

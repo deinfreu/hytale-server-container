@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Hytale"
-parent: "⚙️ Technical Info"
+parent: "Documentation"
 nav_order: 1
 ---
 

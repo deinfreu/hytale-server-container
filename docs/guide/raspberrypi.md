@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Raspberry Pi"
-parent: "📓 Guide"
+parent: "Guides"
 nav_order: 4
 ---
 

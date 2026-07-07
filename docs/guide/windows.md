@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Windows WSL2"
-parent: "📓 Guide"
+parent: "Guides"
 nav_order: 3
 ---
 

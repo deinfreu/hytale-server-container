@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Debian 13 (Bullseye)"
-parent: "📓 Guide"
+parent: "Guides"
 nav_order: 5
 ---
 

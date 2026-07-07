@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Pterodactyl"
-parent: "⚙️ Technical Info"
+parent: "Documentation"
 nav_order: 3
 ---
 

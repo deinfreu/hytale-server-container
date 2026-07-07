@@ -1,6 +1,6 @@
 ---
 layout: default
-title: hytale docker
+title: Home
 nav_order: 1
 description: "Hytale server container Documentation Home"
 ---

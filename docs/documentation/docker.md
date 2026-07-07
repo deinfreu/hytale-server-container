@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Docker"
-parent: "⚙️ Technical Info"
+parent: "Documentation"
 nav_order: 2
 ---
 

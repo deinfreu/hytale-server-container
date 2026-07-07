@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "1. Requirements"
-parent: "📥 Installation"
+parent: "Installation"
 nav_order: 1
 ---
 
