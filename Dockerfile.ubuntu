@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-# --- STAGE 1: Builder ---
+# --- STAGE 1: Builder (runs on target platform) ---
 FROM eclipse-temurin:25-jdk AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -9,8 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /build
 
-# 1. Download and extract Hytale Downloader
-RUN curl -L -o hytale.zip https://downloader.hytale.com/hytale-downloader.zip && \
+# 1. Download and extract Hytale Downloader (with retries for QEMU emulation slowness)
+RUN curl -L --retry 3 --retry-delay 5 -o hytale.zip https://downloader.hytale.com/hytale-downloader.zip && \
     7z x hytale.zip -y -o./hytale -mmt=on && \
     mv ./hytale/hytale-downloader-linux-amd64 ./hytale-downloader && \
     chmod +x ./hytale-downloader && \
@@ -25,7 +25,7 @@ RUN find scripts -type f -name "*.sh" -exec dos2unix {} + && \
     chmod +x entrypoint.sh
 
 # --- STAGE 2: Final Runtime ---
-FROM eclipse-temurin:25-jdk
+FROM eclipse-temurin:25-jdk AS runtime
 
 # Build arguments for customizable UID/GID
 ARG UID=1000
@@ -41,19 +41,20 @@ ENV USER=container \
     PROD=FALSE \
     DEBUG=FALSE
 
-# 1. Install Runtime Dependencies
+# 1. Install Runtime Dependencies (minimal set, no qemu-user-static)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     tini curl iproute2 ca-certificates unzip tzdata jq p7zip-full && \
     rm -rf /var/lib/apt/lists/*
 
-# 1.1. Install QEMU static binary for x86_64 emulation (host must register binfmt)
+# 1.1. Install QEMU static binary for x86_64 emulation (direct download, no apt)
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
-        echo "[INFO] Detected ARM64, installing QEMU static binary for x86_64 emulation..."; \
-        apt-get update && apt-get install -y --no-install-recommends qemu-user-static && \
-        # Verify QEMU is installed and accessible
-        which qemu-x86_64-static || { echo "ERROR: QEMU not found"; exit 1; }; \
-        rm -rf /var/lib/apt/lists/*; \
+        echo "[INFO] Detected ARM64, downloading QEMU static binary for x86_64..."; \
+        curl -L --retry 3 https://github.com/multiarch/qemu-user-static/releases/download/v7.2.0-1/qemu-x86_64-static.tar.gz -o /tmp/qemu.tar.gz && \
+        tar xzf /tmp/qemu.tar.gz -C /usr/local/bin/ && \
+        chmod +x /usr/local/bin/qemu-x86_64-static && \
+        rm /tmp/qemu.tar.gz && \
+        echo "[INFO] QEMU static binary installed successfully"; \
     else \
         echo "[INFO] Detected x86_64, skipping QEMU install (not required)"; \
     fi
@@ -82,23 +83,21 @@ RUN mkdir -p ${HOME} && \
     chown -R ${USER}:${USER} ${HOME} && \
     chmod 755 ${HOME}
 
-# 5. Copy Prepared Files from Builder
+# 4. Copy Prepared Files from Builder
 COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader-bin
 COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scripts/
 COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
 
-# 4.1. Create QEMU wrapper for hytale-downloader on ARM64
-ARG TARGETARCH
+# 5. Create QEMU wrapper for hytale-downloader on ARM64
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
-        QEMU_BIN=$(which qemu-x86_64-static) && \
         echo '#!/bin/sh' > /usr/local/bin/hytale-downloader && \
-        echo "exec $QEMU_BIN /usr/local/bin/hytale-downloader-bin \"\$@\"" >> /usr/local/bin/hytale-downloader && \
+        echo 'exec /usr/local/bin/qemu-x86_64-static /usr/local/bin/hytale-downloader-bin "$@"' >> /usr/local/bin/hytale-downloader && \
         chmod +x /usr/local/bin/hytale-downloader; \
     else \
         mv /usr/local/bin/hytale-downloader-bin /usr/local/bin/hytale-downloader; \
     fi
 
-# 5. Build Metadata
+# 6. Build Metadata
 ARG BUILDTIME=local
 ARG VERSION=local
 ARG REVISION=local
