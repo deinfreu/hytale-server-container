@@ -10,6 +10,16 @@ on:
     branches:
       - main
       - staging
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'assets/**'
+      - 'examples/**'
+      - 'SECURITY.md'
+      - 'README.md'
+      - 'DOCKERHUB.md'
+      - '.clinerules'
+      - 'LICENSE'
   workflow_dispatch:
 
 permissions:
