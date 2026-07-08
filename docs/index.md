@@ -2,7 +2,8 @@
 layout: default
 title: Home
 nav_order: 1
-description: "Hytale server container Documentation Home"
+permalink: /
+description: "Official documentation for the Hytale Server Container — a lightweight, secure Docker image for self-hosting Hytale game servers on x86_64 and ARM64."
 ---
 
 # Hytale server container

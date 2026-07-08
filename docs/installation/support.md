@@ -3,6 +3,7 @@ layout: default
 title: "Support"
 parent: "Installation"
 nav_order: 4
+description: "Get help with the Hytale Server Container — debug mode diagnostics, Discord community support, and GitHub issue reporting."
 ---
 
 # Support

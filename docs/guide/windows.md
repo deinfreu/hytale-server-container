@@ -3,6 +3,7 @@ layout: default
 title: "Windows"
 parent: "Guides"
 nav_order: 3
+description: "Deploy the Hytale Server Container on Windows using Docker Desktop with WSL2 backend — installation, machine-id setup, and server deployment."
 ---
 
 # Windows (Docker Desktop)

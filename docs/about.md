@@ -2,7 +2,7 @@
 layout: default
 title: "About"
 nav_order: 6
-description: "About this project"
+description: "Learn about the Hytale Server Container project, its open-source GPL-3.0 license, and how to contribute."
 ---
 
 # About the project

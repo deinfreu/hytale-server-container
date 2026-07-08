@@ -3,6 +3,7 @@ layout: default
 title: "Unraid"
 parent: "Guides"
 nav_order: 6
+description: "Install the Hytale Server Container on Unraid using the Docker web UI — container setup, machine-id configuration, port mapping, and authentication."
 ---
 
 # Unraid

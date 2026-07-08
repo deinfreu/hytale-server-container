@@ -3,6 +3,7 @@ layout: default
 title: "Raspberry Pi"
 parent: "Guides"
 nav_order: 4
+description: "Deploy the Hytale Server Container on Raspberry Pi (ARM64) using QEMU emulation — Docker setup, machine-id configuration, and performance tips."
 ---
 
 # Raspberry Pi (ARM64)

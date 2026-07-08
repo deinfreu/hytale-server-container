@@ -3,6 +3,7 @@ layout: default
 title: "3. Running The Server"
 parent: "Installation"
 nav_order: 3
+description: "Start and authenticate your Hytale server container — download server files, complete Hytale account authentication, and launch the server."
 ---
 
 # Running the Container

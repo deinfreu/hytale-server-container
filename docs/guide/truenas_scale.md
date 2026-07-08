@@ -3,6 +3,7 @@ layout: default
 title: "Truenas Scale"
 parent: "Guides"
 nav_order: 1
+description: "Install the Hytale Server Container on TrueNAS Scale using custom app YAML deployment with volume mounts and port configuration."
 ---
 
 # TrueNAS Scale

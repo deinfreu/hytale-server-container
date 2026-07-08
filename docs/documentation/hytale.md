@@ -3,6 +3,7 @@ layout: default
 title: "Hytale"
 parent: "Documentation"
 nav_order: 1
+description: "Manage Hytale server binaries and updates using the built-in hytale-downloader CLI tool — commands, version checks, pre-release channel, and update instructions."
 ---
 
 # Hytale specific settings

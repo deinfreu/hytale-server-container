@@ -3,6 +3,7 @@ layout: default
 title: "1. Requirements"
 parent: "Installation"
 nav_order: 1
+description: "Hardware and licensing requirements for running the Hytale Server Container — supported OS, architectures (x86_64/ARM64), Docker installation, and storage needs."
 ---
 
 # Requirements & Licensing

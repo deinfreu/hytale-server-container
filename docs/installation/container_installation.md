@@ -3,6 +3,7 @@ layout: default
 title: "2. Container Installation"
 parent: "Installation"
 nav_order: 2
+description: "Install the Hytale Server Container using Docker CLI or Docker Compose — step-by-step setup with volume mounts, environment variables, and authentication."
 ---
 
 # Container installation

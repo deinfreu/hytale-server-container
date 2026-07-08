@@ -3,6 +3,7 @@ layout: default
 title: "Debian 13 (trixie)"
 parent: "Guides"
 nav_order: 5
+description: "Deploy the Hytale Server Container on Debian 13 (trixie) — Docker installation, docker-compose setup, and server authentication."
 ---
 
 # Debian 13 (trixie)
