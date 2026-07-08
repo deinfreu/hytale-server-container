@@ -59,8 +59,8 @@ jobs:
               else
                   TAG_NAME="latest-$BASE_SUFFIX"
               fi
-              PLATFORMS="linux/amd64"
-              NEEDS_QEMU="false"
+              PLATFORMS="linux/amd64,linux/arm64"
+              NEEDS_QEMU="true"
           else
               if [ -z "$BASE_SUFFIX" ]; then
                   TAG_NAME="staging"
