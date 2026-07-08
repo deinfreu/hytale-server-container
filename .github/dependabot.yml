@@ -13,6 +13,15 @@ updates:
       - "docker"
       - "dependencies"
 
+  # 📝 Ruby (Jekyll docs) updates
+  - package-ecosystem: "bundler"
+    directory: "/docs/dev/"
+    schedule:
+      interval: "weekly"
+    target-branch: "main"
+    labels:
+      - "dependencies"
+
   # ⚙️ GitHub Actions updates
   - package-ecosystem: "github-actions"
     directory: "/"
