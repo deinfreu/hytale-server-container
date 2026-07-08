@@ -37,6 +37,12 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
+      - name: Copy root assets into docs
+        run: |
+          mkdir -p docs/assets/images docs/assets/videos
+          cp -n assets/images/* docs/assets/images/ 2>/dev/null || true
+          cp -n assets/videos/* docs/assets/videos/ 2>/dev/null || true
+
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1.0.13
         with:
