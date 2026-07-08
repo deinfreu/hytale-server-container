@@ -44,6 +44,12 @@ Ready to host your world? Ensure you have the correct hardware and a valid Hytal
 
 ---
 
+## Build From Source
+
+Want to build the Docker image yourself or run the documentation site locally? See our [Development guide](./documentation/development.md) for step-by-step instructions on building images and setting up your local environment.
+
+---
+
 ## Need Help?
 
 If you run into trouble, we have resources available:
