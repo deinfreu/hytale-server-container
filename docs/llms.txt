@@ -1,46 +1,122 @@
-# Docker Hytale Server Container
+# Docker Hytale Server Container — Lightweight Self-Hosted Hytale Game Server
 
 Repository: https://github.com/deinfreu/hytale-server-container
 Documentation: https://hytale-server-container.com
 Docker Hub: https://hub.docker.com/r/deinfreu/hytale-server
-License: Apache-2.0
+License: Apache-2.0 (code), GPL-3.0 (container)
 
 ## Description
-Containerized solution for running Hytale dedicated game servers.
-Provides automated server binary management, persistent storage support, and configurable runtime modes for development and production environments.
+
+The Hytale Server Container is a lightweight, production-ready Docker image for self-hosting Hytale dedicated game servers. Built from Alpine Linux with the Liberica JDK, it ships at just 61.7MB — making it one of the smallest available options. It supports both x86_64 and ARM64 architectures, runs as a non-root user by default for security, and includes the `hytale-downloader` CLI tool for managing server binaries and performing in-game updates without rebuilding the container.
+
+The project provides comprehensive documentation covering installation via Docker CLI or Docker Compose, platform-specific guides for Debian 13, Raspberry Pi (ARM64), TrueNAS Scale, Unraid, and Windows WSL2, plus a debug diagnostic suite that audits network configurations and security settings during startup. It is actively maintained by 10+ contributors and designed for stability, performance, and ease of use.
 
 ## Core Capabilities
-- Automated Hytale server binary download and updates
-- Fast startup with optional caching
-- Configurable production and debug modes
-- Persistent storage for server data and worlds
-- Optimized container images (Alpine and Ubuntu)
-- Cross-platform Docker support (x86_64, ARM64 planned)
+
+- **Automated binary management:** The `hytale-downloader` CLI tool downloads, installs, and updates Hytale server binaries from within the container terminal — no image rebuild required.
+- **Tiny footprint:** Alpine-based images starting at 61.7MB with Liberica JDK for optimal performance.
+- **Multi-architecture support:** Native x86_64 builds and ARM64 support via QEMU emulation (Raspberry Pi).
+- **Non-root security:** Container runs as unprivileged user `1000:1000` by default, following Docker best practices.
+- **Diagnostic suite:** Built-in debug mode (`DEBUG=TRUE`) that automatically audits network configurations, security settings, and permissions on startup.
+- **Persistent storage:** Full volume support for world data, configs, logs, and backups — survives container restarts and redeploys.
+- **In-game updates:** Run `hytale-downloader` inside the terminal to update server binaries while preserving all user data.
+- **Configurable runtime:** Environment variables control server port, IP, game mode, player limits, compression, world selection, timezone, caching, backup frequency, and more.
+
+## Architecture & Images
+
+The project provides three Dockerfile variants:
+
+| Image Tag | Base OS | JDK | Purpose |
+|-----------|---------|-----|---------|
+| `latest` (Ubuntu) | Ubuntu | OpenJDK | Full-featured development image |
+| `latest-alpine` | Alpine Linux | OpenJDK | Minimal footprint production image |
+| `latest-alpine-liberica` | Alpine Linux | Liberica JDK | Smallest image (~61.7MB), recommended for production |
+
+All images share the same entrypoint script (`entrypoint.sh`) which orchestrates dependency installation, binary downloading, authentication, and server startup.
 
 ## Configuration
-Server behavior is controlled via environment variables, including:
-- Network binding and port configuration
-- Production and debug mode toggles
-- Startup caching
-- Timezone configuration
 
-## Storage
-- Persistent storage is supported via Docker volumes or bind mounts
-- Server binaries, world data, and configuration files are stored outside the container filesystem
+Server behavior is controlled entirely through environment variables — no manual file editing required:
 
-## Authentication
-Hytale account authentication is required during initial server setup and startup via a web-based flow.
+### Core Settings
+- `TZ` — Timezone for logs (default: `UTC`)
+- `DEBUG` — Enable diagnostic audits (`FALSE` by default)
+- `PROD` — Run production readiness checks (`FALSE` by default)
+- `SERVER_PORT` — UDP port for game traffic (`5520`)
+- `SERVER_IP` — Bind address (`0.0.0.0`)
 
-## Documentation & Guides
-Comprehensive documentation is available, including:
-- General setup and requirements
-- Platform-specific deployment guides (TrueNAS Scale, Unraid, Windows WSL2)
-- Server authentication and runtime behavior
-- Troubleshooting and FAQs
-- Technical details related to Docker, security, and Hytale server operation
+### Hytale Server Options (config.json injection)
+- `HYTALE_SERVER_NAME` — Display name in server browser
+- `HYTALE_MOTD` — Message of the Day
+- `HYTALE_PASSWORD` — Private server password
+- `HYTALE_MAX_PLAYERS` — Concurrent player limit (`100`)
+- `HYTALE_MAX_VIEW_RADIUS` — Chunk render distance (`32`)
+- `HYTALE_COMPRESSION` — Network compression toggle (`false`)
+- `HYTALE_WORLD` — World folder to load (`default`)
+- `HYTALE_GAMEMODE` — Default game mode (`Adventure`)
+
+### Advanced Options
+- `HYTALE_CACHE` — Enable Ahead-Of-Time caching (`FALSE`)
+- `HYTALE_BACKUP` — Auto-backup on startup (`FALSE`)
+- `HYTALE_BACKUP_DIR` — Backup storage directory (`./backups`)
+- `HYTALE_BACKUP_FREQUENCY` — Backup interval in minutes
+- `HYTALE_BACKUP_MAX_COUNT` — Maximum retained backups
+- `JAVA_ARGS` — Custom JVM flags
+
+## Storage & Volumes
+
+The container uses `/home/container` as its working directory. All persistent data should be mounted here:
+
+| Container Path | Purpose |
+|----------------|---------|
+| `/home/container` | World files, configs, logs, and server data |
+| `/etc/machine-id` (read-only) | Persistent host machine identity for server authorization |
+
+Machine-ID persistence is critical — without it, the server regenerates its identity on each restart, requiring re-authentication. On systems where `/etc/machine-id` does not persist reliably (WSL2, Unraid, Raspberry Pi), create a local `machine-id` file and mount it read-only.
+
+## Authentication Flow
+
+Hytale requires account authentication during initial setup:
+
+1. Start the container without `-d` flag to access the terminal.
+2. The entrypoint script displays a verification URL with an embedded code.
+3. Open the link in a browser, log into your Hytale account.
+4. After authorization, server binaries are downloaded and the server starts automatically.
+
+A second authentication step occurs after the server boots — authorize the server instance itself using the same flow. Once complete, the server is ready for player connections.
+
+## CLI Tool: hytale-downloader
+
+The container includes a built-in CLI tool accessible via `docker exec`:
+
+| Command | Description |
+|---------|-------------|
+| `hytale-downloader` | Download latest release and install binaries |
+| `hytale-downloader -print-version` | Show current Hytale game version |
+| `hytale-downloader -version` | Show hytale-downloader tool version |
+| `hytale-downloader -check-update` | Check for CLI updates |
+| `hytale-downloader -patchline pre-release` | Download from the pre-release channel |
+| `hytale-downloader -skip-update-check` | Skip automatic update check on startup |
+
+## Documentation Site Structure
+
+The documentation is a Jekyll site using the Just the Docs theme, deployed at https://hytale-server-container.com:
+
+- **Home** — Overview, features, quick start links
+- **Installation** — Requirements, Docker CLI/Compose setup, running the server, support
+- **Guides** — Platform-specific tutorials (Debian 13, Raspberry Pi, TrueNAS Scale, Unraid, Windows WSL2)
+- **Documentation** — Docker configuration reference, Hytale settings, development guide
+- **FAQ** — Common issues: re-authentication loops, permission errors, updates, in-game commands
 
 ## Use Cases
-- Self-hosting Hytale dedicated servers
-- Mod development and testing
-- Persistent multiplayer worlds
-- Development and production server deployments
+
+- Self-hosting Hytale dedicated servers for personal or community use
+- Mod development and testing environments
+- Persistent multiplayer worlds with automated backups
+- CI/CD pipeline integration via Docker Compose
+- Edge deployment on ARM64 hardware (Raspberry Pi)
+- Homelab server deployments on TrueNAS Scale or Unraid
+
+## Contributing
+
+The project welcomes contributions under GPL-3.0. See the GitHub repository for coding standards and pull request guidelines. Join the Discord community for support discussions and feature requests.
