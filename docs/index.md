@@ -18,7 +18,11 @@ A lightweight, user-friendly Docker container for hosting Hytale servers. With a
 
 ---
 
-![Terminal demo](./assets/videos/terminal.gif)
+<video 
+  width="100%" autoplay loop muted playsinline poster="./assets/images/terminal.jpg">
+  <source src="./assets/videos/terminal.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 ## Key Features
 

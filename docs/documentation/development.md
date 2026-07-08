@@ -11,7 +11,6 @@ This page covers all approaches for running the documentation site and building 
 
 ---
 
-
 ## Building the Server Container
 
 Build the Hytale server Docker image yourself on Linux.
