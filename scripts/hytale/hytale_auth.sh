@@ -42,12 +42,12 @@ generate_hardware_id() {
         SALT="hytale-server-container-hardware-id-v1"
         HASH=$(printf '%s-%s' "$CONTAINER_NAME" "$SALT" | sha256sum | cut -d' ' -f1)
         # RFC 4122 UUID v4: force version=4 at index 12, variant nibble at index 16
-        printf '%s-%s-%s-%s-%s\n' \
-            "${HASH:0:8}" \
-            "${HASH:8:4}" \
-            "4${HASH:13:3}" \
-            "8${HASH:17:3}" \
-            "${HASH:20:12}" > "$HARDWARE_ID_FILE"
+        UUID_PART1=$(printf '%s' "$HASH" | cut -c1-8)
+        UUID_PART2=$(printf '%s' "$HASH" | cut -c9-12)
+        UUID_PART3="4$(printf '%s' "$HASH" | cut -c14-16)"
+        UUID_PART4="8$(printf '%s' "$HASH" | cut -c18-20)"
+        UUID_PART5=$(printf '%s' "$HASH" | cut -c21-32)
+        printf '%s-%s-%s-%s-%s\n' "$UUID_PART1" "$UUID_PART2" "$UUID_PART3" "$UUID_PART4" "$UUID_PART5" > "$HARDWARE_ID_FILE"
     fi
 
     HARDWARE_ID="$(cat "$HARDWARE_ID_FILE")"
@@ -88,10 +88,13 @@ check_hardware_id() {
 
 start_auth_monitor() {
     (
-        sleep 5
+        # Increased initial wait for ARM64/QEMU emulation overhead
+        sleep 10
 
+        AUTH_SELECT_PROFILE="${AUTH_SELECT_PROFILE:-0}"
         LOG_FILE=""
-        for i in $(seq 1 30); do
+        # Extended retry window for ARM64/QEMU (60 × 2s = 120s vs old 30 × 2s = 60s)
+        for i in $(seq 1 60); do
             for f in /home/container/Server/logs/*_server.log; do
                 if [ -f "$f" ]; then
                     LOG_FILE="$f"
@@ -99,6 +102,16 @@ start_auth_monitor() {
                 fi
             done
             sleep 2
+        done
+
+        # Wait for FIFO pipe to be consumed (hytale_start.sh opens it) before monitoring
+        _fifo_ready=0
+        while [ $_fifo_ready -eq 0 ]; do
+            if [ -p "$AUTH_PIPE" ] && [ -f "${LOG_FILE:-/dev/null}" ]; then
+                _fifo_ready=1
+            else
+                sleep 1
+            fi
         done
 
         if [ -n "$LOG_FILE" ] && [ -f "$LOG_FILE" ]; then

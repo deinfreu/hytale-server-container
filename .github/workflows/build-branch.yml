@@ -20,6 +20,20 @@ on:
       - 'DOCKERHUB.md'
       - '.clinerules'
       - 'LICENSE'
+  pull_request:
+    branches:
+      - main
+      - staging
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'assets/**'
+      - 'examples/**'
+      - 'SECURITY.md'
+      - 'README.md'
+      - 'DOCKERHUB.md'
+      - '.clinerules'
+      - 'LICENSE'
   workflow_dispatch:
 
 permissions:
@@ -30,6 +44,10 @@ jobs:
   build:
     name: "🐳 Build & Push Images"
     runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.repository == github.event.pull_request.base.repo.full_name)
     strategy:
       fail-fast: false
       matrix:
@@ -51,6 +69,9 @@ jobs:
         id: context
         run: |
           BRANCH="${{ github.ref_name }}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BRANCH="${{ github.base_ref_name }}"
+          fi
           BASE_SUFFIX="${{ matrix.base_suffix }}"
           
           if [ "$BRANCH" = "main" ]; then
@@ -59,8 +80,8 @@ jobs:
               else
                   TAG_NAME="latest-$BASE_SUFFIX"
               fi
-              PLATFORMS="linux/amd64"
-              NEEDS_QEMU="false"
+              PLATFORMS="linux/amd64,linux/arm64"
+              NEEDS_QEMU="true"
           else
               if [ -z "$BASE_SUFFIX" ]; then
                   TAG_NAME="staging"
@@ -84,6 +105,7 @@ jobs:
         uses: docker/setup-buildx-action@v4.2.0
 
       - name: Login to Docker Hub
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v4.4.0
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -102,7 +124,7 @@ jobs:
         with:
           context: .
           file: ./${{ matrix.dockerfile }}
-          push: true
+          push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           platforms: ${{ steps.context.outputs.platforms }}
           tags: |
             ghcr.io/deinfreu/hytale-server:${{ steps.context.outputs.tag_suffix }}
