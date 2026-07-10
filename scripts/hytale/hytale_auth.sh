@@ -61,7 +61,7 @@ check_hardware_id() {
         printf "${GREEN}${HARDWARE_ID}${NC}\n"
         log_success
 
-        if [ -f "$BASE_DIR/auth.enc" ]; then
+        if [ -f "$BASE_DIR/Server/auth.enc" ]; then
             log_step "Credential Persistence"
             printf "${GREEN}enabled (auth.enc file found)${NC}\n"
             RUN_AUTO_AUTH="FALSE"
@@ -75,7 +75,7 @@ check_hardware_id() {
         log_success
         printf "    ${DIM}↳ Info:${NC} Stored in ${BASE_DIR}/.hardware-id\n"
 
-        if [ -f "$BASE_DIR/auth.enc" ]; then
+        if [ -f "$BASE_DIR/Server/auth.enc" ]; then
             log_step "Credential Persistence"
             printf "${GREEN}enabled (auth.enc file found)${NC}\n"
             RUN_AUTO_AUTH="FALSE"
