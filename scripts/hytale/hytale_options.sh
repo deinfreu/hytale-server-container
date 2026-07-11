@@ -166,8 +166,8 @@ check_bool "Validate Assets"             "${HYTALE_VALIDATE_ASSETS:-}"
 check_bool "Validate World Gen"          "${HYTALE_VALIDATE_WORLD_GEN:-}"
 [ "${HYTALE_VALIDATE_WORLD_GEN:-}" = "TRUE" ] && set_flag HYTALE_VALIDATE_WORLD_GEN_OPT "--validate-world-gen"
 
-check_bool "AOT Cache Log"               "${HYTALE_CACHE_LOG:-}"
-if [ "${HYTALE_CACHE_LOG:-}" = "TRUE" ]; then set_flag HYTALE_CACHE_LOG_OPT "-Xlog:aot"; fi
+check_bool "Class-Data Cache Log"        "${HYTALE_CACHE_LOG:-}"
+if [ "${HYTALE_CACHE_LOG:-}" = "TRUE" ]; then set_flag HYTALE_CACHE_LOG_OPT "-Xlog:cds"; fi
 
 # --- String/Value options ---
 log_step "Authentication Mode"
@@ -277,11 +277,24 @@ fi
 check_string  "World Gen Path"      "${HYTALE_WORLD_GEN:-}"
 [ -n "${HYTALE_WORLD_GEN:-}" ]     && set_flag HYTALE_WORLD_GEN_OPT "--world-gen=$HYTALE_WORLD_GEN"
 
-# --- AOT Cache (special handling) ---
-log_step "AOT Cache"
+# --- Class-Data Cache (special handling) ---
+# Uses dynamic AppCDS, NOT the JDK 25 AOT cache (-XX:AOTCache). The AOT cache
+# can't work here: the .aot.config shipped in the server package is tied to
+# Hytale's own JVM build, and generating one locally fails (the JVM refuses to
+# archive parts of the server's live heap). Dynamic CDS archives class metadata
+# only, so it builds cleanly with our JVM. -XX:+AutoCreateSharedArchive creates
+# the archive on first exit and transparently rebuilds it whenever the jar
+# changes, so no separate training run or staleness tracking is needed.
+log_step "Class-Data Cache"
 if [ "${HYTALE_CACHE:-}" = "TRUE" ]; then
-    set_flag HYTALE_CACHE_OPT "-XX:AOTCache=$HYTALE_CACHE_DIR"
-    printf "${GREEN}enabled${NC} (file: ${CYAN}${HYTALE_CACHE_DIR}${NC})\n"
+    # The server runs with CWD=Server (hytale_start.sh), so anchor a relative
+    # cache path to $BASE_DIR to avoid resolving it under Server/Server/.
+    case "$HYTALE_CACHE_DIR" in
+        /*) HYTALE_CACHE_PATH="$HYTALE_CACHE_DIR" ;;
+        *)  HYTALE_CACHE_PATH="${BASE_DIR:-/home/container}/$HYTALE_CACHE_DIR" ;;
+    esac
+    set_flag HYTALE_CACHE_OPT "-XX:+AutoCreateSharedArchive -XX:SharedArchiveFile=$HYTALE_CACHE_PATH"
+    printf "${GREEN}enabled${NC} (AppCDS archive: ${CYAN}${HYTALE_CACHE_PATH}${NC})\n"
 fi
 
 printf "      ${DIM}↳ Server Options:${NC} ${GREEN}Ready${NC}\n"
