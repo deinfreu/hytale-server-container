@@ -70,10 +70,10 @@ jobs:
         run: |
           BRANCH="${{ github.ref_name }}"
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BRANCH="${{ github.base_ref_name }}"
+            BRANCH="${{ github.base_ref }}"
           fi
           BASE_SUFFIX="${{ matrix.base_suffix }}"
-          
+
           if [ "$BRANCH" = "main" ]; then
               if [ -z "$BASE_SUFFIX" ]; then
                   TAG_NAME="latest"
@@ -91,7 +91,7 @@ jobs:
               PLATFORMS="linux/amd64,linux/arm64"
               NEEDS_QEMU="true"
           fi
-          
+
           echo "tag_suffix=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "platforms=$PLATFORMS" >> $GITHUB_OUTPUT
           echo "needs_qemu=$NEEDS_QEMU" >> $GITHUB_OUTPUT
@@ -127,7 +127,7 @@ jobs:
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           platforms: ${{ steps.context.outputs.platforms }}
           tags: |
-            ghcr.io/deinfreu/hytale-server:${{ steps.context.outputs.tag_suffix }}
-            deinfreu/hytale-server:${{ steps.context.outputs.tag_suffix }}
+            ghcr.io/${{ github.repository_owner }}/hytale-server:${{ steps.context.outputs.tag_suffix }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/hytale-server:${{ steps.context.outputs.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

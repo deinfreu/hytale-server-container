@@ -27,7 +27,7 @@ jobs:
         run: |
           # 1. Fetch metadata with authentication to avoid API rate limits
           TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "${{ secrets.DOCKER_HUB_USERNAME }}", "password": "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
-          JSON_DATA=$(curl -s -H "Authorization: JWT ${TOKEN}" "https://hub.docker.com/v2/repositories/deinfreu/hytale-server/tags/latest-alpine-liberica")
+          JSON_DATA=$(curl -s -H "Authorization: JWT ${TOKEN}" "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_HUB_USERNAME }}/hytale-server/tags/latest-alpine-liberica")
           
           # 2. Extract size and convert to MB met awk
           SIZE_BYTES=$(echo "$JSON_DATA" | jq -r '.full_size')
@@ -57,7 +57,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          repository: deinfreu/hytale-server
+          repository: ${{ secrets.DOCKER_HUB_USERNAME }}/hytale-server
           short-description: ${{ steps.get_info.outputs.DOCKER_DESC }}
           readme-filepath: DOCKERHUB.md
           enable-url-completion: true
