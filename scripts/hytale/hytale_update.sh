@@ -28,17 +28,22 @@ set -eu
 
 extract_and_stage_server() {
     local ZIP_FILE="$1"
+    local STAGING_DIR="$GAME_DIR/updater/staging"
 
     log_step "Extracting to staging area"
-    mkdir -p "$GAME_DIR/updater/staging"
+    rm -rf "$STAGING_DIR"
+    mkdir -p "$STAGING_DIR"
 
     if [ "${DEBUG:-FALSE}" = "TRUE" ]; then
         printf "      ${DIM}↳ Source:${NC} %s\n" "$(basename "$ZIP_FILE")"
-        printf "      ${DIM}↳ Target:${NC} ${GREEN}%s${NC}\n" "$BASE_DIR"
+        printf "      ${DIM}↳ Target:${NC} ${GREEN}%s${NC}\n" "$STAGING_DIR"
     fi
 
-    # Overwrites only archived files; user data/configs/mods untouched
-    if 7z x "$ZIP_FILE" -aoa -bsp1 -mmt=on -o"$BASE_DIR" >/dev/null 2>&1; then
+    # Extract into the staging area (NOT $BASE_DIR): the apply step below copies
+    # from updater/staging/ into the live server dirs. Extracting straight to
+    # $BASE_DIR left staging empty, so the "Missing Server/HytaleServer.jar"
+    # guard always tripped and no update was ever applied.
+    if 7z x "$ZIP_FILE" -aoa -bsp1 -mmt=on -o"$STAGING_DIR" >/dev/null 2>&1; then
         log_success
     else
         log_error "Extraction failed" "Check disk space or 7z compatibility."
