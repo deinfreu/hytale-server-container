@@ -54,7 +54,6 @@ extract_and_stage_server() {
     cd "$GAME_DIR"
     if [ -f "updater/staging/Server/HytaleServer.jar" ]; then
         cp -f updater/staging/Server/HytaleServer.jar Server/
-        [ -f "updater/staging/Server/HytaleServer.aot" ]  && cp -f updater/staging/Server/HytaleServer.aot Server/
         [ -d "updater/staging/Server/Licenses" ]          && rm -rf Server/Licenses && cp -r updater/staging/Server/Licenses Server/
         [ -f "updater/staging/Assets.zip" ]               && cp -f updater/staging/Assets.zip ./
         [ -f "updater/staging/start.sh" ]                 && cp -f updater/staging/start.sh ./

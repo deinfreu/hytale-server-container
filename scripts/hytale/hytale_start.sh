@@ -34,7 +34,6 @@ apply_staged_update() {
 
     log_step "Applying staged update"
     cp -f updater/staging/Server/HytaleServer.jar Server/
-    [ -f "updater/staging/Server/HytaleServer.aot" ]   && cp -f updater/staging/Server/HytaleServer.aot Server/
     [ -d "updater/staging/Server/Licenses" ]           && rm -rf Server/Licenses && cp -r updater/staging/Server/Licenses Server/
     [ -f "updater/staging/Assets.zip" ]                && cp -f updater/staging/Assets.zip ./
     rm -rf updater/staging

@@ -41,7 +41,7 @@ fi
 
 log_step "Setting Server Binary Permissions"
 # Make server binaries executable (755)
-find "$GAME_DIR/Server" -maxdepth 1 -type f \( -name "*.jar" -o -name "*.aot" \) -exec chmod 755 {} \; 2>/dev/null || true
+find "$GAME_DIR/Server" -maxdepth 1 -type f -name "*.jar" -exec chmod 755 {} \; 2>/dev/null || true
 log_success
 
 log_step "Setting Executable File Permissions"
@@ -67,7 +67,7 @@ chown -R container:container "$GAME_DIR" 2>/dev/null || true
 log_success
 
 if [ "${DEBUG:-FALSE}" = "TRUE" ]; then
-    printf "      ${DIM}↳ Binaries (.jar, .aot):${NC} ${GREEN}755${NC} (rwxr-xr-x)\n"
+    printf "      ${DIM}↳ Binaries (.jar):${NC} ${GREEN}755${NC} (rwxr-xr-x)\n"
     printf "      ${DIM}↳ Executables (Assets.zip, start.sh, start.bat):${NC} ${GREEN}755${NC} (rwxr-xr-x)\n"
     printf "      ${DIM}↳ Configs (.json, .enc):${NC} ${GREEN}644${NC} (rw-r--r--)\n"
     printf "      ${DIM}↳ Directories:${NC} ${GREEN}755${NC} (rwxr-xr-x)\n"
