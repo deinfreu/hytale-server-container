@@ -73,7 +73,7 @@ Options are listed in the same order as they appear in `java -jar HytaleServer.j
 
 ## Hytale Settings (config.json)
 
-These variables directly inject values into the `home/container/config.json` file on startup.
+These variables directly inject values into the `home/container/Server/config.json` file on startup.
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
