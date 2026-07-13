@@ -1,41 +1,30 @@
 <div align="center" width="100%">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/deinfreu/hytale-server-container/blob/main/assets/images/logo_dark.png?raw=true">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/deinfreu/hytale-server-container/blob/main/assets/images/logo_light.png?raw=true">
-  <img alt="Docker Hytale Server Logo" src="https://github.com/deinfreu/hytale-server-container/blob/main/assets/images/logo_light.png?raw=true" width="800">
-</picture>
-
 [![GitHub stars](https://img.shields.io/github/stars/deinfreu/hytale-server-container?style=for-the-badge&color=daaa3f)](https://github.com/deinfreu/hytale-server-container)
-[![GitHub last commit](https://img.shields.io/github/last-commit/deinfreu/hytale-server-container?style=for-the-badge)](https://github.com/deinfreu/hytale-server-container)
-[![Discord](https://img.shields.io/discord/1458149014808821965?style=for-the-badge&label=Discord&labelColor=5865F2)](https://discord.gg/M8yrdnHb32)
-[![Docker Pulls](https://img.shields.io/docker/pulls/deinfreu/hytale-server?style=for-the-badge)](https://hub.docker.com/r/deinfreu/hytale-server)
-[![Docker Image Size (tag)](https://img.shields.io/docker/image-size/deinfreu/hytale-server/latest-alpine-liberica?sort=date&style=for-the-badge&label=ALPINE%20LIBERICA%20SIZE)](https://hub.docker.com/layers/deinfreu/hytale-server/latest-alpine-liberica/images/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/deinfreu/hytale-server?style=for-the-badge&label=PULLS)](https://hub.docker.com/r/deinfreu/hytale-server)
+[![Size (tag)](https://img.shields.io/docker/image-size/deinfreu/hytale-server/latest-alpine-liberica?sort=date&style=for-the-badge&label=SIZE)](https://hub.docker.com/layers/deinfreu/hytale-server/latest-alpine-liberica/images/)
 [![GitHub license](https://img.shields.io/github/license/deinfreu/hytale-server-container?style=for-the-badge)](https://github.com/deinfreu/hytale-server-container/blob/main/LICENSE)
+[![Discord](https://img.shields.io/discord/1458149014808821965?style=for-the-badge&label=Discord&labelColor=5865F2)](https://discord.gg/M8yrdnHb32)
 
-Deploy a Hytale dedicated server with a community-focused Docker image by 10+ contributors. This project simplifies Hytale self-hosting with built-in security, networking and debugging tools. Join our active Discord for direct support and to connect with other server owners. Whether you're testing mods or running a persistent world, this container provides a consistent, production-ready environment in one command.
+Simply use the docker run command or docker compose, follow the authentication steps in the terminal, and your server will be ready in seconds. Designed by a community of 10+ contributors, this image prioritizes stability, security, and performance, allowing you to focus on managing your world rather than debugging your environment.
 
 </div>
 
-## Support & Resources
-
-* **Documentation:** Detailed performance optimizations and security specifications are located in the [Project Docs](https://hytale-server-container.com/?utm_source=dockerhub&utm_medium=social&utm_campaign=dockerhub_readme).
-* **Troubleshooting:** Check the [support](https://hytale-server-container.com/installation/support/?utm_source=dockerhub&utm_medium=social&utm_campaign=dockerhub_readme) page and our [Security Policy](SECURITY.md) before reporting issues. You can also visit our [Discord](https://discord.com/invite/2kn2T6zpaV)
+> [!WARNING]
+> **A valid Hytale game license is required for container authorization.**
+>
+> On the first launch, the server will display an authentication URL in your terminal. Open this link in your browser, log in with your Hytale account, and follow the instructions to authorize the server.
 
 ## Quick start
 
-Install docker [CLI](https://docs.docker.com/engine/install/) on linux or the [GUI](https://docs.docker.com/desktop) on windows, macos and linux
+### Docker run
 
-You can run the container by running this in your CLI
+> [!TIP]
+> container image: "alpine-liberica" provides the smallest footprint and fastest startup time.
 
 ```bash
 docker run \
   --name hytale-server \
-  -e SERVER_IP="0.0.0.0" \
-  -e SERVER_PORT="5520" \
-  -e PROD="FALSE" \
-  -e DEBUG="FALSE" \
-  -e TZ="Europe/Amsterdam" \
   -p 5520:5520/udp \
   -v "hytale-server:/home/container" \
   -v "/etc/machine-id:/etc/machine-id:ro" \
@@ -43,19 +32,16 @@ docker run \
   deinfreu/hytale-server:latest
 ```
 
-Alternatively, you can deploy using Docker Compose. Use the configuration below or explore the [examples](https://github.com/deinfreu/hytale-server-container/tree/main/examples) folder for more advanced templates.
+### Docker compose
+
+> [!IMPORTANT]
+> You need to run ```docker compose up``` without the "-d" flag for terminal-based authorization.
 
 ```bash
 services:
   hytale:
     image: deinfreu/hytale-server:latest
     container_name: hytale-server
-    environment:
-      SERVER_IP: "0.0.0.0"
-      SERVER_PORT: "5520"
-      PROD: "FALSE"
-      DEBUG: "FALSE"
-      TZ: "Europe/Amsterdam"
     restart: unless-stopped
     ports:
       - "5520:5520/udp"
@@ -65,3 +51,43 @@ services:
     tty: true
     stdin_open: true
 ```
+
+For additional deployment configurations, see our [examples](https://github.com/deinfreu/hytale-server-container/tree/main/examples) or refer to the [installation](https://hytale-server-container.com/installation/container_installation/?utm_source=github&utm_medium=social&utm_campaign=github_readme) and [OS-specific](https://hytale-server-container.com/guide/?utm_source=github&utm_medium=social&utm_campaign=github_readme) guides.
+
+## File structure
+
+Once the initial run is complete, your server-files directory will be populated with the following structure:
+
+```
+data/
+├── Server/
+│   ├── .cache/
+│   ├── Licenses/
+│   ├── logs/
+│   ├── mods/
+│   ├── telemetry/
+│   ├── universe/
+│   ├── auth.enc
+│   ├── auth.key
+│   ├── bans.json
+│   ├── config.json
+│   ├── config.json.bak
+│   ├── HytaleServer.aot.config
+│   ├── HytaleServer.jar
+│   ├── permissions.json
+│   └── whitelist.json
+├── .hytale-downloader-credentials.json
+└── Assets.zip
+```
+
+## Support & Resources
+
+**Support:** 
+- OS Specific installation guide at [hytale-server-container.com/guide](https://hytale-server-container.com/guide/?utm_source=github&utm_medium=social&utm_campaign=github_readme).
+- Full installation guide available at [hytale-server-container.com/installation](https://hytale-server-container.com/installation/?utm_source=github&utm_medium=social&utm_campaign=github_readme).
+- Enviroment variables and more: [hytale-server-container.com/technical](https://hytale-server-container.com/technical/?utm_source=github&utm_medium=social&utm_campaign=github_readme).
+
+**Troubleshooting:**
+- For frequently asked questions: [hytale-server-container.com/faq](https://hytale-server-container.com/faq/?utm_source=github&utm_medium=social&utm_campaign=github_readme)
+- Join our community and ask your question! [Discord Community](https://discord.com/invite/M8yrdnHb32?utm_source=github&utm_medium=social&utm_campaign=github_readme)
+- To check what is actively happening to this github repo and what is planned [GitHub Issues](https://github.com/deinfreu/hytale-server-container/issues?utm_source=github&utm_medium=social&utm_campaign=github_readme)
