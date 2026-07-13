@@ -94,7 +94,6 @@ JAVAEOF
 
 run_server() {
     local java_cmd="$1"
-    RUNTIME_CMD="${RUNTIME:-}"
 
     # Open AUTH_PIPE read-write on fd 3 so java holds a permanent reader
     # reference on its own stdin. This avoids relaying through a separate
@@ -102,12 +101,13 @@ run_server() {
     # FIFO risks a lost handoff or EOF race. With java holding the pipe open
     # O_RDWR directly, external writers (`echo cmd > "$AUTH_PIPE"`) always
     # have an attached reader and their writes reach java's stdin directly.
-    if [ -n "$RUNTIME_CMD" ]; then
-        $RUNTIME sh -c "exec 3<>\"$AUTH_PIPE\"; $java_cmd <&3 2>&1 | stdbuf -oL -eL sed 's/\r$//' | stdbuf -oL -eL tee \"$AUTH_OUTPUT_LOG\""
-    else
-        exec 3<>"$AUTH_PIPE"
-        $java_cmd <&3 2>&1 | stdbuf -oL -eL sed 's/\r$//' | stdbuf -oL -eL tee "$AUTH_OUTPUT_LOG"
-    fi
+
+    exec 3<>"$AUTH_PIPE"
+    exec 4<&0               # capturing stdin on fd 4
+    $RUNTIME cat <&4 >&3 &  # background job reads fd 4 instead of /dev/null default substitution
+
+    $RUNTIME sh -c "$java_cmd" <&3 2>&1 | stdbuf -oL -eL sed 's/\r$//' | stdbuf -oL -eL tee "$AUTH_OUTPUT_LOG"
+
 }
 
 handle_exit_code() {
