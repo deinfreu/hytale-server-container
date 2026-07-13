@@ -10,6 +10,7 @@ on:
       - main
     paths:
       - 'README.md'
+      - 'DOCKERHUB.md'
   workflow_dispatch:
 
 permissions:
@@ -35,11 +36,11 @@ jobs:
           
           # 3. Create the strings
           # Long version for GitHub
-          GH_DESC="Hytale Docker Server 📦 ${SIZE_MB}MB (Alpine/Liberica) • Secure non-root execution • QUIC/UDP • Built-in Production & Debug diagnostics • Pterodactyl coming soon..."
-          
+          GH_DESC="Lightweight, user-friendly Hytale server Docker container. 📦 Tiny ${SIZE_MB}MB footprint, ARM64 support, secure non-root execution, in-game updates, webiste, and comprehensive documentation."
+
           # Short version for Docker Hub
-          DH_DESC="📦 ${SIZE_MB}MB (Alpine/Liberica) • Non-root • QUIC • Prod/Debug • Pterodactyl soon"
-          
+          DH_DESC="Hytale server Docker container. 📦 Tiny ${SIZE_MB}MB, ARM64, non-root, updates, documentation & website."
+
           # 4. EXPORT THEM PROPERLY
           echo "GITHUB_DESC=$GH_DESC" >> $GITHUB_OUTPUT
           echo "DOCKER_DESC=$DH_DESC" >> $GITHUB_OUTPUT
