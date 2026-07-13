@@ -56,16 +56,22 @@ run_downloader() {
     log_step "Authenticating and fetching binaries"
     log_break 2
 
+    # If HYTALE_PATCHLINE is defined, append the corresponding patchline flag to the download command.
+    local DOWNLOAD_CMD="hytale-downloader"
+    if [ -n "${HYTALE_PATCHLINE:-}" ]; then
+        DOWNLOAD_CMD="$DOWNLOAD_CMD -patchline $HYTALE_PATCHLINE"
+    fi
+
     if [ "$(id -u)" = "0" ]; then
         if command -v gosu >/dev/null 2>&1; then
-            gosu container:container env HOME=/home/container sh -c 'cd $HOME && hytale-downloader'
+            gosu container:container env HOME=/home/container sh -c "cd \$HOME && $DOWNLOAD_CMD"
         elif command -v su-exec >/dev/null 2>&1; then
-            su-exec container:container env HOME=/home/container sh -c 'cd $HOME && hytale-downloader'
+            su-exec container:container env HOME=/home/container sh -c "cd \$HOME && $DOWNLOAD_CMD"
         else
-            hytale-downloader
+            $DOWNLOAD_CMD
         fi
     else
-        hytale-downloader
+        $DOWNLOAD_CMD
     fi
 }
 
@@ -81,18 +87,17 @@ for f in "$BASE_DIR"/*.zip; do
     # Get just the filename
     filename=$(basename "$f")
 
-    # Skip Assets.zip and only accept files matching semantic versioning
-    # This pattern matches files like 0.5.6.zip, 1.0.0.zip, etc.
-    case "$filename" in
-        [0-9]*.[0-9]*.[0-9]*.zip)
-            # Validate it's actually semantic versioning (digits.digits.digits.zip)
-            base="${filename%.zip}"
-            if echo "$base" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-                ZIP_FILE="$f"
-                break
-            fi
-            ;;
-    esac
+    # Extract base name to validate against the pattern
+    base="${filename%.zip}"
+
+    # Regex breakdown:
+    # ^[0-9]+\.[0-9]+\.[0-9]+  -> Matches the main version (e.g., 0.6.0)
+    # (-[a-zA-Z0-9.-]+)?       -> Optionally matches a hyphen followed by pre-release info (e.g., -pre.7)
+    # $                        -> End of string
+    if echo "$base" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$'; then
+        ZIP_FILE="$f"
+        break
+    fi
 done
 
 if [ -z "$ZIP_FILE" ]; then
