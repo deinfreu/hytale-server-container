@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Development"
+title: "Local Development"
 parent: "Documentation"
 nav_order: 3
 description: "Build the Hytale Server Container Docker image from source and run the Jekyll documentation site locally with Ruby, Bundler, or Docker."

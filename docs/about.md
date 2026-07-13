@@ -18,7 +18,7 @@ Hytale Server Container is distributed under the [GPL-3.0](https://github.com/de
 When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change.
 
-#### Thank you to the contributors of Just the Docs!
+#### Thank you to the contributors!
 
 <ul class="list-style-none">
 {% for contributor in site.github.contributors %}
