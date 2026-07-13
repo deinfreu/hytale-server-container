@@ -8,11 +8,6 @@
 
 Simply use the docker run command or docker compose, follow the authentication steps in the terminal, and your server will be ready in seconds. Designed by a community of 10+ contributors, this image prioritizes stability, security, and performance, allowing you to focus on managing your world rather than debugging your environment.
 
-<video width="100%" autoplay loop muted playsinline poster="https://github.com/deinfreu/hytale-server-container/blob/main/assets/images/terminal.jpg">
-  <source src="https://github.com/deinfreu/hytale-server-container/blob/main/assets/videos/terminal.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
 </div>
 
 > [!WARNING]
