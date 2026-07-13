@@ -11,7 +11,7 @@ description: "Official documentation for the Hytale Server Container — a light
 
 deinfreu/hytale-server-container
 
-A lightweight, user-friendly Docker container for hosting Hytale servers. With a tiny 61.7MB footprint, ARM64 support, secure non-root execution, and in-game updates, we prioritize stability and performance so you can focus on managing your world.
+A lightweight, plug & play Docker container for hosting Hytale servers. With a tiny 61.7MB footprint, ARM64 support, secure non-root execution, and in-game updates.
 {: .fs-6 .fw-400 }
 
 [Getting started](/installation/requirements.md){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
@@ -24,6 +24,18 @@ A lightweight, user-friendly Docker container for hosting Hytale servers. With a
   <source src="./assets/videos/terminal.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
+
+## Hytale Server Hosting, Made Simple
+
+I created this project to help everyone get started with building their own Hytale server to play on with friends. When I was younger, I used to set up Minecraft servers for my friends. I spent what felt like ages researching the most performant ways to run a server on low-spec hardware, just to squeeze every bit of efficiency out of the machine. While it resulted in great times playing together, in hindsight, I should have focused less on the technical setup and more on just creating and enjoying the game with friends.
+
+Because of that experience, I designed this Hytale server Docker container with a few key architectural goals in mind. And I will keep improving them as we go!
+
+Plug-and-play simplicity: I firmly believe that code found on the internet should be incredibly easy to run. There is nothing worse than finding the perfect solution to your problem, only to realize it doesn't work when you try it out. Running this Docker container and setting up a world for your friends should be effortless.
+
+Optimized out-of-the-box: You shouldn't have to spend hours researching online how to get the best performance out of a Hytale server. The most optimal performance flags are already enabled by default!
+
+For now, enjoy the smooth sailing and have fun playing the game! If you have any improvements in mind, feel free to open a GitHub issue.
 
 ## Key Features
 
