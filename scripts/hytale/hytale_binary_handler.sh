@@ -33,18 +33,17 @@ determine_install_state() {
         # Get just the filename
         filename=$(basename "$f")
 
-        # Skip Assets.zip and only accept files matching semantic versioning
-        # This pattern matches files like 0.5.6.zip, 1.0.0.zip, etc.
-        case "$filename" in
-            [0-9]*.[0-9]*.[0-9]*.zip)
-                # Validate it's actually semantic versioning (digits.digits.digits.zip)
-                base="${filename%.zip}"
-                if echo "$base" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-                    ZIP_FILE="$f"
-                    break
-                fi
-                ;;
-        esac
+        # Extract base name to validate against the pattern
+        base="${filename%.zip}"
+
+        # Regex breakdown:
+        # ^[0-9]+\.[0-9]+\.[0-9]+  -> Matches the main version (e.g., 0.6.0)
+        # (-[a-zA-Z0-9.-]+)?       -> Optionally matches a hyphen followed by pre-release info (e.g., -pre.7)
+        # $                        -> End of string
+        if echo "$base" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$'; then
+            ZIP_FILE="$f"
+            break
+        fi
     done
 
     # Decision logic based on detection
