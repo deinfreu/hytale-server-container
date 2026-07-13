@@ -96,18 +96,26 @@ run_server() {
     local java_cmd="$1"
     RUNTIME_CMD="${RUNTIME:-}"
 
-    # Open AUTH_PIPE read-write on fd 3 so java holds a permanent reader
-    # reference on its own stdin. This avoids relaying through a separate
-    # `tail -f` process: with a relay, every writer open/close cycle on the
-    # FIFO risks a lost handoff or EOF race. With java holding the pipe open
-    # O_RDWR directly, external writers (`echo cmd > "$AUTH_PIPE"`) always
-    # have an attached reader and their writes reach java's stdin directly.
+    # 1. Copy Docker STDIN (0) to a new file descriptor channel (4)
+    # This prevents the background process from being detached to /dev/null
+    exec 4<&0
+
+    # 2. Start a background process that listens to channel 4 
+    # and pushes everything directly into the AUTH_PIPE
+    ( while read -r line <&4; do printf "%s\n" "$line" >> "$AUTH_PIPE"; done ) &
+    local INPUT_PID=$!
+
+    # 3. Start the Java server with channel 3 connected to the AUTH_PIPE
     if [ -n "$RUNTIME_CMD" ]; then
         $RUNTIME sh -c "exec 3<>\"$AUTH_PIPE\"; $java_cmd <&3 2>&1 | stdbuf -oL -eL sed 's/\r$//' | stdbuf -oL -eL tee \"$AUTH_OUTPUT_LOG\""
     else
         exec 3<>"$AUTH_PIPE"
         $java_cmd <&3 2>&1 | stdbuf -oL -eL sed 's/\r$//' | stdbuf -oL -eL tee "$AUTH_OUTPUT_LOG"
     fi
+
+    # 4. Clean up the processes and channels gracefully when the server stops
+    kill $INPUT_PID 2>/dev/null
+    exec 4<&-
 }
 
 handle_exit_code() {
