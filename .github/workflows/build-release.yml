@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   build:
-    name: "🐳 Build & Push Images"
+    name: "Build & Push Images"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -25,12 +25,15 @@ jobs:
           - os_type: ubuntu
             dockerfile: Dockerfile.ubuntu
             tag_suffix: ""
+            latest_tag: "latest"
           - os_type: alpine
             dockerfile: Dockerfile.alpine
             tag_suffix: "alpine"
+            latest_tag: "latest-alpine"
           - os_type: alpine-liberica
             dockerfile: Dockerfile.alpine-liberica
             tag_suffix: "alpine-liberica"
+            latest_tag: "latest-alpine-liberica"
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -57,8 +60,14 @@ jobs:
       - name: Extract version from tag
         id: get_version
         run: |
-          raw_tag="${GITHUB_REF#refs/tags/}"
-          echo "version=$raw_tag" >> $GITHUB_OUTPUT
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            raw_tag="${GITHUB_REF#refs/tags/}"
+            echo "version=$raw_tag" >> $GITHUB_OUTPUT
+            echo "has_version=true" >> $GITHUB_OUTPUT
+          else
+            echo "version=" >> $GITHUB_OUTPUT
+            echo "has_version=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set tag prefix
         id: set_tag
@@ -69,6 +78,23 @@ jobs:
             echo "tag_prefix=${{ matrix.tag_suffix }}-" >> $GITHUB_OUTPUT
           fi
 
+      - name: Set dynamic tags
+        id: set_tags
+        run: |
+          GHCR="ghcr.io/${{ github.repository_owner }}/hytale-server"
+          DHUB="${{ secrets.DOCKER_HUB_USERNAME }}/hytale-server"
+          
+          TAGS="${GHCR}:${{ matrix.latest_tag }}"$'\n'"${DHUB}:${{ matrix.latest_tag }}"
+          
+          if [ "${{ steps.get_version.outputs.has_version }}" = "true" ]; then
+            TAGS+=$'\n'"${GHCR}:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}"
+            TAGS+=$'\n'"${DHUB}:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}"
+          fi
+          
+          echo "tags<<EOF" >> $GITHUB_OUTPUT
+          echo "$TAGS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       # Combined step: builds once and pushes directly to both registries
       - name: Build & Push Images
         uses: docker/build-push-action@v6
@@ -77,14 +103,21 @@ jobs:
           file: ./${{ matrix.dockerfile }}
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
+          tags: ${{ steps.set_tags.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Summarize tags
+        if: success()
+        run: |
+          echo "## Tags pushed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.set_tags.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
   github_release:
-    name: "🚀 Create GitHub Release"
+    name: "Create GitHub Release"
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
@@ -160,3 +193,13 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summarize release
+        if: success()
+        run: |
+          echo "## Release created" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Name:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Changelog:** ${{ steps.changelog.outputs.changelog != '' && 'included' || 'empty' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Contributors:** ${{ steps.contributors.outputs.contributors != '' && steps.contributors.outputs.contributors != '- Geen externe bijdragen in deze release.' && 'included' || 'none' }}" >> $GITHUB_STEP_SUMMARY
