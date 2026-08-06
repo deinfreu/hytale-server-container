@@ -99,18 +99,13 @@ run_server() {
     # This prevents the background process from being detached to /dev/null
     exec 4<&0
 
-    # 2. Start a background process that listens to channel 4 
+    # 2. Start a background process that listens to channel 4
     # and pushes everything directly into the AUTH_PIPE
     ( while read -r line <&4; do printf "%s\n" "$line" >> "$AUTH_PIPE"; done ) &
     local INPUT_PID=$!
 
     # 3. Start the Java server with channel 3 connected to the AUTH_PIPE
-    if [ -n "$RUNTIME_CMD" ]; then
-        $RUNTIME sh -c "exec 3<>\"$AUTH_PIPE\"; $java_cmd <&3 2>&1 | stdbuf -oL -eL sed 's/\r$//' | stdbuf -oL -eL tee \"$AUTH_OUTPUT_LOG\""
-    else
-        exec 3<>"$AUTH_PIPE"
-        $java_cmd <&3 2>&1 | stdbuf -oL -eL sed 's/\r$//' | stdbuf -oL -eL tee "$AUTH_OUTPUT_LOG"
-    fi
+    $RUNTIME sh -c "exec 3<>\"$AUTH_PIPE\"; $java_cmd <&3 2>&1 | stdbuf -oL -eL sed 's/\r$//' | stdbuf -oL -eL tee \"$AUTH_OUTPUT_LOG\""
 
     # 4. Clean up the processes and channels gracefully when the server stops
     kill $INPUT_PID 2>/dev/null
