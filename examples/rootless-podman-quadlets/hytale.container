@@ -10,6 +10,10 @@ PublishPort=5520:5520/udp
 EnvironmentFile=%h/.config/containers/systemd/hytale.env
 Volume=%h/files/hytale:/home/container
 Volume=/etc/machine-id:/etc/machine-id:ro
+# Use same UID/GID in container and host
+UserNS=keep-id
+# Enable interactive terminal (Options "tty: true" and "stdin: true" in docker-compose)
+PodmanArgs=--attach stdin --tty
 # If running on an OS with SELinux, use these Volume declarations instead
 # (Create ~/files/.secrets/machine-id yourself, using dbus-uuidgen)
 #Volume=%h/files/hytale:/home/container:z
