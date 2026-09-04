@@ -24,3 +24,9 @@ jobs:
           release_name: ${{ inputs.release_name }}
           release_body: ${{ inputs.release_body }}
           release_html_url: ${{ inputs.release_html_url }}
+          avatar_url: https://avatars.githubusercontent.com/u/49069598?v=4&size=64
+          username: Github Notification Bot
+          color: "2105893"
+          content: "||@everyone||"
+          footer_title: "Changelog"
+          reduce_headings: true
