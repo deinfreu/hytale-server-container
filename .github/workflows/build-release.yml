@@ -80,6 +80,8 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
             ${{ secrets.DOCKER_HUB_USERNAME }}/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
+            ghcr.io/${{ github.repository_owner }}/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
