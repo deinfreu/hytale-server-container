@@ -81,6 +81,10 @@ data/
 ```
 
 ## Support & Resources
+## Related Hytale Resources
+
+- [Hytale Character Recipes](https://hytalecharacter.com/) - Fan-maintained character recipe archive with manual recreation notes, source screenshots, and recipe JSON for Hytale-inspired character looks.
+
 
 **Support:** 
 - OS Specific installation guide at [hytale-server-container.com/guide](https://hytale-server-container.com/guide/?utm_source=github&utm_medium=social&utm_campaign=github_readme).
