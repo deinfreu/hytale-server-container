@@ -3,6 +3,7 @@ name: "Build release"
 # Description: Automated CI/CD pipeline triggered by clean version tags (*.*.*).
 # 1. Builds and publishes multi-flavor Docker images simultaneously to both GHCR and Docker Hub.
 # 2. Automatically compiles a markdown changelog, filters contributors, and deploys a formal GitHub Release.
+# 3. Sends a release notification directly to Discord once the build and release succeeded.
 
 on:
   push:
@@ -88,7 +89,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   github_release:
-    name: "🚀 Create GitHub Release"
+    name: "🚀 Create GitHub Release & Notify"
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
@@ -162,3 +163,12 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send release notification to Discord
+        uses: SethCohen/github-releases-to-discord@v1
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          avatar_url: https://avatars.githubusercontent.com/u/49069598?v=4&size=64
+          username: Hytale Server Release Bot
+          content: "@everyone New release: ${{ github.ref_name }} \n\nChangelog: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
+          reduce_headings: true
