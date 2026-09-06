@@ -1,10 +1,14 @@
 <div align="center" width="100%">
 
-[![GitHub stars](https://img.shields.io/github/stars/deinfreu/hytale-server-container?style=for-the-badge&color=daaa3f)](https://github.com/deinfreu/hytale-server-container)
-[![Docker Pulls](https://img.shields.io/docker/pulls/deinfreu/hytale-server?style=for-the-badge&label=PULLS)](https://hub.docker.com/r/deinfreu/hytale-server)
-[![Size (tag)](https://img.shields.io/docker/image-size/deinfreu/hytale-server/latest-alpine-liberica?sort=date&style=for-the-badge&label=SIZE)](https://hub.docker.com/layers/deinfreu/hytale-server/latest-alpine-liberica/images/)
-[![GitHub license](https://img.shields.io/github/license/deinfreu/hytale-server-container?style=for-the-badge)](https://github.com/deinfreu/hytale-server-container/blob/main/LICENSE)
-[![Discord](https://img.shields.io/discord/1458149014808821965?style=for-the-badge&label=Discord&labelColor=5865F2)](https://discord.gg/M8yrdnHb32)
+[![GitHub Release](https://img.shields.io/github/v/release/deinfreu/hytale-server-container?style=for-the-badge&logo=github&logoColor=white&color=blue)](https://github.com/deinfreu/hytale-server-container/releases/latest)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/deinfreu/hytale-server-container/main?display_timestamp=committer&style=for-the-badge&logo=git&logoColor=white)
+[![GitHub stars](https://img.shields.io/github/stars/deinfreu/hytale-server-container?style=for-the-badge&color=daaa3f&logo=github&logoColor=white)](https://github.com/deinfreu/hytale-server-container)
+![Docker Architecture](https://img.shields.io/badge/architecture-amd64%20%7C%20arm64-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+[![Docker Pulls](https://img.shields.io/docker/pulls/deinfreu/hytale-server?style=for-the-badge&label=PULLS&color=2496ED&logo=docker&logoColor=white)](https://hub.docker.com/r/deinfreu/hytale-server)
+[![Size (tag)](https://img.shields.io/docker/image-size/deinfreu/hytale-server/latest-alpine-liberica?sort=date&style=for-the-badge&label=SIZE&color=2496ED&logo=docker&logoColor=white)](https://hub.docker.com/layers/deinfreu/hytale-server/latest-alpine-liberica/images/)
+[![GitHub license](https://img.shields.io/github/license/deinfreu/hytale-server-container?style=for-the-badge&logo=open-source-initiative&logoColor=white)](https://github.com/deinfreu/hytale-server-container/blob/main/LICENSE)
+![GitHub contributors](https://img.shields.io/github/contributors/deinfreu/hytale-server-container?style=for-the-badge&logo=github&logoColor=white)
+[![Discord](https://img.shields.io/discord/1458149014808821965?style=for-the-badge&label=Discord&labelColor=5865F2&logo=discord&logoColor=white)](https://discord.gg/M8yrdnHb32)
 
 Simply use the docker run command or docker compose, follow the authentication steps in the terminal, and your server will be ready in seconds. Designed by a community of 10+ contributors, this image prioritizes stability, security, and performance, allowing you to focus on managing your world rather than debugging your environment.
 
