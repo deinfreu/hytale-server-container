@@ -169,6 +169,9 @@ jobs:
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           avatar_url: https://avatars.githubusercontent.com/u/49069598?v=4&size=64
-          username: Hytale Server Release Bot
-          content: "@everyone New release: ${{ github.ref_name }} \n\nChangelog: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
+          username: Github
+          content: "@everyone New release: ${{ github.ref_name }}"
+          release_name: ${{ github.ref_name }}
+          release_body: ${{ steps.changelog.outputs.changelog }}
+          release_html_url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
           reduce_headings: true
