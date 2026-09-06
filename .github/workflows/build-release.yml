@@ -60,13 +60,15 @@ jobs:
           raw_tag="${GITHUB_REF#refs/tags/}"
           echo "version=$raw_tag" >> $GITHUB_OUTPUT
 
-      - name: Set tag prefix
+      - name: Set tag prefix and latest tag
         id: set_tag
         run: |
           if [ -z "${{ matrix.tag_suffix }}" ]; then
             echo "tag_prefix=" >> $GITHUB_OUTPUT
+            echo "latest_tag=latest" >> $GITHUB_OUTPUT
           else
             echo "tag_prefix=${{ matrix.tag_suffix }}-" >> $GITHUB_OUTPUT
+            echo "latest_tag=${{ matrix.tag_suffix }}-latest" >> $GITHUB_OUTPUT
           fi
 
       # Combined step: builds once and pushes directly to both registries
@@ -80,8 +82,8 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
             ${{ secrets.DOCKER_HUB_USERNAME }}/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}${{ steps.get_version.outputs.version }}
-            ghcr.io/${{ github.repository_owner }}/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}latest
-            ${{ secrets.DOCKER_HUB_USERNAME }}/hytale-server:${{ steps.set_tag.outputs.tag_prefix }}latest
+            ghcr.io/${{ github.repository_owner }}/hytale-server:${{ steps.set_tag.outputs.latest_tag }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/hytale-server:${{ steps.set_tag.outputs.latest_tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -99,7 +101,6 @@ jobs:
       - name: Get previous tag or initial commit
         id: previoustag
         run: |
-          # Haal de vorige tag op. Als deze niet bestaat, pak de allereerste commit als fallback.
           PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -A1 "${{ github.ref_name }}" | tail -n1 || true)
           if [ -z "$PREVIOUS_TAG" ] || [ "$PREVIOUS_TAG" = "${{ github.ref_name }}" ]; then
             PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
@@ -127,7 +128,6 @@ jobs:
           PREVIOUS_TAG="${{ steps.previoustag.outputs.previous_tag }}"
           CURRENT_TAG="${{ github.ref_name }}"
 
-          # Toont Git auteursnamen (zonder @ aangezien dit geen GitHub handles zijn)
           CONTRIBUTORS=$(git log --pretty=format:"- %an" --no-merges ${PREVIOUS_TAG}..${CURRENT_TAG} | sort -u | grep -vi "${{ github.repository_owner }}" || true)
 
           if [ -z "$CONTRIBUTORS" ]; then
