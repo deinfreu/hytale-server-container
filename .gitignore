@@ -23,6 +23,9 @@ TestResults.xml
 #Hytale specific
 /data
 
+#act specific
+.actrc
+
 #Coding
 .idea/
 *.sublime-project
@@ -30,6 +33,8 @@ TestResults.xml
 *.sw?
 *.code-workspace
 .clinerules
+
+.secrets
 
 # ----------------------
 # OS-specific files
@@ -104,4 +109,4 @@ docs/_site
 # Misc
 # ----------------------
 *.log
-*.cache
+*.cache.secrets

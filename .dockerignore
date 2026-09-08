@@ -1,41 +1,112 @@
-# Git files
+# ----------------------
+# Git & CI files
+# ----------------------
 .git
 .gitignore
 .github
 
-# Coding files
+# ----------------------
+# IDE & Coding files
+# ----------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.sw?
+*.code-workspace
 .clinerules
 
-# Specific repo files
+# ----------------------
+# Specific repo/docs files (not needed in image context)
+# ----------------------
 /assets
-
-# Documentation and metadata
 README.md
 SECURITY.md
 LICENSE
 CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+DOCKERHUB.md
+.actrc
 .editorconfig
 /docs
 /examples
 
-# Docker files (The Dockerfile itself isn't needed inside the image)
-Dockerfile
-docker-compose.yml
+# ----------------------
+# Docker files
+# ----------------------
+Dockerfile*
+docker-compose*.yml
 .dockerignore
 
-# Build artifacts & Temporary files
-*.log
-tmp/
-dist/
-.cache/
-/data
-**/data
-**/data/**
+# ----------------------
+# Caches & AL/Extension files
+# ----------------------
+.alcache/
+.alpackages/
+.snapshots/
+.output/
+*.app
+rad.json
+*.g.xlf
+*.flf
+TestResults.xml
+.actrc
+.secrets
 
-# OS specific files
+# ----------------------
+# OS-specific files
+# ----------------------
 .DS_Store
+.AppleDouble
+.LSOverride
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*~
 
-# Potential sensitive/local config
+# ----------------------
+# Python / language caches
+# ----------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.pyo
+*.pyd
+
+# ----------------------
+# Runtime data & logs
+# ----------------------
+/data
+**/data/
+/data_backup
+*.log
+*.pid
+*.sock
 .env
-config/local.json
+*.cache.secrets
+
+# ----------------------
+# Archives & temp files
+# ----------------------
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.tmp
+*.bak
+tmp/
+.cache/
+
+# ----------------------
+# Build artifacts
+# ----------------------
+dist/
+out/
+docs/_site
+*.class
+*.o
+*.so
+*.exe
+
