@@ -109,36 +109,20 @@ jobs:
           fi
           echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
 
-      - name: Generate changelog
+      - name: Generate changelog and contributors
         id: changelog
         run: |
           PREVIOUS_TAG="${{ steps.previoustag.outputs.previous_tag }}"
           CURRENT_TAG="${{ github.ref_name }}"
-
-          CHANGELOG=$(git log ${PREVIOUS_TAG}..${CURRENT_TAG} --pretty=format:"- %s (%h)" --no-merges || echo "Eerste release")
-
+          
+          # Run the release notes generator script and capture output
+          RELEASE_BODY=$(./scripts/generate-release-notes.sh "$PREVIOUS_TAG" "$CURRENT_TAG")
+          
+          # Multi-line output escaping for GitHub Actions
           {
-            echo 'changelog<<EOF'
-            echo "$CHANGELOG"
-            echo EOF
-          } >> $GITHUB_OUTPUT
-
-      - name: Generate contributors list
-        id: contributors
-        run: |
-          PREVIOUS_TAG="${{ steps.previoustag.outputs.previous_tag }}"
-          CURRENT_TAG="${{ github.ref_name }}"
-
-          CONTRIBUTORS=$(git log --pretty=format:"- %an" --no-merges ${PREVIOUS_TAG}..${CURRENT_TAG} | sort -u | grep -vi "${{ github.repository_owner }}" || true)
-
-          if [ -z "$CONTRIBUTORS" ]; then
-            CONTRIBUTORS="- Geen externe bijdragen in deze release."
-          fi
-
-          {
-            echo 'contributors<<EOF'
-            echo "$CONTRIBUTORS"
-            echo EOF
+            echo 'body<<EOF'
+            echo "$RELEASE_BODY"
+            echo 'EOF'
           } >> $GITHUB_OUTPUT
 
       - name: Create Release
@@ -146,19 +130,7 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
-          body: |
-            ## Changes since ${{ steps.previoustag.outputs.previous_tag }}
-
-            ${{ steps.changelog.outputs.changelog }}
-
-            ---
-
-            ## Contributors
-
-            A special thank you to everyone who contributed to this release!
-
-            ${{ steps.contributors.outputs.contributors }}
-
+          body: ${{ steps.changelog.outputs.body }}
           draft: false
           prerelease: false
         env:
@@ -172,6 +144,6 @@ jobs:
           username: Github
           content: "@everyone New release: ${{ github.ref_name }}"
           release_name: ${{ github.ref_name }}
-          release_body: ${{ steps.changelog.outputs.changelog }}
+          release_body: ${{ steps.changelog.outputs.body }}
           release_html_url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
           reduce_headings: true
