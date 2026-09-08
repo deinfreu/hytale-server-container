@@ -3,7 +3,7 @@ name: "Build release"
 # Description: Automated CI/CD pipeline triggered by clean version tags (*.*.*).
 # 1. Builds and publishes multi-flavor Docker images simultaneously to both GHCR and Docker Hub.
 # 2. Automatically compiles a markdown changelog, filters contributors, and deploys a formal GitHub Release.
-# 3. Sends a release notification directly to Discord once the build and release succeeded.
+# 3. Sends a rich release notification directly to Discord via custom cURL once the release succeeded.
 
 on:
   push:
@@ -136,14 +136,49 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Send release notification to Discord
-        uses: SethCohen/github-releases-to-discord@v1
-        with:
-          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          avatar_url: https://avatars.githubusercontent.com/u/49069598?v=4&size=64
-          username: Github
-          content: "@everyone New release: ${{ github.ref_name }}"
-          release_name: ${{ github.ref_name }}
-          release_body: ${{ steps.changelog.outputs.body }}
-          release_html_url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
-          reduce_headings: true
+      - name: Send Discord Notification via cURL
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RELEASE_NAME: ${{ github.ref_name }}
+          RELEASE_BODY: ${{ steps.changelog.outputs.body }}
+          RELEASE_URL: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          PAYLOAD=$(jq -n \
+            --arg username "Github Release" \
+            --arg avatar_url "https://avatars.githubusercontent.com/u/49069598?v=4&size=64" \
+            --arg content "I have just released a new version. Version: $RELEASE_NAME is now online!" \
+            --arg title "Release $RELEASE_NAME • Changelog & Source Code" \
+            --arg url "$RELEASE_URL" \
+            --arg description "$RELEASE_BODY" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              username: $username,
+              avatar_url: $avatar_url,
+              content: $content,
+              embeds: [{
+                author: {
+                  name: "GitHub",
+                  url: "https://github.com",
+                  icon_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                },
+                title: $title,
+                url: $url,
+                description: $description,
+                color: 3447003,
+                image: {
+                  url: "https://raw.githubusercontent.com/deinfreu/hytale-server-container/main/assets/images/logo_dark.png"
+                },
+                footer: {
+                  text: "deinfreu/hytale-server-container",
+                  icon_url: "https://avatars.githubusercontent.com/u/49069598?v=4"
+                },
+                timestamp: $timestamp
+              }]
+            }')
+
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "$PAYLOAD" \
+               "$DISCORD_WEBHOOK_URL"
