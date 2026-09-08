@@ -1,0 +1,37 @@
+name: "Test Discord Notification"
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_name:
+        description: "Release title to post"
+        required: true
+        default: "v1.2.3"
+      release_body:
+        description: "Release notes body to post"
+        required: true
+        default: |
+          ## Changes
+          - Added manual testing support
+          - Verified Discord webhook output
+      release_html_url:
+        description: "Release URL to link in Discord"
+        required: false
+        default: "https://github.com/danfreudend/hytale-server-container/releases/tag/v1.2.3"
+
+jobs:
+  github-releases-to-discord:
+    name: "📢 Send Discord Notification"
+    runs-on: ubuntu-latest
+    steps:
+      - name: GitHub Releases to Discord
+        uses: SethCohen/github-releases-to-discord@v1.20.0
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          avatar_url: https://avatars.githubusercontent.com/u/49069598?v=4&size=64
+          username: "Github"
+          content: "@everyone New release: ${{ github.event.inputs.release_name }}"
+          release_name: ${{ github.event.inputs.release_name }}
+          release_body: ${{ github.event.inputs.release_body }}
+          release_html_url: ${{ github.event.inputs.release_html_url }}
+          reduce_headings: true
