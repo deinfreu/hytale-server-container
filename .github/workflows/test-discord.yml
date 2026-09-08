@@ -6,7 +6,7 @@ on:
       release_name:
         description: "Release title to post"
         required: true
-        default: "v1.2.3"
+        default: "1.0.3"
       release_body:
         description: "Release notes body to post"
         required: true
@@ -17,21 +17,56 @@ on:
       release_html_url:
         description: "Release URL to link in Discord"
         required: false
-        default: "https://github.com/danfreudend/hytale-server-container/releases/tag/v1.2.3"
+        default: "https://github.com/deinfreu/hytale-server-container/releases/tag/1.0.3"
 
 jobs:
   github-releases-to-discord:
     name: "📢 Send Discord Notification"
     runs-on: ubuntu-latest
     steps:
-      - name: GitHub Releases to Discord
-        uses: SethCohen/github-releases-to-discord@v1.20.0
-        with:
-          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          avatar_url: "https://avatars.githubusercontent.com/u/49069598?v=4&size=64"
-          username: "Github Release"
-          content: "📢 **Hytale Server Container ${{ inputs.release_name }} is live!** @everyone"
-          release_name: ${{ inputs.release_name }}
-          release_body: ${{ inputs.release_body }}
-          release_html_url: ${{ inputs.release_html_url }}
-          max_description: 250
+      - name: Send Discord Notification via cURL
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RELEASE_NAME: ${{ inputs.release_name }}
+          RELEASE_BODY: ${{ inputs.release_body }}
+          RELEASE_URL: ${{ inputs.release_html_url }}
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          PAYLOAD=$(jq -n \
+            --arg username "Github Release" \
+            --arg avatar_url "https://avatars.githubusercontent.com/u/49069598?v=4&size=64" \
+            --arg content "I have just released a new version. Version: $RELEASE_NAME is now online!" \
+            --arg title "Release $RELEASE_NAME • Changelog & Source Code" \
+            --arg url "$RELEASE_URL" \
+            --arg description "$RELEASE_BODY" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              username: $username,
+              avatar_url: $avatar_url,
+              content: $content,
+              embeds: [{
+                author: {
+                  name: "GitHub",
+                  url: "https://github.com",
+                  icon_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                },
+                title: $title,
+                url: $url,
+                description: $description,
+                color: 3447003,
+                image: {
+                  url: "https://raw.githubusercontent.com/deinfreu/hytale-server-container/main/assets/images/logo_dark.png"
+                },
+                footer: {
+                  text: "deinfreu/hytale-server-container",
+                  icon_url: "https://avatars.githubusercontent.com/u/49069598?v=4"
+                },
+                timestamp: $timestamp
+              }]
+            }')
+
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "$PAYLOAD" \
+               "$DISCORD_WEBHOOK_URL"
