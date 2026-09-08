@@ -39,7 +39,8 @@ git log "${PREVIOUS_TAG}..${CURRENT_TAG}" --pretty=format:"%h|%s|%an" --no-merge
     fi
 
     # Parse conventional commit: type(scope): description or type: description
-    if [[ "$subject" =~ ^([a-z]+)(\(([^)]+)\))?:[[:space:]]*(.*)$ ]]; then
+    regex="^([a-z]+)(\(([^\)]+)\))?:[[:space:]]*(.*)$"
+    if [[ "$subject" =~ $regex ]]; then
         type="${BASH_REMATCH[1]}"
         scope="${BASH_REMATCH[3]}"
         desc="${BASH_REMATCH[4]}"
