@@ -43,10 +43,10 @@ extract_and_stage_server() {
     # from updater/staging/ into the live server dirs. Extracting straight to
     # $BASE_DIR left staging empty, so the "Missing Server/HytaleServer.jar"
     # guard always tripped and no update was ever applied.
-    if 7z x "$ZIP_FILE" -aoa -bsp1 -mmt=on -o"$STAGING_DIR" >/dev/null 2>&1; then
+    if unzip -o -q "$ZIP_FILE" -d "$STAGING_DIR" >/dev/null 2>&1; then
         log_success
     else
-        log_error "Extraction failed" "Check disk space or 7z compatibility."
+        log_error "Extraction failed" "Check disk space or zip file integrity."
         exit 1
     fi
 

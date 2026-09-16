@@ -1,20 +1,17 @@
 # syntax=docker/dockerfile:1.7
 
 # --- STAGE 1: Builder (runs on target platform) ---
-FROM eclipse-temurin:25-jdk AS builder
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl p7zip-full dos2unix && \
-    rm -rf /var/lib/apt/lists/*
+FROM alpine:3.21 AS builder
 
 WORKDIR /build
 
-# 1. Download and extract Hytale Downloader (with retries for QEMU emulation slowness)
-RUN curl -L --retry 3 --retry-delay 5 -o hytale.zip https://downloader.hytale.com/hytale-downloader.zip && \
-    7z x hytale.zip -y -o./hytale -mmt=on && \
+# 1. Download and extract Hytale Downloader (with retries for slow downloads)
+RUN apk add --no-cache curl unzip dos2unix && \
+    curl -L --retry 3 --retry-delay 5 -o hytale.zip https://downloader.hytale.com/hytale-downloader.zip && \
+    unzip -o -q hytale.zip -d hytale && \
     mv ./hytale/hytale-downloader-linux-amd64 ./hytale-downloader && \
     chmod +x ./hytale-downloader && \
-    rm hytale.zip
+    rm -rf hytale hytale.zip
 
 # 2. Prepare Scripts (fixing line endings and permissions)
 COPY scripts/ ./scripts/
@@ -43,7 +40,7 @@ ENV USER=container \
 
 # 1. Install Runtime Dependencies (minimal set, no qemu-user-static)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    tini curl iproute2 ca-certificates unzip tzdata jq p7zip-full && \
+    tini curl iproute2 ca-certificates tzdata jq unzip && \
     rm -rf /var/lib/apt/lists/*
 
 # 1.1. Install QEMU static binary for x86_64 emulation (direct download, no apt)
