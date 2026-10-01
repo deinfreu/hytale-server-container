@@ -89,7 +89,7 @@ data/
 **Support:** 
 - OS Specific installation guide at [hytale-server-container.com/guide](https://hytale-server-container.com/guide/?utm_source=github&utm_medium=social&utm_campaign=github_readme).
 - Full installation guide available at [hytale-server-container.com/installation](https://hytale-server-container.com/installation/?utm_source=github&utm_medium=social&utm_campaign=github_readme).
-- Enviroment variables and more: [hytale-server-container.com/technical](https://hytale-server-container.com/technical/?utm_source=github&utm_medium=social&utm_campaign=github_readme).
+- Enviroment variables and more: [hytale-server-container.com/documentation](https://hytale-server-container.com/documentation/?utm_source=github&utm_medium=social&utm_campaign=github_readme).
 
 **Troubleshooting:**
 - For frequently asked questions: [hytale-server-container.com/faq](https://hytale-server-container.com/faq/?utm_source=github&utm_medium=social&utm_campaign=github_readme)
